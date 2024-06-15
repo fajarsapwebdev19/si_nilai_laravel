@@ -25,3 +25,12 @@ Route::get('admin/ekskul', [AdminController::class, 'ekskul'])->name('data-eksku
 Route::get('admin/set-profil-sekolah', [AdminController::class, 'set_profil'])->name('profil-sekolah');
 Route::get('admin/set-wakel', [AdminController::class, 'set_wakel'])->name('pilih-wakel');
 Route::get('admin/set-mapel', [AdminController::class, 'set_mapel'])->name('pilih-guru-mapel');
+
+// Route Data
+Route::get('admin/data_kelas', [AdminController::class, 'data_kelas']);
+
+// Route Tambah Data
+Route::post('admin/tambah_kelas', [AdminController::class, 'tambah_kelas']);
+
+// Route Ambil Data
+Route::get('admin/get_kelas/{id}', [AdminController::class, 'get_class']);
