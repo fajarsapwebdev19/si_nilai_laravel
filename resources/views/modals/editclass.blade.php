@@ -1,5 +1,6 @@
 @csrf;
 <div class="modal-body">
+    <input type="hidden" id="id" value="{{$kelas->id}}">
     <div class="form-group mb-3">
         <label for="" class="form-label">Nama Rombel</label>
         <input type="text" name="nama_rombel" class="form-control" value="{{$kelas->nama_rombel}}">

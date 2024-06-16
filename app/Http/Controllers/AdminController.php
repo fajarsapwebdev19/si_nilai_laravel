@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Kelas;
+use App\Models\Mapel;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
 
@@ -30,12 +31,16 @@ class AdminController extends Controller
     }
 
     // class
+    public function class_room()
+    {
+        return view('class');
+    }
 
     // data kelas
     public function data_kelas(Request $request)
     {
         if ($request->ajax()) {
-            $data = Kelas::all();
+            $data = Kelas::orderBy('nama_rombel', 'asc')->get();
 
             return DataTables::of($data)
             ->addIndexColumn()
@@ -85,14 +90,110 @@ class AdminController extends Controller
         return view('modals.editclass', compact('kelas'));
     }
 
-    public function class_room()
+    public function get_class_delete($id)
     {
-        return view('class');
+         // Mengambil hanya kolom 'id' dan 'nama_rombel'
+        $kelas = Kelas::select('id', 'nama_rombel')->findOrFail($id);
+
+        return view('modals.confirmdeleteclass', compact('kelas'));
     }
 
+    // proses ubah data kelas
+    public function ubah_kelas(Request $request, $id)
+    {
+        $kelas = Kelas::findOrFail($id);
+        $kelas->nama_rombel = $request->nama_rombel;
+        $kelas->tingkat = $request->tingkat;
+        $kelas->status = $request->status;
+        $kelas->save();
+
+        return response()->json(['message' => 'Berhasil Ubah Data Kelas'], 200);
+    }
+
+    // proses hapus data
+    public function hapus_kelas($id)
+    {
+        $kelas = Kelas::findOrFail($id);
+        $kelas->delete();
+
+        return response()->json(['message' => 'Berhasil Hapus Data Kelas'], 200);
+    }
+
+    // mapel
     public function mapel()
     {
         return view('mapel');
+    }
+
+    // data mapel
+    public function data_mapel(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = Mapel::all();
+
+            return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('action', function($row) {
+                $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="'.$row->id.'">Ubah</button>
+                <button class="badge rounded-pill text-bg-danger hapus" data-id="'.$row->id.'">Hapus</button>';
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+        }
+    }
+
+    // tambah data mapel
+    public function tambah_mapel(Request $request)
+    {
+        $mapel = new Mapel();
+        $mapel->id = Uuid::uuid7()->toString();
+        $mapel->kelompok = $request->kelompok;
+        $mapel->kode = $request->kode;
+        $mapel->nama_mapel = $request->nama_mapel;
+        $mapel->tingkat = $request->tingkat;
+        $mapel->kkm = $request->kkm;
+        $mapel->save();
+
+        return response()->json(['message' => 'Berhasil Tambah Data Mapel'], 200);
+    }
+
+    // ambil data mapel per id
+    public function get_data_mapel($id)
+    {
+        $mapel = Mapel::findOrFail($id);
+
+        return view("modals.update_mapel", compact("mapel"));
+    }
+    public function get_mapel_delete($id)
+    {
+        $mapel = Mapel::findOrFail($id);
+
+        return view("modals.confirmdeletemapel", compact("mapel"));
+    }
+
+    // proses ubah data mapel
+    public function ubah_mapel(Request $request, $id)
+    {
+        $mapel = Mapel::findOrFail($id);
+        $mapel->kelompok = $request->kelompok;
+        $mapel->kode = $request->kode;
+        $mapel->nama_mapel = $request->nama_mapel;
+        $mapel->tingkat = $request->tingkat;
+        $mapel->kkm = $request->kkm;
+        $mapel->save();
+
+        return response()->json(['message' => 'Berhasil Ubah Data Mapel'], 200);
+    }
+
+    // proses hapus data
+    public function hapus_mapel($id)
+    {
+        $mapel = Mapel::findOrFail($id);
+        $mapel->delete();
+
+        return response()->json(['message' => 'Berhasil Hapus Data Mapel'], 200);
     }
 
     public function ekskul()

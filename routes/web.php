@@ -15,6 +15,8 @@ use App\Http\Controllers\AuthController;
 |
 */
 Route::get('/', [AuthController::class, 'auth']);
+
+// Route Halaman
 Route::get('admin/', [AdminController::class, 'index'])->name('dashboard-admin');
 Route::get('admin/manajemen_akun/', [AdminController::class, 'account'])->name('manajemen-akun');
 Route::get('admin/guru', [AdminController::class, 'teacher'])->name('data-guru');
@@ -27,10 +29,23 @@ Route::get('admin/set-wakel', [AdminController::class, 'set_wakel'])->name('pili
 Route::get('admin/set-mapel', [AdminController::class, 'set_mapel'])->name('pilih-guru-mapel');
 
 // Route Data
-Route::get('admin/data_kelas', [AdminController::class, 'data_kelas']);
+Route::get('admin/data_kelas', [AdminController::class, 'data_kelas']); // data kelas
+Route::get('admin/data_mapel', [AdminController::class, 'data_mapel']); // data mapel
 
 // Route Tambah Data
-Route::post('admin/tambah_kelas', [AdminController::class, 'tambah_kelas']);
+Route::post('admin/tambah_kelas', [AdminController::class, 'tambah_kelas']); // data kelas
+Route::post('admin/tambah_mapel', [AdminController::class, 'tambah_mapel']); //data mapel
+
+// Route Ubah Data
+Route::put('admin/ubah_kelas/{id}', [AdminController::class, 'ubah_kelas']); // data kelas
+Route::put('admin/ubah_mapel/{id}', [AdminController::class, 'ubah_mapel']); //data mapel
+
+// Route Hapus Data
+Route::get('admin/hapus_kelas/{id}', [AdminController::class, 'hapus_kelas']); // data kelas
+Route::get('admin/hapus_mapel/{id}', [AdminController::class, 'hapus_mapel']); //data mapel
 
 // Route Ambil Data
-Route::get('admin/get_kelas/{id}', [AdminController::class, 'get_class']);
+Route::get('admin/get_kelas/{id}', [AdminController::class, 'get_class']); // data kelas
+Route::get('admin/get_data_delete/{id}', [AdminController::class, 'get_class_delete']); // data kelas
+Route::get('admin/get_mapel/{id}', [AdminController::class, 'get_data_mapel']);
+Route::get('admin/get_mapel_delete/{id}', [AdminController::class, 'get_mapel_delete']);

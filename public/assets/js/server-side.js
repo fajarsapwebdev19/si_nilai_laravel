@@ -4,6 +4,7 @@ var account = $(".account").DataTable({
 
 });
 
+// data kelas
 var data_kelas = $(".kelas").DataTable({
     processing: true,
     serverSide: true,
@@ -14,5 +15,21 @@ var data_kelas = $(".kelas").DataTable({
         { data: 'tingkat', name: 'tingkat'},
         { data: 'status', name: 'status'},
         { data: 'action', name: 'action', orderable: false, searchable: false },
+    ]
+});
+
+// data mapel
+var data_mapel = $(".mapel").DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: 'data_mapel',
+    columns: [
+        {data : 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data : 'kelompok', name: 'kelompok'},
+        {data : 'kode', name: 'kode'},
+        {data : 'nama_mapel', name: 'nama_mapel'},
+        {data : 'tingkat', name: 'tingkat'},
+        {data : 'kkm', name: 'kkm'},
+        {data : 'action', name: 'action', orderable: false, searchable: false}
     ]
 });
