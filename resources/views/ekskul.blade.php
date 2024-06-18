@@ -14,7 +14,7 @@
                 <div class="card mt-2">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover account">
+                            <table class="table table-hover ekskul">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </div>
-                @include('modals/account')
+                @include('modals/ekskul')
             </div>
         </div>
     </div>

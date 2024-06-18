@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\Ekskul;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
+use Yajra\DataTables\Contracts\DataTable;
 
 class AdminController extends Controller
 {
@@ -196,9 +198,70 @@ class AdminController extends Controller
         return response()->json(['message' => 'Berhasil Hapus Data Mapel'], 200);
     }
 
+    // ekskul
+
     public function ekskul()
     {
         return view('ekskul');
+    }
+    // data ekskul
+    public function data_ekskul(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = Ekskul::all();
+
+            return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('action', function($row){
+                $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="'.$row->id.'">Ubah</button>
+                <button class="badge rounded-pill text-bg-danger hapus" data-id="'.$row->id.'">Hapus</button>';
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+        }
+    }
+    // proses tambah ekskul
+    public function tambah_ekskul(Request $request)
+    {
+        $ekskul = new Ekskul();
+        $ekskul->id = Uuid::uuid7()->toString();
+        $ekskul->nama_ekstrakulikuler = $request->nama_ekstrakulikuler;
+        $ekskul->save();
+
+        return response()->json(['message' => 'Berhasil Tambah Data Ekskul'], 200);
+    }
+
+    // ambil data per id data ekskul untuk edit data dan konfirmasi hapus data
+    public function get_ekskul_delete($id)
+    {
+        $ekskul = Ekskul::findOrFail($id);
+
+        return view('modals.confirmdeleteekskul', compact('ekskul'));
+    }
+    public function get_ekskul_edit($id)
+    {
+        $ekskul = Ekskul::findOrFail($id);
+
+        return view('modals.editekskul', compact('ekskul'));
+    }
+
+    // proses ubah data ekskul
+    public function ubah_ekskul(Request $request, $id)
+    {
+        $ekskul = Ekskul::findOrFail($id);
+        $ekskul->nama_ekstrakulikuler = $request->nama_ekstrakulikuler;
+        $ekskul->save();
+        return response()->json(['message' => 'Berhasil Ubah Data Ekskul'], 200);
+    }
+
+    // proses hapus data ekskul
+    public function hapus_ekskul($id)
+    {
+        $ekskul = Ekskul::findOrFail($id);
+        $ekskul->delete();
+        return response()->json(['message' => 'Berhasil Hapus Data Ekskul'], 200);
     }
 
     public function set_profil()

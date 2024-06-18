@@ -31,21 +31,27 @@ Route::get('admin/set-mapel', [AdminController::class, 'set_mapel'])->name('pili
 // Route Data
 Route::get('admin/data_kelas', [AdminController::class, 'data_kelas']); // data kelas
 Route::get('admin/data_mapel', [AdminController::class, 'data_mapel']); // data mapel
+Route::get('admin/data_ekskul', [AdminController::class, 'data_ekskul']); //data ekskul
 
 // Route Tambah Data
 Route::post('admin/tambah_kelas', [AdminController::class, 'tambah_kelas']); // data kelas
 Route::post('admin/tambah_mapel', [AdminController::class, 'tambah_mapel']); //data mapel
+Route::post('admin/tambah_ekskul', [AdminController::class, 'tambah_ekskul']); //data ekskul
 
 // Route Ubah Data
 Route::put('admin/ubah_kelas/{id}', [AdminController::class, 'ubah_kelas']); // data kelas
 Route::put('admin/ubah_mapel/{id}', [AdminController::class, 'ubah_mapel']); //data mapel
+Route::put('admin/ubah_ekskul/{id}', [AdminController::class, 'ubah_ekskul']); //data ekskul
 
 // Route Hapus Data
 Route::get('admin/hapus_kelas/{id}', [AdminController::class, 'hapus_kelas']); // data kelas
 Route::get('admin/hapus_mapel/{id}', [AdminController::class, 'hapus_mapel']); //data mapel
+Route::get('admin/hapus_ekskul/{id}', [AdminController::class, 'hapus_ekskul']); //data ekskul
 
 // Route Ambil Data
 Route::get('admin/get_kelas/{id}', [AdminController::class, 'get_class']); // data kelas
 Route::get('admin/get_data_delete/{id}', [AdminController::class, 'get_class_delete']); // data kelas
-Route::get('admin/get_mapel/{id}', [AdminController::class, 'get_data_mapel']);
-Route::get('admin/get_mapel_delete/{id}', [AdminController::class, 'get_mapel_delete']);
+Route::get('admin/get_mapel/{id}', [AdminController::class, 'get_data_mapel']); // data mapel
+Route::get('admin/get_mapel_delete/{id}', [AdminController::class, 'get_mapel_delete']); // data mapel
+Route::get('admin/get_ekskul_edit/{id}', [AdminController::class, 'get_ekskul_edit']); // data ekskul
+Route::get('admin/get_ekskul_delete/{id}', [AdminController::class, 'get_ekskul_delete']); // data ekskul

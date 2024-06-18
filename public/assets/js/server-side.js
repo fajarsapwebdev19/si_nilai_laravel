@@ -33,3 +33,15 @@ var data_mapel = $(".mapel").DataTable({
         {data : 'action', name: 'action', orderable: false, searchable: false}
     ]
 });
+
+// data ekstrakulikuler
+var data_ekskul = $('.ekskul').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: 'data_ekskul',
+    columns: [
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'nama_ekstrakulikuler', name: 'nama_ekstrakulikuler'},
+        {data: 'action', name: 'action', orderable: false, searchable: false}
+    ]
+});

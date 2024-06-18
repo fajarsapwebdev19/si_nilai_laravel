@@ -1,3 +1,4 @@
+
 // proses tambah data kelas
 $("#tambah-kelas").on('click', '.simpan', function(){
     let data = $("#tambah-kelas").serialize();
@@ -181,6 +182,97 @@ $("#hapus-mapel").on('click', '.yes', function(){
                 $(this).removeClass('alert-success bg-success');
             });
             data_mapel.ajax.reload();
+        }
+    });
+});
+
+// proses tambah ekskul
+$("#tambah-ekskul").on('click', '.simpan', function(){
+    let data = $('#tambah-ekskul').serialize();
+
+    $.ajax({
+        url: "tambah_ekskul",
+        data: data,
+        method: "POST",
+        success:function(response)
+        {
+            $("#tambah").modal('hide');
+            $(".messages").show();
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $(this).removeClass('alert-success bg-success');
+            });
+            data_ekskul.ajax.reload();
+            $("#tambah-ekskul")[0].reset();
+        }
+    });
+});
+
+// get data ekskul per id untuk di tampilkan di modal edit ekskul
+$('.ekskul').on('click', '.ubah', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: "get_ekskul_edit/"+id,
+        method: "GET",
+        success:function(response)
+        {
+            $("#ubah").modal('show');
+            $("#ubah-ekskul").html(response);
+        }
+    });
+});
+
+$('#ubah-ekskul').on('click', '.simpan', function(){
+    let data = $('#ubah-ekskul').serialize();
+    let id = $('#id').val();
+
+    $.ajax({
+        url: "ubah_ekskul/"+ id,
+        data: data,
+        method: "PUT",
+        success:function(response)
+        {
+            $("#ubah").modal('hide');
+            $(".messages").show();
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $(this).removeClass('alert-success bg-success');
+            });
+            data_ekskul.ajax.reload();
+        }
+    });
+});
+
+$('.ekskul').on('click', '.hapus', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: "get_ekskul_delete/"+id,
+        method: 'GET',
+        success:function(response)
+        {
+            $("#hapus").modal('show');
+            $("#hapus-ekskul").html(response);
+        }
+    });
+});
+
+$('#hapus-ekskul').on('click', '.yes', function(){
+    let id = $('#id').val();
+
+    $.ajax({
+        url: "hapus_ekskul/"+id,
+        method: "GET",
+        success:function(response)
+        {
+            $("#hapus").modal('hide');
+            $(".messages").show();
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $(this).removeClass('alert-success bg-success');
+            });
+            data_ekskul.ajax.reload();
         }
     });
 });
