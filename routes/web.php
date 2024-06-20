@@ -30,12 +30,14 @@ Route::get('admin/set-mapel', [AdminController::class, 'set_mapel'])->name('pili
 
 // Route Data
 Route::get('admin/akun_admin', [AdminController::class, 'account_data']); // data akun admin
+Route::get('admin/data_guru', [AdminController::class, 'data_guru']); // data guru
 Route::get('admin/data_kelas', [AdminController::class, 'data_kelas']); // data kelas
 Route::get('admin/data_mapel', [AdminController::class, 'data_mapel']); // data mapel
 Route::get('admin/data_ekskul', [AdminController::class, 'data_ekskul']); //data ekskul
 
 // Route Tambah Data
 Route::post('admin/tambah_akun', [AdminController::class, 'tambah_akun']); // data akun admin
+Route::post('admin/tambah_guru', [AdminController::class, 'tambah_guru']); // data guru
 Route::post('admin/tambah_kelas', [AdminController::class, 'tambah_kelas']); // data kelas
 Route::post('admin/tambah_mapel', [AdminController::class, 'tambah_mapel']); //data mapel
 Route::post('admin/tambah_ekskul', [AdminController::class, 'tambah_ekskul']); //data ekskul
@@ -55,6 +57,7 @@ Route::get('admin/hapus_ekskul/{id}', [AdminController::class, 'hapus_ekskul']);
 // Route Ambil Data
 Route::get('admin/get_users_edit/{id}', [AdminController::class, 'get_users_edit']); // data akun admin
 Route::get('admin/get_users_delete/{id}', [AdminController::class, 'get_users_delete']); // data akun admin
+Route::get('admin/get_data_kelas', [AdminController::class, 'get_data_kelas']); // semua data kelas
 Route::get('admin/get_kelas/{id}', [AdminController::class, 'get_class']); // data kelas
 Route::get('admin/get_data_delete/{id}', [AdminController::class, 'get_class_delete']); // data kelas
 Route::get('admin/get_mapel/{id}', [AdminController::class, 'get_data_mapel']); // data mapel

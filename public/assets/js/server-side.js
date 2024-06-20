@@ -10,7 +10,22 @@ var account = $(".account").DataTable({
         { data: 'personal_data.jenis_kelamin', name: 'personal_data.jenis_kelamin'},
         { data: 'username', name: 'username'},
         { data: 'status', name: 'status'},
-        { data: 'action', name: 'action', orderable: false, searchable: false },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ]
+});
+
+// data guru
+var data_guru = $('.teacher').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: 'data_guru',
+    columns:[
+        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+        { data: 'personal_data.nama', name: 'personal_data.nama'},
+        { data: 'personal_data.jenis_kelamin', name: 'personal_data.jenis_kelamin'},
+        { data: 'nik', name: 'nik'},
+        { data: 'status', name: 'status'},
+        { data: 'action', name: 'action', orderable: false, searchable: false }
     ]
 });
 

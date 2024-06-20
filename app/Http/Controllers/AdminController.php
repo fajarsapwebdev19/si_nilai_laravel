@@ -8,8 +8,9 @@ use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Ekskul;
 use App\Models\User;
-use App\Models\Role;
+use App\Models\Guru;
 use App\Models\PersonalData;
+use Faker\Provider\ar_EG\Person;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
 
@@ -30,24 +31,22 @@ class AdminController extends Controller
     // data manajemen akun
     public function account_data(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = User::with(['personalData', 'role'])->where('role_id', 1)->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function($row)
-                {
+                ->addColumn('action', function ($row) {
                     $btn = '
-                            <button class="badge rounded-pill text-bg-info ubah" data-id="'.$row->id.'">Ubah</button>
-                            <button class="badge rounded-pill text-bg-danger hapus" data-id="'.$row->id.'">Hapus</button>';
+                            <button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
+                            <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
-                ->addColumn('status', function($row){
+                ->addColumn('status', function ($row) {
                     $status = $row->status_account == "Y" ? '<em class="fas fa-check-circle text-success"></em>' : '<em class="fas fa-times-circle text-danger"></em>';
                     return $status;
                 })
-                ->rawColumns(['action','status'])
+                ->rawColumns(['action', 'status'])
                 ->toJson();
         }
     }
@@ -66,7 +65,7 @@ class AdminController extends Controller
         $personal->modified_at = NULL;
 
         $user = new User();
-        $user->id = Uuid::uuid7()->toString();
+        $user->id = Uuid::uuid4()->toString();
         $user->username = $request->username;
         $user->password = Hash::make($request->password);
         $user->real_password = $request->password;
@@ -128,9 +127,90 @@ class AdminController extends Controller
         return response()->json(['message' => 'Berhasil Hapus Akun Admin'], 200);
     }
 
+    // guru
     public function teacher()
     {
         return view('teacher');
+    }
+
+    // sensor nik
+    public function sensorNik($nik, $mask_char = '*', $num_visible_start = 4, $num_visible_end = 4)
+    {
+        $start = substr($nik, 0, $num_visible_start);
+        $end = substr($nik, -$num_visible_end);
+        $masked_length = strlen($nik) - ($num_visible_start + $num_visible_end);
+        $masked = str_repeat($mask_char, $masked_length);
+
+        return $start . $masked . $end;
+    }
+
+    // data guru
+    public function data_guru(Request $request)
+    {
+        if ($request->ajax()) {
+            // Ambil data User dengan relasi 'personal' dan 'guru' yang memiliki role_id = 2
+            $data = User::with(['personalData', 'guru'])
+                ->where('role_id', 2)
+                ->get();
+
+            // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('nik', function ($row) {
+                    // Mengakses properti 'nik' dari relasi 'guru' pada setiap row
+                    return $this->sensorNik($row->guru->nik); // Perbaikan: Menggunakan $row->guru->nik
+                })
+                ->addColumn('action', function ($row) {
+                    // Tombol aksi untuk setiap baris data
+                    $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> ';
+                    $btn .= '<button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    return $btn;
+                })
+                ->addColumn('status', function ($row) {
+                    // Kolom status dengan ikon berdasarkan nilai 'status'
+                    return $row->status_account == "Y" ? '<em class="fas fa-check-circle text-success"></em>' : '<em class="fas fa-times-circle text-danger"></em>';
+                })
+                ->rawColumns(['action', 'nik', 'status']) // Menandakan kolom yang berisi HTML
+                ->toJson(); // Mengonversi data menjadi format JSON
+        }
+    }
+
+    // proses tambah data
+    public function tambah_guru(Request $request)
+    {
+        $p_id = mt_rand(0, 99999);
+        $personal = new PersonalData();
+        $personal->id = $p_id;
+        $personal->nama = $request->nama;
+        $personal->jenis_kelamin = $request->jenis_kelamin;
+        $personal->alamat = $request->alamat;
+        $personal->save();
+
+        $user = new User();
+        $uid = Uuid::uuid4()->toString();
+        $user->id = $uid;
+        $user->username = $request->username;
+        $user->password = Hash::make($request->password);
+        $user->real_password = $request->password;
+        $user->status_account = 'Y';
+        $user->role_id = 2;
+        $user->personal_id = $p_id;
+        $user->create_at = date('Y-m-d H:i:s');
+        $user->modified_at = NULL;
+        $user->save();
+
+        $guru = new Guru();
+        $guru->nik = $request->nik;
+        $guru->nuptk = $request->nuptk;
+        $guru->tempat_lahir = $request->t_lahir;
+        $guru->tanggal_lahir = $request->tgl_lahir;
+        $guru->jenis_ptk = $request->jenis_ptk;
+        $guru->wali_kelas = $request->sts_wls;
+        $guru->class_id = $request->kelas_id;
+        $guru->user_id = $uid;
+        $guru->save();
+
+        return response()->json(['message' => 'Berhasil Tambah Data Guru'], 200);
     }
 
     public function student()
@@ -145,22 +225,28 @@ class AdminController extends Controller
     }
 
     // data kelas
+    public function get_data_kelas()
+    {
+        $kelas = Kelas::where('status', 'y')->get();
+        return response()->json($kelas);
+    }
+
     public function data_kelas(Request $request)
     {
         if ($request->ajax()) {
             $data = Kelas::orderBy('nama_rombel', 'asc')->get();
 
             return DataTables::of($data)
-            ->addIndexColumn()
+                ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<button class="badge rounded-pill text-bg-primary student-get" data-id="'.$row->id.'">Siswa</button> <button class="badge rounded-pill text-bg-info ubah" data-id="'.$row->id.'">Ubah</button> <button class="badge rounded-pill text-bg-danger hapus" data-id="'.$row->id.'">Hapus</button>';
+                    $btn = '<button class="badge rounded-pill text-bg-primary student-get" data-id="' . $row->id . '">Siswa</button> <button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
                 ->addColumn('status', function ($row) {
                     $status = $row->status == 'y' ? "<em class='fas fa-check-circle text-success'></em>" : "<em class='fas fa-times-circle text-danger'></em>";
                     return $status;
                 })
-                ->rawColumns(['action','status'])
+                ->rawColumns(['action', 'status'])
                 ->toJson();
         }
     }
@@ -178,7 +264,7 @@ class AdminController extends Controller
 
         // Simpan data ke dalam tabel kelas
         $kelas = new Kelas();
-        $kelas->id = Uuid::uuid7()->toString();
+        $kelas->id = Uuid::uuid4()->toString();
         $kelas->nama_rombel = $request->nama_rombel;
         $kelas->tingkat = $request->tingkat;
         $kelas->status = $request->status;
@@ -200,7 +286,7 @@ class AdminController extends Controller
 
     public function get_class_delete($id)
     {
-         // Mengambil hanya kolom 'id' dan 'nama_rombel'
+        // Mengambil hanya kolom 'id' dan 'nama_rombel'
         $kelas = Kelas::select('id', 'nama_rombel')->findOrFail($id);
 
         return view('modals.confirmdeleteclass', compact('kelas'));
@@ -236,19 +322,18 @@ class AdminController extends Controller
     // data mapel
     public function data_mapel(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = Mapel::all();
 
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('action', function($row) {
-                $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="'.$row->id.'">Ubah</button>
-                <button class="badge rounded-pill text-bg-danger hapus" data-id="'.$row->id.'">Hapus</button>';
-                return $btn;
-            })
-            ->rawColumns(['action'])
-            ->toJson();
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
+                <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->toJson();
         }
     }
 
@@ -256,7 +341,7 @@ class AdminController extends Controller
     public function tambah_mapel(Request $request)
     {
         $mapel = new Mapel();
-        $mapel->id = Uuid::uuid7()->toString();
+        $mapel->id = Uuid::uuid4()->toString();
         $mapel->kelompok = $request->kelompok;
         $mapel->kode = $request->kode;
         $mapel->nama_mapel = $request->nama_mapel;
@@ -313,26 +398,25 @@ class AdminController extends Controller
     // data ekskul
     public function data_ekskul(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = Ekskul::all();
 
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('action', function($row){
-                $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="'.$row->id.'">Ubah</button>
-                <button class="badge rounded-pill text-bg-danger hapus" data-id="'.$row->id.'">Hapus</button>';
-                return $btn;
-            })
-            ->rawColumns(['action'])
-            ->toJson();
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
+                <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->toJson();
         }
     }
     // proses tambah ekskul
     public function tambah_ekskul(Request $request)
     {
         $ekskul = new Ekskul();
-        $ekskul->id = Uuid::uuid7()->toString();
+        $ekskul->id = Uuid::uuid4()->toString();
         $ekskul->nama_ekstrakulikuler = $request->nama_ekstrakulikuler;
         $ekskul->save();
 

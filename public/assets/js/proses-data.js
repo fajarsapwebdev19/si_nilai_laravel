@@ -84,7 +84,6 @@ $("#hapus-akun").on("click", ".yes", function(){
         success:function(response)
         {
             $("#hapus").modal('hide');
-            $("#ubah").modal('hide');
             $(".messages").show();
             $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
             $('.messages').fadeIn().delay(3000).fadeOut(function() {
@@ -93,6 +92,44 @@ $("#hapus-akun").on("click", ".yes", function(){
             account.ajax.reload();
         }
     })
+});
+
+// proses tambah data guru
+$("#tambah-guru").on('click', '.simpan', function(){
+    let data = $('#tambah-guru').serialize();
+
+    $.ajax({
+        url: "tambah_guru",
+        method: 'POST',
+        data: data,
+        success:function(response)
+        {
+            $("#tambah").modal('hide');
+            $(".messages").show();
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $(this).removeClass('alert-success bg-success');
+            });
+            data_guru.ajax.reload();
+            $('#tambah-guru')[0].reset();
+        }
+    })
+});
+
+// ambil semua data kelas
+$.ajax({
+    url: 'get_data_kelas', // Ganti sesuai dengan URL endpoint Anda
+    method: 'GET',
+    dataType: 'json',
+    success: function(response) {
+        // Response adalah array objek kelas, misalnya [{id: 1, nama: 'Kelas A'}, {id: 2, nama: 'Kelas B'}]
+        var kelas = response;
+
+        // Loop untuk menambahkan opsi ke dropdown
+        $.each(kelas, function(key, value) {
+            $('#kelas_id').append('<option value="' + value.id + '">' + value.nama_rombel + '</option>');
+        });
+    }
 });
 
 // proses tambah data kelas
