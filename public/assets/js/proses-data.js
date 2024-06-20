@@ -1,3 +1,99 @@
+'use strict';
+
+// proses tambah akun
+$("#tambah-akun").on('click', '.simpan', function(){
+    let data = $('#tambah-akun').serialize();
+
+    $.ajax({
+        url: 'tambah_akun',
+        data: data,
+        method: "POST",
+        success:function(response)
+        {
+            $("#tambah").modal('hide');
+            $(".messages").show();
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $(this).removeClass('alert-success bg-success');
+            });
+            account.ajax.reload();
+            $("#tambah-akun")[0].reset();
+        }
+    });
+});
+
+// ambil data untuk di tampilkan di form ubah akun admin
+$('.account').on('click', '.ubah', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: "get_users_edit/"+id,
+        method: "GET",
+        success:function(response)
+        {
+            $('#ubah').modal('show');
+            $("#ubah-akun").html(response);
+        }
+    });
+});
+
+// proses ubah data akun admin
+$('#ubah-akun').on('click', '.simpan', function(){
+    let data = $('#ubah-akun').serialize();
+    let id = $('#id').val();
+
+    $.ajax({
+        url: 'ubah_akun/'+id,
+        data: data,
+        method: "PUT",
+        success:function(response)
+        {
+            $("#ubah").modal('hide');
+            $(".messages").show();
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $(this).removeClass('alert-success bg-success');
+            });
+            account.ajax.reload();
+        }
+    });
+});
+
+// ambil data untuk di tampilkan di form konfirmasi hapus akun admin
+$('.account').on('click', '.hapus', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: "get_users_delete/"+id,
+        method: "GET",
+        success:function(response)
+        {
+            $("#hapus").modal("show");
+            $("#hapus-akun").html(response);
+        }
+    });
+});
+
+// proses hapus data akun admin
+$("#hapus-akun").on("click", ".yes", function(){
+    let id = $('#id').val();
+
+    $.ajax({
+        url: 'hapus_akun/'+id,
+        method: "GET",
+        success:function(response)
+        {
+            $("#hapus").modal('hide');
+            $("#ubah").modal('hide');
+            $(".messages").show();
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $(this).removeClass('alert-success bg-success');
+            });
+            account.ajax.reload();
+        }
+    })
+});
 
 // proses tambah data kelas
 $("#tambah-kelas").on('click', '.simpan', function(){

@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Ekskul;
+use App\Models\User;
+use App\Models\Role;
+use App\Models\PersonalData;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
-use Yajra\DataTables\Contracts\DataTable;
 
 class AdminController extends Controller
 {
@@ -17,9 +20,112 @@ class AdminController extends Controller
         return view('index');
     }
 
+    // manajemen akun
+
     public function account()
     {
         return view('account');
+    }
+
+    // data manajemen akun
+    public function account_data(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = User::with(['personalData', 'role'])->where('role_id', 1)->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function($row)
+                {
+                    $btn = '
+                            <button class="badge rounded-pill text-bg-info ubah" data-id="'.$row->id.'">Ubah</button>
+                            <button class="badge rounded-pill text-bg-danger hapus" data-id="'.$row->id.'">Hapus</button>';
+                    return $btn;
+                })
+                ->addColumn('status', function($row){
+                    $status = $row->status_account == "Y" ? '<em class="fas fa-check-circle text-success"></em>' : '<em class="fas fa-times-circle text-danger"></em>';
+                    return $status;
+                })
+                ->rawColumns(['action','status'])
+                ->toJson();
+        }
+    }
+
+    // proses tambah data admin
+    public function tambah_akun(Request $request)
+    {
+        $p_id = mt_rand();
+
+        $personal = new PersonalData();
+        $personal->id = $p_id;
+        $personal->nama = $request->nama;
+        $personal->jenis_kelamin = $request->jenis_kelamin;
+        $personal->alamat = $request->alamat;
+        $personal->create_at = date('Y-m-d H:i:s');
+        $personal->modified_at = NULL;
+
+        $user = new User();
+        $user->id = Uuid::uuid7()->toString();
+        $user->username = $request->username;
+        $user->password = Hash::make($request->password);
+        $user->real_password = $request->password;
+        $user->status_account = 'Y';
+        $user->role_id = 1;
+        $user->personal_id = $p_id;
+        $user->create_at = date('Y-m-d H:i:s');
+        $user->modified_at = NULL;
+
+        $personal->save();
+        $user->save();
+
+        return response()->json(['message' => 'Berhasil Tambah Akun Admin'], 200);
+    }
+
+    // ambil data untuk edit data akun admin
+    public function get_users_edit($id)
+    {
+        $user = User::with(['personalData', 'role'])->find($id);
+
+        return view('modals.editaccount', compact('user'));
+    }
+
+    // ambil data untuk hapus data akun admin
+    public function get_users_delete($id)
+    {
+        $user = User::with(['personalData', 'role'])->find($id);
+
+        return view('modals.confirmdeleteaccount', compact('user'));
+    }
+
+    // proses ubah data akun admin
+    public function ubah_akun(Request $request, $id)
+    {
+        $user = User::with(['personalData', 'role'])->find($id);
+
+        $personal = PersonalData::find($user->personal_id);
+        $personal->nama = $request->nama;
+        $personal->jenis_kelamin = $request->jenis_kelamin;
+        $personal->alamat = $request->alamat;
+        $personal->save();
+
+        $user->password = Hash::make($request->password);
+        $user->real_password = $request->password;
+        $user->modified_at = date('Y-m-d H:i:s');
+        $user->save();
+
+
+        return response()->json(['message' => 'Berhasil Ubah Akun Admin'], 200);
+    }
+
+    // proses hapus akun
+    public function hapus_akun($id)
+    {
+        $user = User::with(['personalData', 'role'])->find($id);
+        $personal = PersonalData::find($user->personal_id);
+        $user->delete();
+        $personal->delete();
+        return response()->json(['message' => 'Berhasil Hapus Akun Admin'], 200);
     }
 
     public function teacher()
