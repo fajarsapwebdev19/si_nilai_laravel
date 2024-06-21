@@ -116,6 +116,21 @@ $("#tambah-guru").on('click', '.simpan', function(){
     })
 });
 
+// ambil semua data guru untuk di tampilkan pada form edit guru
+$('.teacher').on('click', '.ubah', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: 'get_teacher_edit/'+id,
+        method: "GET",
+        success:function(response)
+        {
+            $('#ubah').modal('show');
+            $("#ubah-guru").html(response);
+        }
+    });
+});
+
 // ambil semua data kelas
 $.ajax({
     url: 'get_data_kelas', // Ganti sesuai dengan URL endpoint Anda

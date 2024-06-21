@@ -213,6 +213,35 @@ class AdminController extends Controller
         return response()->json(['message' => 'Berhasil Tambah Data Guru'], 200);
     }
 
+    // ambil data guru untuk ditampilkan kedalam form edit
+    public function get_teacher_edit($id)
+    {
+        $t = User::with('personalData', 'guru')->find($id);
+        $k = Kelas::where('status', 'y')->get();
+
+        return view('modals.editguru', compact('t', 'k'));
+    }
+
+    public function ubah_guru(Request $request, $id)
+    {
+        $u = User::with('personalData', 'guru')->find($id);
+        $p = PersonalData::find($u->personal_id);
+        $t = Guru::where('user_id', $u->id);
+        $u->password = ($request->password);
+        $u->real_password = $request->password;
+        $u->modified_at = date('Y-m-d H:i:s');
+        $p->nama = $request->nama;
+        $p->jenis_kelamin = $request->jenis_kelamin;
+        $p->alamat = $request->alamat;
+        $t->nik = $request->nik;
+        $t->nuptk = $request->nuptk;
+        $t->tempat_lahir = $request->t_lahir;
+        $t->tanggal_lahir = $request->tgl_lahir;
+        $t->jenis_ptk = $request->jenis_ptk;
+        $t->wali_kelas = $request->wali_kelas;
+
+    }
+
     public function student()
     {
         return view('student');

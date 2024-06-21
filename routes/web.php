@@ -57,6 +57,8 @@ Route::get('admin/hapus_ekskul/{id}', [AdminController::class, 'hapus_ekskul']);
 // Route Ambil Data
 Route::get('admin/get_users_edit/{id}', [AdminController::class, 'get_users_edit']); // data akun admin
 Route::get('admin/get_users_delete/{id}', [AdminController::class, 'get_users_delete']); // data akun admin
+Route::get('admin/get_teacher_edit/{id}', [AdminController::class, 'get_teacher_edit']); // data guru
+Route::get('admin/get_teacher_delete/{id}', [AdminController::class, 'get_teacher_delete']); //data guru
 Route::get('admin/get_data_kelas', [AdminController::class, 'get_data_kelas']); // semua data kelas
 Route::get('admin/get_kelas/{id}', [AdminController::class, 'get_class']); // data kelas
 Route::get('admin/get_data_delete/{id}', [AdminController::class, 'get_class_delete']); // data kelas
