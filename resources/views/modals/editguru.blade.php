@@ -1,12 +1,13 @@
 @csrf
+<input type="hidden" id="id" value="{{$t->id}}">
 <div class="modal-body">
     <div class="form-group mb-3">
         <label for="">NIK</label>
-        <input type="number" name="nik" class="form-control" value="{{$t->guru->nik}}">
+        <input type="number" name="nik" class="form-control 16-length" value="{{$t->guru->nik}}">
     </div>
     <div class="form-group mb-3">
         <label for="">NUPTK</label>
-        <input type="number" name="nuptk" class="form-control" value="{{$t->guru->nuptk}}">
+        <input type="number" name="nuptk" class="form-control 16-length" value="{{$t->guru->nuptk}}">
     </div>
     <div class="form-group mb-3">
         <label for="">Nama</label>
@@ -57,7 +58,7 @@
     <div class="form-group mb-3">
         <label for="">Kelas</label>
         <select name="kelas_id" id="kelas_id" class="form-control">
-            <option value="">-- Pilih Kelas --</option>
+            <option value="NULL">-- Pilih Kelas --</option>
             @isset($k)
                 @foreach ($k as $kelas)
                     @php

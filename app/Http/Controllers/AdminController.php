@@ -9,8 +9,12 @@ use App\Models\Mapel;
 use App\Models\Ekskul;
 use App\Models\User;
 use App\Models\Guru;
+use App\Models\Suswa;
 use App\Models\PersonalData;
-use Faker\Provider\ar_EG\Person;
+use App\Models\Tingkat;
+use App\Models\KelasSiswa;
+use App\Models\Siswa;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
 
@@ -106,6 +110,7 @@ class AdminController extends Controller
         $personal->nama = $request->nama;
         $personal->jenis_kelamin = $request->jenis_kelamin;
         $personal->alamat = $request->alamat;
+        $personal->modified_at = date('Y-m-d H:i:s');
         $personal->save();
 
         $user->password = Hash::make($request->password);
@@ -134,7 +139,7 @@ class AdminController extends Controller
     }
 
     // sensor nik
-    public function sensorNik($nik, $mask_char = '*', $num_visible_start = 4, $num_visible_end = 4)
+    public function sensorNik($nik, $mask_char = '*', $num_visible_start = 6, $num_visible_end = 6)
     {
         $start = substr($nik, 0, $num_visible_start);
         $end = substr($nik, -$num_visible_end);
@@ -144,21 +149,27 @@ class AdminController extends Controller
         return $start . $masked . $end;
     }
 
+    // generate acak untuk username dan password
+    function generateRandomString($length) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        return substr(str_shuffle(str_repeat($characters, ceil($length / strlen($characters)))), 1, $length);
+    }
+
     // data guru
     public function data_guru(Request $request)
     {
         if ($request->ajax()) {
-            // Ambil data User dengan relasi 'personal' dan 'guru' yang memiliki role_id = 2
+            // Ambil data User dengan relasi 'personalData' dan 'guru' yang memiliki role_id = 2
             $data = User::with(['personalData', 'guru'])
-                ->where('role_id', 2)
-                ->get();
+            ->where('role_id', 2)
+            ->get();
 
             // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('nik', function ($row) {
-                    // Mengakses properti 'nik' dari relasi 'guru' pada setiap row
-                    return $this->sensorNik($row->guru->nik); // Perbaikan: Menggunakan $row->guru->nik
+                    // Memeriksa apakah relasi 'guru' ada sebelum mengakses properti 'nik'
+                    return $row->guru->nik ? $this->sensorNik($row->guru->nik) : 'NULL';
                 })
                 ->addColumn('action', function ($row) {
                     // Tombol aksi untuk setiap baris data
@@ -167,7 +178,7 @@ class AdminController extends Controller
                     return $btn;
                 })
                 ->addColumn('status', function ($row) {
-                    // Kolom status dengan ikon berdasarkan nilai 'status'
+                    // Kolom status dengan ikon berdasarkan nilai 'status_account'
                     return $row->status_account == "Y" ? '<em class="fas fa-check-circle text-success"></em>' : '<em class="fas fa-times-circle text-danger"></em>';
                 })
                 ->rawColumns(['action', 'nik', 'status']) // Menandakan kolom yang berisi HTML
@@ -175,23 +186,27 @@ class AdminController extends Controller
         }
     }
 
+
     // proses tambah data
     public function tambah_guru(Request $request)
     {
+        DB::beginTransaction();
+
         $p_id = mt_rand(0, 99999);
         $personal = new PersonalData();
         $personal->id = $p_id;
         $personal->nama = $request->nama;
         $personal->jenis_kelamin = $request->jenis_kelamin;
         $personal->alamat = $request->alamat;
+        $personal->create_at = date('Y-m-d H:i:s');
         $personal->save();
 
         $user = new User();
         $uid = Uuid::uuid4()->toString();
         $user->id = $uid;
-        $user->username = $request->username;
-        $user->password = Hash::make($request->password);
-        $user->real_password = $request->password;
+        $user->username = $this->generateRandomString(6);
+        $user->password = Hash::make($this->generateRandomString(6));
+        $user->real_password = $this->generateRandomString(6);
         $user->status_account = 'Y';
         $user->role_id = 2;
         $user->personal_id = $p_id;
@@ -210,6 +225,8 @@ class AdminController extends Controller
         $guru->user_id = $uid;
         $guru->save();
 
+        DB::commit();
+
         return response()->json(['message' => 'Berhasil Tambah Data Guru'], 200);
     }
 
@@ -222,29 +239,140 @@ class AdminController extends Controller
         return view('modals.editguru', compact('t', 'k'));
     }
 
-    public function ubah_guru(Request $request, $id)
+    // ambil id data guru untuk ditampilkan kedalam form konfirmasi hapus data
+    public function get_teacher_delete($id)
     {
-        $u = User::with('personalData', 'guru')->find($id);
-        $p = PersonalData::find($u->personal_id);
-        $t = Guru::where('user_id', $u->id);
-        $u->password = ($request->password);
-        $u->real_password = $request->password;
-        $u->modified_at = date('Y-m-d H:i:s');
-        $p->nama = $request->nama;
-        $p->jenis_kelamin = $request->jenis_kelamin;
-        $p->alamat = $request->alamat;
-        $t->nik = $request->nik;
-        $t->nuptk = $request->nuptk;
-        $t->tempat_lahir = $request->t_lahir;
-        $t->tanggal_lahir = $request->tgl_lahir;
-        $t->jenis_ptk = $request->jenis_ptk;
-        $t->wali_kelas = $request->wali_kelas;
+        $t = User::with('personalData', 'guru')->find($id);
 
+        return view('modals.confirmdeleteguru', compact('t'));
     }
 
+    // proses ubah data guru
+    public function ubah_guru(Request $request, $id)
+    {
+        DB::beginTransaction();
+
+        $u = User::with('personalData', 'guru')->find($id);
+
+        $guru = Guru::where('user_id', $id)->first();
+        $guru->nik = $request->nik;
+        $guru->nuptk = $request->nuptk;
+        $guru->tempat_lahir = $request->t_lahir;
+        $guru->tanggal_lahir = $request->tgl_lahir;
+        $guru->jenis_ptk = $request->jenis_ptk;
+        $guru->wali_kelas = $request->sts_wls;
+        $guru->class_id = $request->kelas_id;
+        $guru->save();
+
+        $personal = PersonalData::find($u->personal_id);
+        $personal->nama = $request->nama;
+        $personal->jenis_kelamin = $request->jenis_kelamin;
+        $personal->alamat = $request->alamat;
+        $personal->modified_at = date('Y-m-d H:i:s');
+        $personal->save();
+
+        $u->password = Hash::make($request->password);
+        $u->real_password = $request->password;
+        $u->modified_at = date('Y-m-d H:i:s');
+        $u->save();
+
+        DB::commit();
+
+
+        return response()->json(['message' => 'Berhasil memperbarui data guru'], 200);
+    }
+
+    // proses hapus data guru
+    public function hapus_guru($id)
+    {
+        $user = User::with('personalData', 'guru')->find($id);
+
+        $t = Guru::where('user_id', $user->id);
+        $t->delete();
+
+        $p = PersonalData::find($user->personal_id);
+        $p->delete();
+
+        $user->delete();
+
+        return response()->json(['message' => 'Berhasil Hapus Data Guru'], 200);
+    }
+
+    // get tingkat
+    public function get_tingkat(){
+        $tingkat = Tingkat::all();
+
+        return response()->json($tingkat);
+    }
+
+    // siswa
     public function student()
     {
         return view('student');
+    }
+
+    // data siswa
+
+    // proses tambah data siswa
+    public function tambah_siswa(Request $request)
+    {
+        // id untuk personal id siswa
+        $p_id = mt_rand(1111,5555).rand(0,999);
+
+        DB::beginTransaction();
+        // personal data
+        $personal = new PersonalData();
+        $personal->id = $p_id;
+        $personal->nama = $request->nama;
+        $personal->jenis_kelamin = $request->jenis_kelamin;
+        $personal->alamat = $request->alamat;
+        $personal->save();
+
+        // users
+        $user = new User();
+        $uid =  Uuid::uuid4()->toString();
+        $user->id = $uid;
+        $user->username = $request->nisn;
+        $user->password = Hash::make($this->generateRandomString(6));
+        $user->real_password = $this->generateRandomString(6);
+        $user->status_account = 'Y';
+        $user->role_id = 3;
+        $user->personal_id = $p_id;
+        $user->create_at = date('Y-m-d H:i:s');
+        $user->modified_at = NULL;
+        $user->save();
+
+        // kelas siswa
+        $kelas_siswa = new KelasSiswa();
+        $kelas_siswa->user_id = $uid;
+        $kelas_siswa->class_id = NULL;
+        $kelas_siswa->save();
+
+        // siswa
+        $siswa = new Siswa();
+        $siswa->nisn = $request->nisn;
+        $siswa->nik = $request->nik;
+        $siswa->tempat_lahir = $request->t_lhr;
+        $siswa->tanggal_lahir = $request->tgl_lhr;
+        $siswa->agama = $request->agama;
+        $siswa->rt = $request->rt;
+        $siswa->rw = $request->rw;
+        $siswa->kelurahan = $request->kelurahan;
+        $siswa->kecamatan = $request->kecamatan;
+        $siswa->kode_pos = $request->kode_pos;
+        $siswa->anak_ke = $request->anak_ke;
+        $siswa->nama_ayah = $request->nama_ayah;
+        $siswa->pendidikan_ayah = $request->pendidikan_ayah;
+        $siswa->pekerjaan_ayah = $request->pekerjaan_ayah;
+        $siswa->nama_ibu = $request->nama_ibu;
+        $siswa->pendidikan_ibu = $request->pendidikan_ibu;
+        $siswa->pekerjaan_ibu = $request->pekerjaan_ibu;
+        $siswa->user_id = $uid;
+        $siswa->save();
+
+        DB::commit();
+
+        return response()->json(['message' => 'Berhasil tambah data siswa'], 200);
     }
 
     // class

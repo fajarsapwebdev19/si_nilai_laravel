@@ -38,18 +38,21 @@ Route::get('admin/data_ekskul', [AdminController::class, 'data_ekskul']); //data
 // Route Tambah Data
 Route::post('admin/tambah_akun', [AdminController::class, 'tambah_akun']); // data akun admin
 Route::post('admin/tambah_guru', [AdminController::class, 'tambah_guru']); // data guru
+Route::post('admin/tambah_siswa', [AdminController::class, 'tambah_siswa']); // data siswa
 Route::post('admin/tambah_kelas', [AdminController::class, 'tambah_kelas']); // data kelas
 Route::post('admin/tambah_mapel', [AdminController::class, 'tambah_mapel']); //data mapel
 Route::post('admin/tambah_ekskul', [AdminController::class, 'tambah_ekskul']); //data ekskul
 
 // Route Ubah Data
 Route::put('admin/ubah_akun/{id}', [AdminController::class, 'ubah_akun']); // data akun admin
+Route::put('admin/ubah_guru/{id}', [AdminController::class, 'ubah_guru']); // data guru
 Route::put('admin/ubah_kelas/{id}', [AdminController::class, 'ubah_kelas']); // data kelas
 Route::put('admin/ubah_mapel/{id}', [AdminController::class, 'ubah_mapel']); //data mapel
 Route::put('admin/ubah_ekskul/{id}', [AdminController::class, 'ubah_ekskul']); //data ekskul
 
 // Route Hapus Data
 Route::get('admin/hapus_akun/{id}', [AdminController::class, 'hapus_akun']); // data akun admin
+Route::get('admin/hapus_guru/{id}', [AdminController::class, 'hapus_guru']); // data guru
 Route::get('admin/hapus_kelas/{id}', [AdminController::class, 'hapus_kelas']); // data kelas
 Route::get('admin/hapus_mapel/{id}', [AdminController::class, 'hapus_mapel']); //data mapel
 Route::get('admin/hapus_ekskul/{id}', [AdminController::class, 'hapus_ekskul']); //data ekskul
@@ -66,3 +69,4 @@ Route::get('admin/get_mapel/{id}', [AdminController::class, 'get_data_mapel']); 
 Route::get('admin/get_mapel_delete/{id}', [AdminController::class, 'get_mapel_delete']); // data mapel
 Route::get('admin/get_ekskul_edit/{id}', [AdminController::class, 'get_ekskul_edit']); // data ekskul
 Route::get('admin/get_ekskul_delete/{id}', [AdminController::class, 'get_ekskul_delete']); // data ekskul
+Route::get('admin/get_tingkat', [AdminController::class, 'get_tingkat']); //data tingkat

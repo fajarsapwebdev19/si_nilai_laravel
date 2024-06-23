@@ -12,11 +12,11 @@
                 <div class="modal-body">
                     <div class="form-group mb-3">
                         <label for="">NIK</label>
-                        <input type="number" name="nik" class="form-control">
+                        <input type="number" name="nik" class="form-control 16-length">
                     </div>
                     <div class="form-group mb-3">
                         <label for="">NUPTK</label>
-                        <input type="number" name="nuptk" class="form-control">
+                        <input type="number" name="nuptk" class="form-control 16-length">
                     </div>
                     <div class="form-group mb-3">
                         <label for="">Nama</label>
@@ -73,14 +73,6 @@
                     <div class="form-group mb-3">
                         <label for="">Alamat</label>
                         <textarea name="alamat" class="form-control" cols="30" rows="2"></textarea>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="">Username</label>
-                        <input type="text" name="username" class="form-control">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="">Password</label>
-                        <input type="text" name="password" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer">
