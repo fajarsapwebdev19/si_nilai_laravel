@@ -201,8 +201,65 @@ $(document).ready(function() {
     $("#tambah-siswa").on('click', '.simpan', function(){
         let data = $('#tambah-siswa').serialize();
 
-        alert(data)
-    })
+        $.ajax({
+            url: "tambah_siswa",
+            data: data,
+            method: "POST",
+            success:function(response)
+            {
+                $("#tambah").modal('hide');
+                $(".messages").show();
+                $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                    $(this).removeClass('alert-success bg-success');
+                });
+                data_siswa.ajax.reload();
+                $('#tambah-siswa')[0].reset();
+            }
+        });
+    });
+
+    $(".student").on('click', '.ubah', function(){
+        let id = $(this).data('id');
+
+        $.ajax({
+            url: "get_siswa/"+id,
+            method: "GET",
+            success:function(response)
+            {
+                $("#ubah").modal('show');
+
+                $('#ubah-siswa input[name=nisn]').val(response.siswa.nisn);
+                $('#ubah-siswa input[name=nik]').val(response.siswa.nik);
+                $('#ubah-siswa input[name=nama]').val(response.personal_data.nama);
+                if(response.personal_data.jenis_kelamin == "L")
+                {
+                    $('#ubah-siswa input[value=L]').prop('checked', true);
+                }
+                else if(response.personal_data.jenis_kelamin == "P")
+                {
+                    $('#ubah-siswa input[value=P]').prop('checked', true);
+                }
+                $('#ubah-siswa input[name=t_lhr]').val(response.siswa.tempat_lahir);
+                $('#ubah-siswa input[name=tgl_lhr]').val(response.siswa.tanggal_lahir);
+                $('#ubah-siswa textarea[name=alamat]').html(response.personal_data.alamat);
+                $('#ubah-siswa input[name=rt]').val(response.siswa.rt);
+                $('#ubah-siswa input[name=rw]').val(response.siswa.rw);
+                $('#ubah-siswa input[name=kelurahan]').val(response.siswa.kelurahan);
+                $('#ubah-siswa input[name=kecamatan]').val(response.siswa.kecamatan);
+                $('#ubah-siswa input[name=kode_pos]').val(response.siswa.kode_pos);
+                $('#ubah-siswa input[name=anak_ke]').val(response.siswa.anak_ke);
+                $('#ubah-siswa input[name=nama_ayah]').val(response.siswa.nama_ayah);
+                $('#ubah-siswa input[name=nama_ibu]').val(response.siswa.nama_ibu);
+                select_agama(response.siswa.agama);
+                select_tingkat(response.siswa.tingkat);
+                select_pekerjaan_ayah(response.siswa.pekerjaan_ayah);
+                select_pendidikan_ayah(response.siswa.pendidikan_ayah);
+                select_pekerjaan_ibu(response.siswa.pekerjaan_ibu);
+                select_pendidikan_ibu(response.siswa.pendidikan_ibu);
+            }
+        })
+    });
 
     // ambil semua data kelas
     $.ajax({

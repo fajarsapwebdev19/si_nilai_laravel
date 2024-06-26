@@ -83,8 +83,8 @@
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
 
     <!-- Main JS -->
-    <script src="{{ asset('assets/ajax/select-data.js') }}"></script>
     <script src="{{ asset('assets/ajax/server-side.js') }}"></script>
+    <script src="{{ asset('assets/ajax/select-data.js') }}"></script>
     <script src="{{asset('assets/ajax/proses-data.js')}}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
 

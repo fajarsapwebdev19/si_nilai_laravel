@@ -35,4 +35,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Guru::class, 'id');
     }
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'id');
+    }
 }

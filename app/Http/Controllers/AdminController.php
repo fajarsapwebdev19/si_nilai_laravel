@@ -9,7 +9,6 @@ use App\Models\Mapel;
 use App\Models\Ekskul;
 use App\Models\User;
 use App\Models\Guru;
-use App\Models\Suswa;
 use App\Models\PersonalData;
 use App\Models\Tingkat;
 use App\Models\KelasSiswa;
@@ -312,6 +311,24 @@ class AdminController extends Controller
     }
 
     // data siswa
+    public function data_siswa(Request $request)
+    {
+        if($request->ajax())
+        {
+            $siswa = User::with(['personalData', 'siswa'])
+            ->where('role_id', 3)
+            ->get();
+
+            return DataTables::of($siswa)
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+            return '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
+            <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+        }
+    }
 
     // proses tambah data siswa
     public function tambah_siswa(Request $request)
@@ -326,6 +343,8 @@ class AdminController extends Controller
         $personal->nama = $request->nama;
         $personal->jenis_kelamin = $request->jenis_kelamin;
         $personal->alamat = $request->alamat;
+        $personal->create_at = date('Y-m-d H:i:s');
+        $personal->modified_at = NULL;
         $personal->save();
 
         // users
@@ -368,11 +387,20 @@ class AdminController extends Controller
         $siswa->pendidikan_ibu = $request->pendidikan_ibu;
         $siswa->pekerjaan_ibu = $request->pekerjaan_ibu;
         $siswa->user_id = $uid;
+        $siswa->tingkat = $request->tingkat;
         $siswa->save();
 
         DB::commit();
 
         return response()->json(['message' => 'Berhasil tambah data siswa'], 200);
+    }
+
+    // get siswa by id
+    public function get_siswa($id)
+    {
+        $siswa = User::with('personalData', 'siswa')->find($id);
+
+        return response()->json($siswa);
     }
 
     // class

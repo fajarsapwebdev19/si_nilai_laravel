@@ -29,6 +29,22 @@ var data_guru = $('.teacher').DataTable({
     ]
 });
 
+// data siswa
+var data_siswa = $('.student').DataTable({
+    serverSide: true,
+    processing: true,
+    ajax: "data_siswa",
+    columns:[
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'personal_data.nama', name: 'personal_data.nama'},
+        {data: 'personal_data.jenis_kelamin', name: 'personal_data.jenis_kelamin'},
+        {data: 'siswa.nisn', name: 'siswa.nisn'},
+        {data: 'siswa.tingkat', name: 'siswa.tingkat'},
+        {data: 'status_account', name: 'status_account'},
+        {data: 'action', name: 'action', orderable: false, searchable: false}
+    ]
+});
+
 // data kelas
 var data_kelas = $(".kelas").DataTable({
     processing: true,

@@ -13,7 +13,12 @@ class TableHistorySiswa extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('history_siswa', function(Blueprint $table){
+            $table->integer('id')->primary();
+            $table->string('tahun_ajaran')->nullable();
+            $table->string('class_id')->nullable();
+            $table->string('user_id')->nullable();
+        });
     }
 
     /**
@@ -23,6 +28,6 @@ class TableHistorySiswa extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('history_siswa');
     }
 }
