@@ -78,3 +78,60 @@
         </div>
     </div>
 </div>
+
+{{-- Get Siswa Perkelas --}}
+<div class="modal fade" id="siswa" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Data Siswa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" id="get_siswa">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <table class="table no-class">
+                                        <thead>
+                                            <tr>
+                                                <th>c</th>
+                                                <th>NISN</th>
+                                                <th>Nama</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            @csrf
+                            <input type="hidden" id="class_id">
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-success" id="assign">Simpan</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <table class="table student-class">
+                                        <thead>
+                                            <tr>
+                                                <th>c</th>
+                                                <th>NISN</th>
+                                                <th>Nama</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-danger" id="unassign">Keluarkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

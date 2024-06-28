@@ -86,3 +86,36 @@ var data_ekskul = $('.ekskul').DataTable({
         {data: 'action', name: 'action', orderable: false, searchable: false}
     ]
 });
+
+// get siswa in class_id
+
+function get_class_id(class_id) {
+    if ($.fn.DataTable.isDataTable('.no-class')) {
+        $('.no-class').DataTable().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('.student-class')) {
+        $('.student-class').DataTable().destroy();
+    }
+
+    $('.no-class').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "get_student_level/" + class_id,
+        columns:[
+            {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
+            {data: 'nisn', name: 'nisn'},
+            {data: 'nama', name: 'nama'}
+        ]
+    });
+
+    $('.student-class').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "get_student_class/" + class_id,
+        columns:[
+            {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
+            {data: 'nisn', name: 'nisn'},
+            {data: 'nama', name: 'nama'}
+        ]
+    });
+}

@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
     $("form").on("input", '.16-length', function(){
         if (this.value.length > 16) {
@@ -259,6 +260,36 @@ $(document).ready(function() {
                 select_pendidikan_ibu(response.siswa.pendidikan_ibu);
             }
         })
+    });
+
+    // get data siswa
+    $(".kelas").on("click", ".siswa", function(){
+        let id = $(this).data('id');
+        $("#class_id").val(id);
+        get_class_id(id);
+        $('#siswa').modal('show');
+    });
+
+    $("#get_siswa").on('click', '#assign', function(){
+        let selectid = [];
+        let token = $('input[name=_token]').val();
+        let class_id = $('#class_id').val();
+
+        $(".no-class tbody .siswa:checked").each(function(){
+            selectid.push($(this).data('id'));
+        });
+
+        console.log(class_id);
+    });
+
+    $("#get_siswa").on('click', '#unassign', function(){
+        let selectid = [];
+
+        $(".student-class tbody .siswa:checked").each(function(){
+            selectid.push($(this).data('id'));
+        });
+
+        console.log(selectid)
     });
 
     // ambil semua data kelas

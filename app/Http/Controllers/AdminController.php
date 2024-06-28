@@ -219,8 +219,8 @@ class AdminController extends Controller
         $guru->tempat_lahir = $request->t_lahir;
         $guru->tanggal_lahir = $request->tgl_lahir;
         $guru->jenis_ptk = $request->jenis_ptk;
-        $guru->wali_kelas = $request->sts_wls;
-        $guru->class_id = $request->kelas_id;
+        $guru->wali_kelas = NULL;
+        $guru->class_id = NULL;
         $guru->user_id = $uid;
         $guru->save();
 
@@ -259,8 +259,6 @@ class AdminController extends Controller
         $guru->tempat_lahir = $request->t_lahir;
         $guru->tanggal_lahir = $request->tgl_lahir;
         $guru->jenis_ptk = $request->jenis_ptk;
-        $guru->wali_kelas = $request->sts_wls;
-        $guru->class_id = $request->kelas_id;
         $guru->save();
 
         $personal = PersonalData::find($u->personal_id);
@@ -302,6 +300,57 @@ class AdminController extends Controller
         $tingkat = Tingkat::all();
 
         return response()->json($tingkat);
+    }
+
+    // get data siswa dari id class
+
+    public function get_siswa_tingkat(Request $request){
+        $id = $request->id;
+        $kelas = Kelas::where('id', $id)->first();
+        $tingkat = $kelas->tingkat;
+
+        $siswa = DB::table('users as u')
+        ->select('u.*', 'pd.*', 's.*', 'ks.*', 'k.*')
+        ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+        ->leftJoin('siswa as s', 's.user_id', '=', 'u.id')
+        ->leftJoin('kelas_siswa as ks', 'ks.user_id', '=', 'u.id')
+        ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
+        ->where('u.role_id', 3)
+        ->where('s.tingkat', $tingkat)
+        ->where('ks.class_id', NULL)
+        ->get();
+
+        return DataTables::of($siswa)
+        ->addColumn('checkbox', function($row) {
+            return '<input type="checkbox" class="form-check-input siswa" data-id="' . $row->user_id . '">';
+        })
+        ->rawColumns(['checkbox'])
+        ->toJson();
+    }
+
+    public function get_siswa_class(Request $request)
+    {
+        $id = $request->id;
+        $kelas = Kelas::where('id', $id)->first();
+        $tingkat = $kelas->tingkat;
+
+        $siswa = DB::table('users as u')
+        ->select('u.*', 'pd.*', 's.*', 'ks.*', 'k.*')
+        ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+        ->leftJoin('siswa as s', 's.user_id', '=', 'u.id')
+        ->leftJoin('kelas_siswa as ks', 'ks.user_id', '=', 'u.id')
+        ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
+        ->where('u.role_id', 3)
+        ->where('s.tingkat', $tingkat)
+        ->where('ks.class_id', $kelas->id)
+        ->get();
+
+        return DataTables::of($siswa)
+        ->addColumn('checkbox', function($row) {
+            return '<input type="checkbox" class="form-check-input siswa" data-id="' . $row->user_id . '">';
+        })
+        ->rawColumns(['checkbox'])
+        ->toJson();
     }
 
     // siswa
@@ -424,7 +473,7 @@ class AdminController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<button class="badge rounded-pill text-bg-primary student-get" data-id="' . $row->id . '">Siswa</button> <button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary siswa" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
                 ->addColumn('status', function ($row) {

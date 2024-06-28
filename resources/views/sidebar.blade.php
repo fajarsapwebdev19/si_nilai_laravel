@@ -10,46 +10,46 @@
     <div class="menu-inner-shadow"></div>
     <ul class="menu-inner py-1">
         <!-- Dashboards -->
-        <li class="menu-item">
+        <li class="menu-item {{ Request::is('admin') ? 'active' : '' }}">
             <a href="{{route('dashboard-admin')}}" class="menu-link">
                 <i class="menu-icon fas fa-dashboard"></i>
                 <div class="text-truncate">Dashboard</div>
             </a>
         </li>
-        <li class="menu-item">
+        <li class="menu-item {{ Request::is('admin/manajemen_akun') ? 'active' : '' }}">
             <a href="{{route('manajemen-akun')}}" class="menu-link">
                 <i class="menu-icon fas fa-user-lock"></i>
                 <div class="text-truncate">Manajemen Akun</div>
             </a>
         </li>
         <!-- master data -->
-        <li class="menu-item">
+        <li class="menu-item {{ Request::is('admin/data/*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fas fa-database"></i>
                 <div class="text-truncate">Master Data</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item">
+                <li class="menu-item {{ Request::is('admin/data/guru') ? 'active' : '' }}">
                     <a href="{{route('data-guru')}}" class="menu-link">
                         <div class="text-truncate">Data Guru</div>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item {{ Request::is('admin/data/siswa') ? 'active' : '' }}">
                     <a href="{{route('data-siswa')}}" class="menu-link">
                         <div class="text-truncate">Data Siswa</div>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item {{ Request::is('admin/data/kelas') ? 'active' : '' }}">
                     <a href="{{route('data-kelas')}}" class="menu-link">
                         <div class="text-truncate">Data Kelas</div>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item {{ Request::is('admin/data/mapel') ? 'active' : '' }}">
                     <a href="{{route('data-mapel')}}" class="menu-link">
                         <div class="text-truncate">Data Mapel</div>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item {{ Request::is('admin/data/ekskul') ? 'active' : '' }}">
                     <a href="{{route('data-ekskul')}}" class="menu-link">
                         <div class="text-truncate">Data Ekskul</div>
                     </a>

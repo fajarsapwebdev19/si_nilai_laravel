@@ -43,34 +43,6 @@
         </select>
     </div>
     <div class="form-group mb-3">
-        <label for="" class="form-label">Status Walas</label>
-        <div class="mt-2">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="sts_wls" id="wls_e_1" value="Y" {{$t->guru->wali_kelas == 'Y' ? 'checked' : ''}}>
-                <label class="form-check-label" for="wls_e_1">Ya</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="sts_wls" id="wls_e_2" value="N" {{$t->guru->wali_kelas == 'N' ? 'checked' : ''}}>
-                <label class="form-check-label" for="wls_e_2">Tidak</label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group mb-3">
-        <label for="">Kelas</label>
-        <select name="kelas_id" id="kelas_id" class="form-control">
-            <option value="NULL">-- Pilih Kelas --</option>
-            @isset($k)
-                @foreach ($k as $kelas)
-                    @php
-                        $isSelected = ($t->guru->class_id == $kelas->id) ? 'selected' : '';
-                    @endphp
-                    <option value="{{ $kelas->id }}" {{ $isSelected }}>{{ $kelas->nama_rombel }}</option>
-                @endforeach
-            @endisset
-
-        </select>
-    </div>
-    <div class="form-group mb-3">
         <label for="">Alamat</label>
         <textarea name="alamat" class="form-control" cols="30" rows="2">{{$t->personalData->alamat}}</textarea>
     </div>

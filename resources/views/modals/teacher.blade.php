@@ -52,25 +52,6 @@
                         </select>
                     </div>
                     <div class="form-group mb-3">
-                        <label for="" class="form-label">Status Walas</label>
-                        <div class="mt-2">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="sts_wls" id="wls_1" value="Y">
-                                <label class="form-check-label" for="wls_1">Ya</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="sts_wls" id="wls_2" value="N">
-                                <label class="form-check-label" for="wls_2">Tidak</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="">Kelas</label>
-                        <select name="kelas_id" id="kelas_id" class="form-control">
-                            <option value="">-- Pilih Kelas --</option>
-                        </select>
-                    </div>
-                    <div class="form-group mb-3">
                         <label for="">Alamat</label>
                         <textarea name="alamat" class="form-control" cols="30" rows="2"></textarea>
                     </div>
