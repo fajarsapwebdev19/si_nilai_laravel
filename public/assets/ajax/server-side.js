@@ -97,7 +97,7 @@ function get_class_id(class_id) {
         $('.student-class').DataTable().destroy();
     }
 
-    $('.no-class').DataTable({
+    var student_no_class = $('.no-class').DataTable({
         processing: true,
         serverSide: true,
         ajax: "get_student_level/" + class_id,
@@ -108,7 +108,7 @@ function get_class_id(class_id) {
         ]
     });
 
-    $('.student-class').DataTable({
+    var student_get_class = $('.student-class').DataTable({
         processing: true,
         serverSide: true,
         ajax: "get_student_class/" + class_id,

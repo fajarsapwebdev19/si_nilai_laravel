@@ -47,6 +47,7 @@ Route::post('admin/data/tambah_ekskul', [AdminController::class, 'tambah_ekskul'
 // Route Ubah Data
 Route::put('admin/ubah_akun/{id}', [AdminController::class, 'ubah_akun']); // data akun admin
 Route::put('admin/data/ubah_guru/{id}', [AdminController::class, 'ubah_guru']); // data guru
+Route::put('admin/data/ubah_siswa/{id}', [AdminController::class, 'ubah_siswa']); // data siswa
 Route::put('admin/data/ubah_kelas/{id}', [AdminController::class, 'ubah_kelas']); // data kelas
 Route::put('admin/data/ubah_mapel/{id}', [AdminController::class, 'ubah_mapel']); //data mapel
 Route::put('admin/data/ubah_ekskul/{id}', [AdminController::class, 'ubah_ekskul']); //data ekskul
@@ -76,6 +77,7 @@ Route::get('admin/data/get_tingkat', [AdminController::class, 'get_tingkat']); /
 
 Route::get('admin/data/get_student_level/{id}', [AdminController::class, 'get_siswa_tingkat']);
 Route::get('admin/data/get_student_class/{id}', [AdminController::class, 'get_siswa_class']);
-// Route::get('admin/data/kelas_siswa/{id}', [AdminController::class, 'class_student']);
+Route::post('admin/data/send_student_to_class', [AdminController::class, 'send_student_class']);
+Route::post('admin/data/drop_student_class', [AdminController::class, 'drop_student_class']);
 
 

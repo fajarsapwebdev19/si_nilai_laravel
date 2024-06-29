@@ -136,6 +136,7 @@
             </div>
             <form id="ubah-siswa" autocomplete="off">
                 @csrf
+                <input type="hidden" id="id">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4 mb-3">

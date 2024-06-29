@@ -229,7 +229,7 @@ $(document).ready(function() {
             success:function(response)
             {
                 $("#ubah").modal('show');
-
+                $('#ubah-siswa #id').val(id);
                 $('#ubah-siswa input[name=nisn]').val(response.siswa.nisn);
                 $('#ubah-siswa input[name=nik]').val(response.siswa.nik);
                 $('#ubah-siswa input[name=nama]').val(response.personal_data.nama);
@@ -262,11 +262,34 @@ $(document).ready(function() {
         })
     });
 
+    $("#ubah-siswa").on('click', '.simpan', function(){
+        let data = $('#ubah-siswa').serialize();
+        let id = $('#id').val();
+
+        $.ajax({
+            url: "ubah_siswa/"+id,
+            method: "PUT",
+            data: data,
+            success:function(response)
+            {
+                $("#ubah").modal('hide');
+                $(".messages").show();
+                $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                    $(this).removeClass('alert-success bg-success');
+                });
+                data_siswa.ajax.reload();
+            }
+        });
+    });
+
     // get data siswa
     $(".kelas").on("click", ".siswa", function(){
         let id = $(this).data('id');
         $("#class_id").val(id);
         get_class_id(id);
+        var kelas = $(this).attr('id');
+        $(".title-kelas").html(kelas);
         $('#siswa').modal('show');
     });
 
@@ -275,21 +298,102 @@ $(document).ready(function() {
         let token = $('input[name=_token]').val();
         let class_id = $('#class_id').val();
 
-        $(".no-class tbody .siswa:checked").each(function(){
+        $(".no-class tbody .no-class-siswa:checked").each(function(){
             selectid.push($(this).data('id'));
         });
 
-        console.log(class_id);
+        if(selectid.length > 0)
+        {
+            $.ajax({
+                url: 'send_student_to_class',
+                method: 'POST',
+                data: {
+                    user_id : selectid,
+                    _token : token,
+                    class_id : class_id
+                },
+                success:function(response)
+                {
+                    $(".message-class").show();
+                    $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                    $('.message-class').fadeIn().delay(3000).fadeOut(function() {
+                        $(this).removeClass('alert-success bg-success');
+                    });
+                    get_class_id(class_id);
+                    $('.all-check-no-class').prop('checked', false);
+                    $('.no-class-siswa').prop('checked', false);
+                    student_no_class.ajax.reload();
+                    student_get_class.ajax.reload();
+                }
+            });
+        }
     });
 
     $("#get_siswa").on('click', '#unassign', function(){
         let selectid = [];
+        let token = $('input[name=_token]').val();
+        let class_id = $('#class_id').val();
 
         $(".student-class tbody .siswa:checked").each(function(){
             selectid.push($(this).data('id'));
         });
 
-        console.log(selectid)
+        if(selectid.length > 0)
+            {
+                $.ajax({
+                    url: 'drop_student_class',
+                    method: 'POST',
+                    data: {
+                        user_id : selectid,
+                        _token : token
+                    },
+                    success:function(response)
+                    {
+                        $(".message-class").show();
+                        $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                        $('.message-class').fadeIn().delay(3000).fadeOut(function() {
+                            $(this).removeClass('alert-success bg-success');
+                        });
+                        get_class_id(class_id);
+                        $('.all-check-class').prop('checked', false);
+                        $('.siswa').prop('checked', false);
+                        student_no_class.ajax.reload();
+                        student_get_class.ajax.reload();
+                    }
+                });
+            }
+    });
+
+
+
+    // Handle all-check-class checkbox change
+    $('.all-check-class').on('change', function() {
+        let status = $(this).is(":checked");
+
+        $('.siswa').prop('checked', status);
+    });
+
+    $('.student-class').on('change', '.siswa', function(){
+        let status = $(this).is(':checked');
+
+        $('.siswa').each(function(){
+            $('.all-check-class').prop('checked', status);
+        });
+    });
+
+    // Handle all-check-class checkbox change
+    $('.all-check-no-class').on('change', function() {
+        let status = $(this).is(":checked");
+
+        $('.no-class-siswa').prop('checked', status);
+    });
+
+    $('.no-class').on('change', '.no-class-siswa', function(){
+        let status = $(this).is(':checked');
+
+        $('.siswa').each(function(){
+            $('.all-check-no-class').prop('checked', status);
+        });
     });
 
     // ambil semua data kelas

@@ -303,7 +303,6 @@ class AdminController extends Controller
     }
 
     // get data siswa dari id class
-
     public function get_siswa_tingkat(Request $request){
         $id = $request->id;
         $kelas = Kelas::where('id', $id)->first();
@@ -322,7 +321,7 @@ class AdminController extends Controller
 
         return DataTables::of($siswa)
         ->addColumn('checkbox', function($row) {
-            return '<input type="checkbox" class="form-check-input siswa" data-id="' . $row->user_id . '">';
+            return '<input type="checkbox" class="form-check-input no-class-siswa" data-id="' . $row->user_id . '">';
         })
         ->rawColumns(['checkbox'])
         ->toJson();
@@ -351,6 +350,36 @@ class AdminController extends Controller
         })
         ->rawColumns(['checkbox'])
         ->toJson();
+    }
+
+    public function send_student_class(Request $request){
+        $id = $request->user_id;
+        $newClassId = $request->input('class_id');
+
+        $kelas_siswa = KelasSiswa::wherein('user_id', $id)->get();
+
+        foreach($kelas_siswa as $ks)
+        {
+            $ks->class_id = $newClassId;
+            $ks->save();
+        }
+
+        return response()->json(['message' => 'Berhasil Tambah Siswa Kedalam Kelas'], 200);
+    }
+
+    public function drop_student_class(Request $request){
+        $id = $request->user_id;
+        $newClassId = NULL;
+
+        $kelas_siswa = KelasSiswa::wherein('user_id', $id)->get();
+
+        foreach($kelas_siswa as $ks)
+        {
+            $ks->class_id = $newClassId;
+            $ks->save();
+        }
+
+        return response()->json(['message' => 'Berhasil Menghapus Kelas Siswa'], 200);
     }
 
     // siswa
@@ -444,6 +473,42 @@ class AdminController extends Controller
         return response()->json(['message' => 'Berhasil tambah data siswa'], 200);
     }
 
+    public function ubah_siswa(Request $request, $id)
+    {
+        $s = User::with('personalData', 'siswa')->find($id);
+        $p_id = $s->personal_id;
+
+        $siswa = Siswa::where('user_id', $id)->first();
+        $siswa->nisn = $request->nisn;
+        $siswa->nik = $request->nik;
+        $siswa->tempat_lahir = $request->t_lahir;
+        $siswa->tanggal_lahir = $request->tgl_lahir;
+        $siswa->agama = $request->agama;
+        $siswa->rt = $request->rt;
+        $siswa->rw = $request->rw;
+        $siswa->kelurahan = $request->kelurahan;
+        $siswa->kecamatan = $request->kecamatan;
+        $siswa->kode_pos = $request->kode_pos;
+        $siswa->anak_ke = $request->anak_ke;
+        $siswa->nama_ayah = $request->nama_ayah;
+        $siswa->pendidikan_ayah = $request->pendidikan_ayah;
+        $siswa->pekerjaan_ayah = $request->pekerjaan_ayah;
+        $siswa->nama_ibu = $request->nama_ibu;
+        $siswa->pendidikan_ibu = $request->pendidikan_ibu;
+        $siswa->pekerjaan_ibu = $request->pekerjaan_ibu;
+        $siswa->tingkat = $request->tingkat;
+        $siswa->save();
+
+
+        $personal = PersonalData::find($p_id);
+        $personal->nama = $request->nama;
+        $personal->jenis_kelamin = $request->jenis_kelamin;
+        $personal->alamat = $request->alamat;
+        $personal->save();
+
+        return response()->json(['message' => 'Berhasil ubah data siswa'], 200);
+    }
+
     // get siswa by id
     public function get_siswa($id)
     {
@@ -473,7 +538,7 @@ class AdminController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary siswa" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary siswa" id="'.$row->nama_rombel.'" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
                 ->addColumn('status', function ($row) {

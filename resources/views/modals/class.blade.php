@@ -85,11 +85,12 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Data Siswa</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Data Siswa <span class="title-kelas"></span></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" id="get_siswa">
                 <div class="modal-body">
+                    <div class="message-class"></div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="card">
@@ -97,7 +98,7 @@
                                     <table class="table no-class">
                                         <thead>
                                             <tr>
-                                                <th>c</th>
+                                                <th><input type="checkbox" class="form-check-input all-check-no-class"></th>
                                                 <th>NISN</th>
                                                 <th>Nama</th>
                                             </tr>
@@ -117,7 +118,7 @@
                                     <table class="table student-class">
                                         <thead>
                                             <tr>
-                                                <th>c</th>
+                                                <th><input type="checkbox" class="form-check-input all-check-class"></th>
                                                 <th>NISN</th>
                                                 <th>Nama</th>
                                             </tr>
