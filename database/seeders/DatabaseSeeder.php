@@ -44,22 +44,18 @@ class DatabaseSeeder extends Seeder
         // tahun_ajaran
         DB::table('tahun_ajaran')->insert([
             [
-                'id' => 1,
                 'tahun' => '2023/2024 1',
                 'status' => 'N'
             ],
             [
-                'id' => 2,
                 'tahun' => '2023/2024 2',
                 'status' => 'Y'
             ],
             [
-                'id' => 3,
                 'tahun' => '2024/2025 1',
                 'status' => 'N'
             ],
             [
-                'id' => 4,
                 'tahun' => '2024/2025 2',
                 'status' => 'N'
             ]
@@ -341,6 +337,8 @@ class DatabaseSeeder extends Seeder
        $u2 = Uuid::uuid4()->toString();
        $u3 = Uuid::uuid4()->toString();
 
+       $nisn = mt_rand(0011111111, 9999999999);
+
         // user
         DB::table('users')->insert([
             [
@@ -367,7 +365,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => $u3,
-                'username' => 'siswa',
+                'username' => $nisn,
                 'password' => Hash::make('siswa'),
                 'real_password' => 'siswa',
                 'status_account' => 'Y',
@@ -396,24 +394,14 @@ class DatabaseSeeder extends Seeder
         DB::table('kelas_siswa')->insert([
             [
                 'user_id' => $u3,
-                'class_id' => 2
-            ]
-        ]);
-
-        // history siswa
-        DB::table('history_siswa')->insert([
-            [
-                'id' => 1,
-                'tahun_ajaran' => '2023/2024 2',
-                'class_id' => 2,
-                'user_id' => $u3
+                'class_id' => NULL
             ]
         ]);
 
         // siswa
         DB::table('siswa')->insert([
             [
-                'nisn' => mt_rand(0011111111, 9999999999),
+                'nisn' => $nisn,
                 'nik' => mt_rand(1111111111111111, 9999999999999999),
                 'tempat_lahir' => 'Tangerang',
                 'tanggal_lahir' => '2007-10-11',
@@ -431,6 +419,7 @@ class DatabaseSeeder extends Seeder
                 'pendidikan_ibu' => 'SD Sederajat',
                 'pekerjaan_ibu' => 'Tidak Bekerja',
                 'tingkat' => 10,
+                'status' => 'y',
                 'user_id' => $u3
             ]
         ]);

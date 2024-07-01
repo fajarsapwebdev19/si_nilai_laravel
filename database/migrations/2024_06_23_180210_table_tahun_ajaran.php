@@ -14,7 +14,7 @@ class TableTahunAjaran extends Migration
     public function up()
     {
         Schema::create('tahun_ajaran', function(Blueprint $table){
-            $table->integer('id')->primary();
+            $table->id();
             $table->string('tahun')->nullable();
             $table->enum('status', ['Y', 'N'])->nullable();
         });

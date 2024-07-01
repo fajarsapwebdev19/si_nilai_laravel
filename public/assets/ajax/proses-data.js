@@ -293,27 +293,25 @@ $(document).ready(function() {
         $('#siswa').modal('show');
     });
 
-    $("#get_siswa").on('click', '#assign', function(){
+    $("#get_siswa").on('click', '#assign', function() {
         let selectid = [];
         let token = $('input[name=_token]').val();
         let class_id = $('#class_id').val();
 
-        $(".no-class tbody .no-class-siswa:checked").each(function(){
+        $(".no-class tbody .no-class-siswa:checked").each(function() {
             selectid.push($(this).data('id'));
         });
 
-        if(selectid.length > 0)
-        {
+        if (selectid.length > 0) {
             $.ajax({
                 url: 'send_student_to_class',
                 method: 'POST',
                 data: {
-                    user_id : selectid,
-                    _token : token,
-                    class_id : class_id
+                    user_id: selectid,
+                    _token: token,
+                    class_id: class_id
                 },
-                success:function(response)
-                {
+                success: function(response) {
                     $(".message-class").show();
                     $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
                     $('.message-class').fadeIn().delay(3000).fadeOut(function() {
@@ -322,12 +320,17 @@ $(document).ready(function() {
                     get_class_id(class_id);
                     $('.all-check-no-class').prop('checked', false);
                     $('.no-class-siswa').prop('checked', false);
+                    selectid = []; // Reset selectid to an empty array
                     student_no_class.ajax.reload();
                     student_get_class.ajax.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error("An error occurred: " + error);
                 }
             });
         }
     });
+
 
     $("#get_siswa").on('click', '#unassign', function(){
         let selectid = [];

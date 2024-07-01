@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\TahunAjaran;
+use App\Models\HistorySiswa;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Ekskul;
@@ -282,6 +284,8 @@ class AdminController extends Controller
     // proses hapus data guru
     public function hapus_guru($id)
     {
+        DB::beginTransaction();
+
         $user = User::with('personalData', 'guru')->find($id);
 
         $t = Guru::where('user_id', $user->id);
@@ -291,6 +295,8 @@ class AdminController extends Controller
         $p->delete();
 
         $user->delete();
+
+        DB::commit();
 
         return response()->json(['message' => 'Berhasil Hapus Data Guru'], 200);
     }
@@ -317,6 +323,7 @@ class AdminController extends Controller
         ->where('u.role_id', 3)
         ->where('s.tingkat', $tingkat)
         ->where('ks.class_id', NULL)
+        ->where('s.status', 'y')
         ->get();
 
         return DataTables::of($siswa)
@@ -342,6 +349,7 @@ class AdminController extends Controller
         ->where('u.role_id', 3)
         ->where('s.tingkat', $tingkat)
         ->where('ks.class_id', $kelas->id)
+        ->where('s.status', 'y')
         ->get();
 
         return DataTables::of($siswa)
@@ -352,7 +360,10 @@ class AdminController extends Controller
         ->toJson();
     }
 
-    public function send_student_class(Request $request){
+    public function send_student_class(Request $request)
+    {
+        DB::beginTransaction();
+
         $id = $request->user_id;
         $newClassId = $request->input('class_id');
 
@@ -364,10 +375,28 @@ class AdminController extends Controller
             $ks->save();
         }
 
+        $ta = TahunAjaran::where("status", "Y")->first();
+        $ta_active = $ta->tahun;
+
+        foreach($id as $siswa_id)
+        {
+            $hs = new HistorySiswa();
+            $hs->id = rand(11111, 99999).date('dmYhis');
+            $hs->tahun_ajaran = $ta_active;
+            $hs->class_id = $newClassId;
+            $hs->user_id = $siswa_id;
+            $hs->save();
+        }
+
+        DB::commit();
+
         return response()->json(['message' => 'Berhasil Tambah Siswa Kedalam Kelas'], 200);
     }
 
-    public function drop_student_class(Request $request){
+    public function drop_student_class(Request $request)
+    {
+        DB::beginTransaction();
+
         $id = $request->user_id;
         $newClassId = NULL;
 
@@ -378,6 +407,17 @@ class AdminController extends Controller
             $ks->class_id = $newClassId;
             $ks->save();
         }
+
+        $siswa_id = array_unique($id);
+
+        $siswa = HistorySiswa::wherein('user_id', $siswa_id)->get();
+
+        foreach($siswa as $s)
+        {
+            $s->delete();
+        }
+
+        DB::commit();
 
         return response()->json(['message' => 'Berhasil Menghapus Kelas Siswa'], 200);
     }
@@ -395,6 +435,9 @@ class AdminController extends Controller
         {
             $siswa = User::with(['personalData', 'siswa'])
             ->where('role_id', 3)
+            ->whereHas('siswa', function($query){
+                $query->where('status', 'y');
+            })
             ->get();
 
             return DataTables::of($siswa)
@@ -466,6 +509,7 @@ class AdminController extends Controller
         $siswa->pekerjaan_ibu = $request->pekerjaan_ibu;
         $siswa->user_id = $uid;
         $siswa->tingkat = $request->tingkat;
+        $siswa->status = 'y';
         $siswa->save();
 
         DB::commit();
@@ -478,11 +522,17 @@ class AdminController extends Controller
         $s = User::with('personalData', 'siswa')->find($id);
         $p_id = $s->personal_id;
 
+        $personal = PersonalData::find($p_id);
+        $personal->nama = $request->nama;
+        $personal->jenis_kelamin = $request->jenis_kelamin;
+        $personal->alamat = $request->alamat;
+        $personal->save();
+
         $siswa = Siswa::where('user_id', $id)->first();
         $siswa->nisn = $request->nisn;
         $siswa->nik = $request->nik;
-        $siswa->tempat_lahir = $request->t_lahir;
-        $siswa->tanggal_lahir = $request->tgl_lahir;
+        $siswa->tempat_lahir = $request->t_lhr;
+        $siswa->tanggal_lahir = $request->tgl_lhr;
         $siswa->agama = $request->agama;
         $siswa->rt = $request->rt;
         $siswa->rw = $request->rw;
@@ -498,14 +548,6 @@ class AdminController extends Controller
         $siswa->pekerjaan_ibu = $request->pekerjaan_ibu;
         $siswa->tingkat = $request->tingkat;
         $siswa->save();
-
-
-        $personal = PersonalData::find($p_id);
-        $personal->nama = $request->nama;
-        $personal->jenis_kelamin = $request->jenis_kelamin;
-        $personal->alamat = $request->alamat;
-        $personal->save();
-
         return response()->json(['message' => 'Berhasil ubah data siswa'], 200);
     }
 
