@@ -16,6 +16,7 @@ use App\Models\Tingkat;
 use App\Models\KelasSiswa;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
 
@@ -426,6 +427,43 @@ class AdminController extends Controller
     public function student()
     {
         return view('student');
+    }
+
+    public function GenerateRandomNumber($length = 7)
+    {
+        $digits = '';
+        for($i=0; $i < $length; $i++)
+        {
+            $digits .= mt_rand(0, 9);
+        }
+        return $digits;
+    }
+
+    // import siswa
+    public function import_siswa(Request $request)
+    {
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+
+        // spreadsheet
+        $spreadsheet = IOFactory::load($path);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        array_shift($rows);
+
+        foreach($rows as $r)
+        {
+            $pid = rand(1,999999).date('dmYhis');
+            $uuid = Uuid::uuid4();
+            $hsid = $this->GenerateRandomNumber()."<br>";
+
+            $ks = new KelasSiswa();
+            $ks->user_id = $uuid;
+            $ks->class_id = NULL;
+            $ks->save();
+
+        }
     }
 
     // data siswa

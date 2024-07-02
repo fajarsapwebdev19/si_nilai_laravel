@@ -253,3 +253,33 @@
         </div>
     </div>
 </div>
+
+{{-- Import Data Siswa --}}
+<div class="modal fade" id="import" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Ubah Data Siswa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="import-siswa" autocomplete="off" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="">File Excel</label>
+                        <input type="file" name="file" class="form-control">
+                        <br>
+                        <span>Ext : .xlx, .xlxs</span>
+                        <br>
+                        <a href="{{asset('assets/template-import/template-siswa.xlsx')}}" class="btn btn-sm btn-success">Template Import</a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-lg btn-success import">Import</button>
+                    <button type="button" class="btn btn-lg btn-danger" data-bs-dismiss="modal">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -80,4 +80,6 @@ Route::get('admin/data/get_student_class/{id}', [AdminController::class, 'get_si
 Route::post('admin/data/send_student_to_class', [AdminController::class, 'send_student_class']);
 Route::post('admin/data/drop_student_class', [AdminController::class, 'drop_student_class']);
 
+Route::post('admin/data/import_siswa', [AdminController::class, 'import_siswa']);
+
 

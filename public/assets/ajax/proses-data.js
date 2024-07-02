@@ -367,6 +367,24 @@ $(document).ready(function() {
             }
     });
 
+    // proses import siswa
+    $('#import-siswa').on('click', '.import', function(){
+        let f = $('#import-siswa')[0];
+        let formData = new FormData(f);
+
+        $.ajax({
+            url: "import_siswa",
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success:function(response)
+            {
+                console.log(response);
+            }
+        })
+    });
+
 
 
     // Handle all-check-class checkbox change

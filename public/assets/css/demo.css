@@ -3,6 +3,18 @@
 * File include item demo only specific css only
 ******************************************************************************/
 
+@font-face {
+    font-family: 'Poppins';
+    src: url('../font/poppins/Poppins-Light.ttf');
+    font-style: normal;
+    font-weight: 300;
+}
+
+*{
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
 .menu .app-brand.demo {
   height: 64px;
   margin-top: 12px;
