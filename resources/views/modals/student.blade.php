@@ -254,18 +254,44 @@
     </div>
 </div>
 
+{{-- Modal Konfirmasi Hapus Data Siswa --}}
+<div class="modal fade" id="hapus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Konfirmasi Hapus Data Siswa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="hapus-siswa" autocomplete="off">
+                @csrf
+                <input type="hidden" id="id-siswa">
+                <div class="modal-body">
+                    <p class="text-center">
+                        Apakah Anda Yakin Ingin Menghapus Data Siswa ? <span id="nama-siswa"></span>
+                        <br><br>
+                        <button type="button" class="btn btn-lg btn-success yes">Ya</button>
+                        <button type="button" class="btn btn-lg btn-danger" data-bs-dismiss="modal">Batal</button>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {{-- Import Data Siswa --}}
 <div class="modal fade" id="import" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Ubah Data Siswa</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Import Data Siswa</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="import-siswa" autocomplete="off" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
+                    <div id="error-message"></div>
                     <div class="form-group mb-3">
                         <label for="">File Excel</label>
                         <input type="file" name="file" class="form-control">

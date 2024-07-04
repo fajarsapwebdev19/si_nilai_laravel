@@ -8,6 +8,9 @@
                 <button type="button" data-bs-toggle="modal" data-bs-target="#tambah" class="btn btn-success mb-2">
                     Tambah
                 </button>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#import" class="btn btn-info mb-2">
+                    Import
+                </button>
 
                 <div class="messages"></div>
 

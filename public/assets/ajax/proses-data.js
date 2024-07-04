@@ -179,6 +179,7 @@ $(document).ready(function() {
         });
     });
 
+    // proses hapus data guru
     $('#hapus-guru').on('click', '.yes', function(){
         let id = $('#id').val();
 
@@ -197,6 +198,23 @@ $(document).ready(function() {
             }
         })
     });
+
+    $("#import-guru").on('click', '.import', function(){
+        let file = $('#import-guru')[0];
+        let data = new FormData(file);
+
+        $.ajax({
+            url: "import-guru",
+            data: data,
+            processData: false,
+            contentType: false,
+            method: "POST",
+            success:function(response)
+            {
+                
+            }
+        })
+    })
 
     // proses tambah data siswa
     $("#tambah-siswa").on('click', '.simpan', function(){
@@ -220,6 +238,7 @@ $(document).ready(function() {
         });
     });
 
+    // proses pengambilan data siswa dari database untuk di tampilkan di form ubah data siswa
     $(".student").on('click', '.ubah', function(){
         let id = $(this).data('id');
 
@@ -262,6 +281,7 @@ $(document).ready(function() {
         })
     });
 
+    // proses ubah data siswa
     $("#ubah-siswa").on('click', '.simpan', function(){
         let data = $('#ubah-siswa').serialize();
         let id = $('#id').val();
@@ -279,6 +299,55 @@ $(document).ready(function() {
                     $(this).removeClass('alert-success bg-success');
                 });
                 data_siswa.ajax.reload();
+            }
+        });
+    });
+
+    // konfirmasi hapus data
+    $(".student").on('click', '.hapus', function(){
+        let id = $(this).data('id');
+        let nama = $(this).attr('id');
+        $("#nama-siswa").text(nama);
+        $('#id-siswa').val(id);
+        $('#hapus').modal('show');
+    });
+
+    // proses hapus data siswa
+    $('#hapus-siswa').on("click", '.yes', function() {
+        let data = $("#hapus-siswa").serialize();
+        let id = $('#id-siswa').val();
+
+        $.ajax({
+            url: "hapus-siswa/" + id,
+            method: "GET",
+            success: function(response) {
+                $('#hapus').modal('hide');
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show success message
+                $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function() {
+                    $('.messages').fadeOut(function() {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
+                data_siswa.ajax.reload();
+            },
+            error: function(xhr) {
+                $('#hapus').modal('hide');
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
+                $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.message).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function() {
+                    $('.messages').fadeOut(function() {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }, 3000);
             }
         });
     });
@@ -315,7 +384,7 @@ $(document).ready(function() {
                     $(".message-class").show();
                     $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
                     $('.message-class').fadeIn().delay(3000).fadeOut(function() {
-                        $(this).removeClass('alert-success bg-success');
+                        $(this).empty();
                     });
                     get_class_id(class_id);
                     $('.all-check-no-class').prop('checked', false);
@@ -355,7 +424,7 @@ $(document).ready(function() {
                         $(".message-class").show();
                         $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
                         $('.message-class').fadeIn().delay(3000).fadeOut(function() {
-                            $(this).removeClass('alert-success bg-success');
+                            $(this).empty();
                         });
                         get_class_id(class_id);
                         $('.all-check-class').prop('checked', false);
@@ -380,7 +449,32 @@ $(document).ready(function() {
             contentType: false,
             success:function(response)
             {
-                console.log(response);
+                $("#import").modal('hide');
+                $(".messages").show();
+                $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                    $(this).empty();
+                });
+                data_siswa.ajax.reload();
+                f.reset();
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    let errorMessages = '';
+
+                    $.each(errors, function(key, messages) {
+                        $.each(messages, function(index, message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    console.log(errorMessages);
+                    $("#error-message").show();
+                    $('#error-message').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('#error-message').fadeIn().delay(3000).fadeOut(function() {
+                        $(this).empty();
+                    });
+                }
             }
         })
     });
@@ -444,11 +538,17 @@ $(document).ready(function() {
             success:function(response)
             {
                 $("#tambah").modal("hide");
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function() {
+                    $('.messages').fadeOut(function() {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_kelas.ajax.reload();
                 $("#tambah-kelas")[0].reset();
             }
@@ -482,11 +582,17 @@ $(document).ready(function() {
             success:function(response)
             {
                 $("#ubah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function() {
+                    $('.messages').fadeOut(function() {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_kelas.ajax.reload();
             }
         });
@@ -517,12 +623,32 @@ $(document).ready(function() {
             success:function(response)
             {
                 $("#hapus").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function() {
+                    $('.messages').fadeOut(function() {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_kelas.ajax.reload();
+            },
+            error:function(xhr)
+            {
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
+                $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.message).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function() {
+                    $('.messages').fadeOut(function() {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }, 3000);
             }
         });
     });

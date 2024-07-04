@@ -14,7 +14,7 @@ class CreateTablePersonaldata extends Migration
     public function up()
     {
         Schema::create('personal_data', function (Blueprint $table) {
-            $table->integer('id')->primary();
+            $table->string('id')->primary();
             $table->string('nama', 300)->nullable();
             $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
             $table->text('alamat')->nullable();

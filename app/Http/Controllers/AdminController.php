@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use App\Models\TahunAjaran;
 use App\Models\HistorySiswa;
 use App\Models\Kelas;
@@ -302,6 +303,12 @@ class AdminController extends Controller
         return response()->json(['message' => 'Berhasil Hapus Data Guru'], 200);
     }
 
+    // import data guru
+    public function import_guru(Request $request)
+    {
+        
+    }
+
     // get tingkat
     public function get_tingkat(){
         $tingkat = Tingkat::all();
@@ -325,6 +332,7 @@ class AdminController extends Controller
         ->where('s.tingkat', $tingkat)
         ->where('ks.class_id', NULL)
         ->where('s.status', 'y')
+        ->orderBy('pd.nama', 'asc')
         ->get();
 
         return DataTables::of($siswa)
@@ -351,6 +359,7 @@ class AdminController extends Controller
         ->where('s.tingkat', $tingkat)
         ->where('ks.class_id', $kelas->id)
         ->where('s.status', 'y')
+        ->orderBy('pd.nama', 'asc')
         ->get();
 
         return DataTables::of($siswa)
@@ -442,6 +451,27 @@ class AdminController extends Controller
     // import siswa
     public function import_siswa(Request $request)
     {
+        // Definisikan aturan validasi dan pesan kustom
+        $rules = [
+            'file' => 'required|file|mimes:xlsx'
+        ];
+
+        $messages = [
+            'file.required' => 'File harus diunggah',
+            'file.file' => 'File yang diunggah harus berupa file',
+            'file.mimes' => 'File yang diunggah harus berformat .xlsx',
+        ];
+
+        // Lakukan validasi
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // Jika validasi gagal, kembalikan pesan kesalahan dalam format JSON
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $file = $request->file('file');
         $path = $file->getRealPath();
 
@@ -452,18 +482,92 @@ class AdminController extends Controller
 
         array_shift($rows);
 
+        $count = 0;
+
+        DB::beginTransaction();
+
         foreach($rows as $r)
         {
-            $pid = rand(1,999999).date('dmYhis');
+            $pid = rand(1,999).date('dmY');
             $uuid = Uuid::uuid4();
-            $hsid = $this->GenerateRandomNumber()."<br>";
+            $pwd = $this->generateRandomString(6);
+            $nama = $r[0];
+            $jk = $r[1];
+            $nik = $r[2];
+            $nisn = $r[3];
+            $tempat_lahir = $r[4];
+            $tanggal_lahir = $r[5];
+            $alamat = $r[6];
+            $rt = $r[7];
+            $rw = $r[8];
+            $kelurahan = $r[9];
+            $kecamatan = $r[10];
+            $kodepos = $r[11];
+            $anakke = $r[12];
+            $agama = $r[13];
+            $nama_ayah = $r[14];
+            $pendidikan_ayah = $r[15];
+            $pekerjaan_ayah = $r[16];
+            $nama_ibu = $r[17];
+            $pendidikan_ibu = $r[18];
+            $pekerjaan_ibu = $r[19];
+            $tingkat = $r[20];
+
+            $personal = new PersonalData();
+            $personal->id = $pid;
+            $personal->nama = $nama;
+            $personal->jenis_kelamin = $jk;
+            $personal->alamat = $alamat;
+            $personal->create_at = date('Y-m-d H:i:s');
+            $personal->modified_at = NULL;
+            $personal->save();
+
+            $user = new User();
+            $user->id = $uuid;
+            $user->username = $nisn;
+            $user->password = Hash::make($pwd);
+            $user->real_password = $pwd;
+            $user->status_account = 'Y';
+            $user->role_id = 3;
+            $user->personal_id = $pid;
+            $user->create_at = date('Y-m-d H:i:s');
+            $user->modified_at = NULL;
+            $user->save();
 
             $ks = new KelasSiswa();
             $ks->user_id = $uuid;
             $ks->class_id = NULL;
             $ks->save();
 
+            $siswa = new Siswa();
+            $siswa->nisn = $nisn;
+            $siswa->nik = $nik;
+            $siswa->tempat_lahir = $tempat_lahir;
+            $siswa->tanggal_lahir = $tanggal_lahir;
+            $siswa->agama = $agama;
+            $siswa->rt = $rt;
+            $siswa->rw = $rw;
+            $siswa->kelurahan = $kelurahan;
+            $siswa->kecamatan = $kecamatan;
+            $siswa->kode_pos = $kodepos;
+            $siswa->anak_ke = $anakke;
+            $siswa->nama_ayah = $nama_ayah;
+            $siswa->pendidikan_ayah = $pendidikan_ayah;
+            $siswa->pekerjaan_ayah = $pekerjaan_ayah;
+            $siswa->nama_ibu = $nama_ibu;
+            $siswa->pendidikan_ibu = $pendidikan_ibu;
+            $siswa->pekerjaan_ibu = $pekerjaan_ibu;
+            $siswa->tingkat = $tingkat;
+            $siswa->status = 'y';
+            $siswa->user_id = $uuid;
+            $siswa->save();
+
+            $count++;
         }
+
+        DB::commit();
+
+        return response()->json(['message' => 'Berhasil Menambah '. $count .' Data Siswa'], 200);
     }
 
     // data siswa
@@ -476,13 +580,19 @@ class AdminController extends Controller
             ->whereHas('siswa', function($query){
                 $query->where('status', 'y');
             })
+            ->orderBy(function($query) {
+                $query->select('nama')
+                      ->from('personal_data')
+                      ->whereColumn('personal_data.id', 'users.personal_id')
+                      ->limit(1);
+            }, 'asc')
             ->get();
 
             return DataTables::of($siswa)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
             return '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
-            <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+            <button class="badge rounded-pill text-bg-danger hapus" id="'.$row->personalData->nama.'" data-id="' . $row->id . '">Hapus</button>';
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -589,6 +699,33 @@ class AdminController extends Controller
         return response()->json(['message' => 'Berhasil ubah data siswa'], 200);
     }
 
+    public function hapus_siswa($id)
+    {
+        $user = User::find($id);
+
+        $personal = PersonalData::find($user->personal_id);
+
+        $ks = KelasSiswa::where('user_id', $id)->first();
+
+        $s = Siswa::where('user_id', $id)->first();
+
+        DB::beginTransaction();
+
+        if($ks->class_id)
+        {
+            return response()->json(['message' => 'Hapus data siswa gagal karena siswa masih memiliki kelas'], 400);
+        }else{
+            $personal->delete();
+            $s->delete();
+            $ks->delete();
+            $user->delete();
+        }
+
+        DB::commit();
+
+        return response()->json(['message' => 'Berhasil hapus siswa'], 200);
+    }
+
     // get siswa by id
     public function get_siswa($id)
     {
@@ -686,8 +823,16 @@ class AdminController extends Controller
     // proses hapus data
     public function hapus_kelas($id)
     {
+        $s = KelasSiswa::where('class_id', $id)->count();
+
+        if($s > 0)
+        {
+            return response()->json(['message' => 'Kelas tidak dapat di hapus karena masih terdapat siswa di dalamnya'], 400);
+        }
+        DB::beginTransaction();
         $kelas = Kelas::findOrFail($id);
         $kelas->delete();
+        DB::commit();
 
         return response()->json(['message' => 'Berhasil Hapus Data Kelas'], 200);
     }

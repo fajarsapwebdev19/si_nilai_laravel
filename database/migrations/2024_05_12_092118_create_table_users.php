@@ -20,7 +20,7 @@ class CreateTableUsers extends Migration
             $table->string('real_password', 300);
             $table->enum('status_account', ['Y', 'N'])->nullable();
             $table->integer('role_id');
-            $table->integer('personal_id');
+            $table->string('personal_id');
             $table->datetime('create_at')->nullable();
             $table->datetime('modified_at')->nullable();
         });

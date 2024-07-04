@@ -81,5 +81,8 @@ Route::post('admin/data/send_student_to_class', [AdminController::class, 'send_s
 Route::post('admin/data/drop_student_class', [AdminController::class, 'drop_student_class']);
 
 Route::post('admin/data/import_siswa', [AdminController::class, 'import_siswa']);
+Route::get('admin/data/hapus-siswa/{id}', [AdminController::class, 'hapus_siswa']);
+
+Route::get('admin/data/import-guru', [AdminController::class, 'import-guru']);
 
 

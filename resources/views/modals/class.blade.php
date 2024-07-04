@@ -7,7 +7,7 @@
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Data Kelas</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" id="tambah-kelas">
+            <form method="post" id="tambah-kelas" autocomplete="off">
                 @csrf;
                 <div class="modal-body">
                     <div class="form-group mb-3">
@@ -56,7 +56,7 @@
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Ubah Data Kelas</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" id="ubah-kelas">
+            <form method="post" id="ubah-kelas" autocomplete="off">
 
             </form>
         </div>
