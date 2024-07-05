@@ -306,7 +306,89 @@ class AdminController extends Controller
     // import data guru
     public function import_guru(Request $request)
     {
-        
+        $rules = [
+            'file' => 'required|file|mimes:xlsx',
+        ];
+
+        $messages = [
+            'file.required' => 'File harus diunggah',
+            'file.file' => 'File yang diunggah harus berupa file',
+            'file.mimes' => 'File yang diunggah harus berformat xlsx'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails())
+        {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+
+        // spreadsheet
+        $spreadsheet = IOFactory::load($path);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        array_shift($rows);
+        DB::beginTransaction();
+
+        $count = 0;
+
+        foreach($rows as $r)
+        {
+            $pid = mt_rand(0,9999).date('dmY');
+            $username = $this->GenerateRandomNumber();
+            $password = $this->generateRandomString(6);
+            $nama = $r[0];
+            $jk = $r[1];
+            $nik = $r[2];
+            $nuptk = $r[3];
+            $tempat_lahir = $r[4];
+            $tanggal_lahir = $r[5];
+            $alamat = $r[6];
+            $jenis_gtk = $r[7];
+            $user_id = Uuid::uuid4();
+
+            $pd = new PersonalData();
+            $pd->id = $pid;
+            $pd->nama = $nama;
+            $pd->jenis_kelamin = $jk;
+            $pd->alamat = $alamat;
+            $pd->create_at = date('Y-m-d H:i:s');
+            $pd->modified_at = NULL;
+            $pd->save();
+
+            $user = new User();
+            $user->id = $user_id;
+            $user->username = $username;
+            $user->password = Hash::make($password);
+            $user->real_password = $password;
+            $user->status_account = "Y";
+            $user->role_id = 2;
+            $user->personal_id = $pid;
+            $user->create_at = date('Y-m-d H:i:s');
+            $user->modified_at = NULL;
+            $user->save();
+
+            $guru = new Guru();
+            $guru->nik = $nik;
+            $guru->nuptk = $nuptk;
+            $guru->tempat_lahir = $tempat_lahir;
+            $guru->tanggal_lahir = $tanggal_lahir;
+            $guru->jenis_ptk = $jenis_gtk;
+            $guru->wali_kelas = "N";
+            $guru->class_id = NULL;
+            $guru->user_id = $user_id;
+            $guru->save();
+
+            $count++;
+        }
+
+        DB::commit();
+
+        return response()->json(['message' => 'Berhasil Tambah ' . $count . ' Data Guru'], 200);
     }
 
     // get tingkat
@@ -981,6 +1063,15 @@ class AdminController extends Controller
     public function set_profil()
     {
         return view('set_profile');
+    }
+
+    public function update_profile_sekolah(Request $request)
+    {
+        $th_aj = TahunAjaran::where('status', 'Y')->first();
+
+        $th_now = $th_aj->tahun;
+
+        
     }
 
     public function set_wakel()

@@ -211,10 +211,40 @@ $(document).ready(function() {
             method: "POST",
             success:function(response)
             {
-                
+                $("#import").modal('hide');
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
+                $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function() {
+                    $('.messages').fadeOut(function() {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
+                data_guru.ajax.reload();
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function(key, messages) {
+                        $.each(messages, function(index, message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    console.log(errorMessages);
+                    $("#error-message").show();
+                    $('#error-message').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('#error-message').fadeIn().delay(3000).fadeOut(function() {
+                        $(this).empty();
+                    });
+                }
             }
-        })
-    })
+        });
+    });
 
     // proses tambah data siswa
     $("#tambah-siswa").on('click', '.simpan', function(){
@@ -314,7 +344,6 @@ $(document).ready(function() {
 
     // proses hapus data siswa
     $('#hapus-siswa').on("click", '.yes', function() {
-        let data = $("#hapus-siswa").serialize();
         let id = $('#id-siswa').val();
 
         $.ajax({
@@ -836,5 +865,7 @@ $(document).ready(function() {
             }
         });
     });
-
 });
+
+// proses ubah data profil sekolah
+

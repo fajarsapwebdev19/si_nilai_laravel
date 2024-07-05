@@ -24,9 +24,9 @@ Route::get('admin/data/siswa', [AdminController::class, 'student'])->name('data-
 Route::get('admin/data/kelas', [AdminController::class, 'class_room'])->name('data-kelas');
 Route::get('admin/data/mapel', [AdminController::class, 'mapel'])->name('data-mapel');
 Route::get('admin/data/ekskul', [AdminController::class, 'ekskul'])->name('data-ekskul');
-Route::get('admin/set-profil-sekolah', [AdminController::class, 'set_profil'])->name('profil-sekolah');
-Route::get('admin/set-wakel', [AdminController::class, 'set_wakel'])->name('pilih-wakel');
-Route::get('admin/set-mapel', [AdminController::class, 'set_mapel'])->name('pilih-guru-mapel');
+Route::get('admin/pengaturan/set-profil-sekolah', [AdminController::class, 'set_profil'])->name('profil-sekolah');
+Route::get('admin/pengaturan/set-wakel', [AdminController::class, 'set_wakel'])->name('pilih-wakel');
+Route::get('admin/pengaturan/set-mapel', [AdminController::class, 'set_mapel'])->name('pilih-guru-mapel');
 
 // Route Data
 Route::get('admin/akun_admin', [AdminController::class, 'account_data']); // data akun admin
@@ -83,6 +83,9 @@ Route::post('admin/data/drop_student_class', [AdminController::class, 'drop_stud
 Route::post('admin/data/import_siswa', [AdminController::class, 'import_siswa']);
 Route::get('admin/data/hapus-siswa/{id}', [AdminController::class, 'hapus_siswa']);
 
-Route::get('admin/data/import-guru', [AdminController::class, 'import-guru']);
+Route::post('admin/data/import-guru', [AdminController::class, 'import_guru']);
+
+// test
+Route::get('admin/pengaturan/profile_sekolah', [AdminController::class, 'update_profile_sekolah']);
 
 
