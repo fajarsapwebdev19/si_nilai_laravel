@@ -16,6 +16,7 @@ use App\Models\PersonalData;
 use App\Models\Tingkat;
 use App\Models\KelasSiswa;
 use App\Models\Siswa;
+use App\Models\ProfilSekolah;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\DataTables;
@@ -1062,7 +1063,9 @@ class AdminController extends Controller
 
     public function set_profil()
     {
-        return view('set_profile');
+        $th = TahunAjaran::all();
+        $p = ProfilSekolah::first();
+        return view('set_profile', compact('th', 'p'));
     }
 
     public function update_profile_sekolah(Request $request)
@@ -1071,7 +1074,7 @@ class AdminController extends Controller
 
         $th_now = $th_aj->tahun;
 
-        
+
     }
 
     public function set_wakel()

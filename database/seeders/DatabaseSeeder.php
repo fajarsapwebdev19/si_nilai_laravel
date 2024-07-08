@@ -25,6 +25,21 @@ class DatabaseSeeder extends Seeder
         $k5 = Uuid::uuid4()->toString();
         $k6 = Uuid::uuid4()->toString();
 
+        DB::table('profile_sekolah')->insert([
+            [
+                'npsn' => '69987103',
+                'nama_sekolah' => 'SMK PGRI NEGLASARI',
+                'alamat' => 'Jl Marsekal Surya Darma No 1 RT 03/ RW 04',
+                'kode_pos' => '15127',
+                'kelurahan' => 'Selapajang Jaya',
+                'kecamatan' => 'Neglasari',
+                'kab_kot' => 'Kota Tangerang',
+                'provinsi' => 'Banten',
+                'kep_id' => NULL,
+                'logo' => NULL
+            ]
+        ]);
+
         // tingkat
         DB::table('tingkat')->insert([
             [
