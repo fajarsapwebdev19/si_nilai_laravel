@@ -58,23 +58,23 @@
         </li>
         <!-- /master data -->
         <!-- pengaturan -->
-        <li class="menu-item">
+        <li class="menu-item {{ Request::is('admin/pengaturan/*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fas fa-cogs"></i>
                 <div class="text-truncate">Pengaturan</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item">
+                <li class="menu-item  {{ Request::is('admin/pengaturan/set-profil-sekolah') ? 'active' : '' }}">
                     <a href="{{route('profil-sekolah')}}" class="menu-link">
                         <div class="text-truncate">Profil Sekolah</div>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item {{ Request::is('admin/pengaturan/set-wakel') ? 'active' : '' }}">
                     <a href="{{route('pilih-wakel')}}" class="menu-link">
                         <div class="text-truncate">Wali Kelas</div>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item {{ Request::is('admin/pengaturan/set-mapel') ? 'active' : '' }}">
                     <a href="{{route('pilih-guru-mapel')}}" class="menu-link">
                         <div class="text-truncate">Mapel</div>
                     </a>

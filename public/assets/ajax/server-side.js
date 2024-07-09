@@ -119,3 +119,16 @@ function get_class_id(class_id) {
         ]
     });
 }
+
+let wakel = $('.wakel').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "get_kelas_wakel",
+    columns:[
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'nama_rombel', name: 'name_rombel'},
+        {data: 'tingkat', name: 'tingkat'},
+        {data: 'nama', name: 'nama'},
+        {data: 'action', name: 'action', orderable: false, searchable: false},
+    ]
+})

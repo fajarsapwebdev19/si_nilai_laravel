@@ -86,6 +86,11 @@ Route::get('admin/data/hapus-siswa/{id}', [AdminController::class, 'hapus_siswa'
 Route::post('admin/data/import-guru', [AdminController::class, 'import_guru']);
 
 // test
-Route::get('admin/pengaturan/profile_sekolah', [AdminController::class, 'update_profile_sekolah']);
+Route::post('admin/pengaturan/update_profile_sekolah', [AdminController::class, 'update_profile_sekolah']);
+
+Route::get('admin/pengaturan/profil_smk', [AdminController::class, 'profil_smk']);
+Route::get('admin/pengaturan/get_kelas_wakel', [AdminController::class, 'get_kelas_wakel']);
+
+Route::get('admin/pengaturan/get_guru', [AdminController::class, 'get_guru']);
 
 

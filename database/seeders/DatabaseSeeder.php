@@ -36,7 +36,8 @@ class DatabaseSeeder extends Seeder
                 'kab_kot' => 'Kota Tangerang',
                 'provinsi' => 'Banten',
                 'kep_id' => NULL,
-                'logo' => NULL
+                'logo' => NULL,
+                'th_aktif' => '2023/2024 2'
             ]
         ]);
 

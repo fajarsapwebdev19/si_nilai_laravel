@@ -5,7 +5,7 @@
         <div class="navbar-nav align-items-center">
             <div class="nav-item navbar-search-wrapper mb-0">
                 <b class="p-0">
-                    Selasa, 11 Nov 2021 11:00:00
+                    <span id="clock"></span>
                 </b>
             </div>
         </div>

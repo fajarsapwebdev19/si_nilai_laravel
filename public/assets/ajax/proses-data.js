@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
     $("form").on("input", '.16-length', function(){
         if (this.value.length > 16) {
@@ -492,8 +491,8 @@ $(document).ready(function() {
                     let errors = xhr.responseJSON.errors;
                     let errorMessages = '';
 
-                    $.each(errors, function(key, messages) {
-                        $.each(messages, function(index, message) {
+                    $.each(errors, function(messages) {
+                        $.each(messages, function(message) {
                             errorMessages += message + '<br>';
                         });
                     });
@@ -538,22 +537,6 @@ $(document).ready(function() {
         $('.siswa').each(function(){
             $('.all-check-no-class').prop('checked', status);
         });
-    });
-
-    // ambil semua data kelas
-    $.ajax({
-        url: 'get_data_kelas', // Ganti sesuai dengan URL endpoint Anda
-        method: 'GET',
-        dataType: 'json',
-        success: function(response) {
-            // Response adalah array objek kelas, misalnya [{id: 1, nama: 'Kelas A'}, {id: 2, nama: 'Kelas B'}]
-            var kelas = response;
-
-            // Loop untuk menambahkan opsi ke dropdown
-            $.each(kelas, function(key, value) {
-                $('#kelas_id').append('<option value="' + value.id + '">' + value.nama_rombel + '</option>');
-            });
-        }
     });
 
     // proses tambah data kelas
@@ -866,6 +849,76 @@ $(document).ready(function() {
         });
     });
 });
+function get_profile(){
+    $.ajax({
+        url: 'profil_smk',
+        method: 'GET',
+        success:function(response)
+        {
+            $('#ubah-profile-sekolah').html(response);
+        }
+    })
+}
+
+const url = window.location.pathname;
+
+if (url.includes('/admin/pengaturan/set-profil-sekolah'))
+{
+    get_profile();
+}
 
 // proses ubah data profil sekolah
+$('#ubah-profile-sekolah').on('click', '.simpan', function(){
+    let data = $('#ubah-profile-sekolah').serialize();
+
+    $.ajax({
+        url: 'update_profile_sekolah',
+        data: data,
+        method: 'POST',
+        success:function(response)
+        {
+            get_profile();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function() {
+                $('.messages').fadeOut(function() {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+        }
+    });
+});
+
+$('.wakel').on('click', '.pilih', function(){
+    let id = $(this).data('id');
+
+    $('#pilih').modal('show');
+    $('#class_id').val(id);
+});
+
+function updateClock() {
+    const optionsDate = { timeZone: 'Asia/Jakarta', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const optionsTime = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+    const now = new Date();
+    const dateString = now.toLocaleDateString('id-ID', optionsDate);
+    const timeString = now.toLocaleTimeString('id-ID', optionsTime);
+
+    document.getElementById('clock').innerHTML = `${dateString}, ${timeString}`;
+}
+
+// Update the clock immediately and then every second
+updateClock();
+setInterval(updateClock, 1000);
+
+$('#pilih-wakel').on('click', '.simpan', function(){
+    let data = $('#pilih-wakel').serialize();
+
+    console.log(data);
+});
+
 

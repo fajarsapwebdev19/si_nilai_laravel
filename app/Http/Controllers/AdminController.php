@@ -1037,6 +1037,7 @@ class AdminController extends Controller
 
         return view('modals.confirmdeleteekskul', compact('ekskul'));
     }
+
     public function get_ekskul_edit($id)
     {
         $ekskul = Ekskul::findOrFail($id);
@@ -1063,24 +1064,116 @@ class AdminController extends Controller
 
     public function set_profil()
     {
-        $th = TahunAjaran::all();
-        $ks = User::with(['personalData', 'guru'])->where('role_id', 2)->get();
-        $p = ProfilSekolah::first();
-        return view('set_profile', compact('th', 'p', 'ks'));
+        return view('set_profile');
     }
 
     public function update_profile_sekolah(Request $request)
     {
+        DB::beginTransaction();
+        // Get the current active TahunAjaran
         $th_aj = TahunAjaran::where('status', 'Y')->first();
 
+        if (!$th_aj) {
+            return response()->json(['error' => 'Active TahunAjaran not found'], 404);
+        }
+
         $th_now = $th_aj->tahun;
+        $now = $request->tahun_ajaran;
 
+        // Get the first ProfilSekolah
+        $ps = ProfilSekolah::first();
 
+        if (!$ps) {
+            return response()->json(['error' => 'ProfilSekolah not found'], 404);
+        }
+
+        if ($th_now == $now) {
+            // Update ProfilSekolah
+            $ps->npsn = $request->npsn;
+            $ps->nama_sekolah = $request->nama_sekolah;
+            $ps->alamat = $request->alamat;
+            $ps->kode_pos = $request->kode_pos;
+            $ps->kelurahan = $request->kelurahan;
+            $ps->kecamatan = $request->kecamatan;
+            $ps->kab_kot = $request->kab_kot;
+            $ps->provinsi = $request->provinsi;
+            $ps->kep_id = $request->kep_id;
+            $ps->th_aktif = $request->tahun_ajaran;
+            $ps->save();
+        } else {
+            // Deactivate the current active TahunAjaran
+            $th_aj->status = 'N';
+            $th_aj->save();
+
+            // Activate the new TahunAjaran
+            $th_new = TahunAjaran::where('tahun', $now)->first();
+
+            if (!$th_new) {
+                return response()->json(['error' => 'TahunAjaran for the given year not found'], 404);
+            }
+
+            $th_new->status = 'Y';
+            $th_new->save();
+
+            // Update ProfilSekolah
+            $ps->npsn = $request->npsn;
+            $ps->nama_sekolah = $request->nama_sekolah;
+            $ps->alamat = $request->alamat;
+            $ps->kode_pos = $request->kode_pos;
+            $ps->kelurahan = $request->kelurahan;
+            $ps->kecamatan = $request->kecamatan;
+            $ps->kab_kot = $request->kab_kot;
+            $ps->provinsi = $request->provinsi;
+            $ps->kep_id = $request->kep_id;
+            $ps->th_aktif = $request->tahun_ajaran;
+            $ps->save();
+        }
+
+        DB::commit();
+
+        return response()->json(['message' => 'Berhasil Ubah Profile Sekolah'], 200);
+    }
+
+    public function profil_smk()
+    {
+        $th = TahunAjaran::all();
+        $ks = User::with(['personalData', 'guru'])->where('role_id', 2)->get();
+        $p = ProfilSekolah::first();
+        return view('profile_smk', compact('th', 'p', 'ks'));
     }
 
     public function set_wakel()
     {
-        return view('set_wakel');
+        $guru = User::with(['personalData', 'guru'])->where('role_id', 2)->get();
+        return view('set_wakel', compact('guru'));
+    }
+
+    public function select_wakel()
+    {
+        
+    }
+
+    public function get_kelas_wakel(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = Kelas::leftJoin('guru as g', 'kelas.id', '=', 'g.class_id')
+            ->leftJoin('users as u', 'g.user_id', '=', 'u.id')
+            ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+            ->select('kelas.id as kelas_id', 'kelas.nama_rombel', 'kelas.tingkat', 'pd.nama', 'kelas.status')
+            ->orderBy('kelas.nama_rombel', 'asc')
+            ->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row)
+                {
+                    $btn = '<button class="badge rounded-pill text-bg-info pilih" data-id="' . $row->kelas_id . '">Pilih</button>';
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->toJson();
+        }
     }
 
     public function set_mapel()
