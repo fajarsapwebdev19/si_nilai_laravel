@@ -15,5 +15,5 @@ class ProfilSekolah extends Model
     protected $keyType = 'string'; // Tentukan tipe data untuk primary key
     public $timestamps = false; // Menonaktifkan timestamps
 
-    protected $fillable = ['npsn', 'nama_sekolah', 'alamat', 'kode_pos', 'kelurahan', 'kecamatan', 'kab_kot', 'provinsi', 'kep_id', 'logo']; // Kolom yang diizinkan untuk diisi massal
+    protected $fillable = ['npsn', 'nama_sekolah', 'alamat', 'kode_pos', 'kelurahan', 'kecamatan', 'kab_kot', 'provinsi', 'kep_id', 'logo', 'th_aktif']; // Kolom yang diizinkan untuk diisi massal
 }

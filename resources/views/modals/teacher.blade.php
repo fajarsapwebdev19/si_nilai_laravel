@@ -49,6 +49,7 @@
                             <option value="NULL">-- Pilih Jenis PTK --</option>
                             <option>Guru Kelas</option>
                             <option>Guru Mata Pelajaran</option>
+                            <option>Kepala Sekolah</option>
                         </select>
                     </div>
                     <div class="form-group mb-3">

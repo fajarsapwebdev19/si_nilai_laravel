@@ -224,7 +224,7 @@ class AdminController extends Controller
         $guru->tempat_lahir = $request->t_lahir;
         $guru->tanggal_lahir = $request->tgl_lahir;
         $guru->jenis_ptk = $request->jenis_ptk;
-        $guru->wali_kelas = NULL;
+        $guru->wali_kelas = 'N';
         $guru->class_id = NULL;
         $guru->user_id = $uid;
         $guru->save();
@@ -1064,8 +1064,9 @@ class AdminController extends Controller
     public function set_profil()
     {
         $th = TahunAjaran::all();
+        $ks = User::with(['personalData', 'guru'])->where('role_id', 2)->get();
         $p = ProfilSekolah::first();
-        return view('set_profile', compact('th', 'p'));
+        return view('set_profile', compact('th', 'p', 'ks'));
     }
 
     public function update_profile_sekolah(Request $request)

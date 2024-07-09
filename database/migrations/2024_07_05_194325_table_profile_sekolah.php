@@ -24,6 +24,7 @@ class TableProfileSekolah extends Migration
             $table->string('provinsi')->nullable();
             $table->string('kep_id')->nullable();
             $table->string('logo')->nullable();
+            $table->string('th_aktif')->nullable();
         });
     }
 

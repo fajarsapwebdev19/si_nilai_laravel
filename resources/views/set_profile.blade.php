@@ -19,7 +19,7 @@
                                     <option value="">Pilih</option>
                                     @foreach($th as $t)
                                     {
-                                        <option>{{$t->tahun}}</option>
+                                        <option {{$t->tahun == $p->th_aktif ? 'selected' : ''}}> {{$t->tahun}}</option>
                                     }
                                     @endforeach
                                 </select>
@@ -88,6 +88,9 @@
                             <div class="col-md-10">
                                 <select name="kep_id" id="" class="form-control">
                                     <option value="">-- Pilih Kepala Sekolah --</option>
+                                    @foreach ($ks as $k)
+                                        <option value="{{$k->id}}">{{$k->personalData->nama}}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>

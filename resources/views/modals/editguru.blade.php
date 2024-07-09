@@ -40,6 +40,7 @@
             <option value="NULL">-- Pilih Jenis PTK --</option>
             <option {{$t->guru->jenis_ptk == 'Guru Kelas' ? 'selected' : ''}}>Guru Kelas</option>
             <option {{$t->guru->jenis_ptk == 'Guru Mata Pelajaran' ? 'selected' : ''}}>Guru Mata Pelajaran</option>
+            <option {{$t->guru->jenis_ptk == 'Kepala Sekolah' ? 'selected' : ''}}>Kepala Sekolah</option>
         </select>
     </div>
     <div class="form-group mb-3">
