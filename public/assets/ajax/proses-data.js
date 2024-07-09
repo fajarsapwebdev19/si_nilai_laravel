@@ -1,47 +1,69 @@
-$(document).ready(function() {
-    $("form").on("input", '.16-length', function(){
+$(document).ready(function () {
+    $("form").on("input", '.16-length', function () {
         if (this.value.length > 16) {
             this.value = this.value.slice(0, 16); // Batas panjang maksimum 10 digit
         }
     });
 
-    $("form").on("input", '.10-length', function(){
+    $("form").on("input", '.10-length', function () {
         if (this.value.length > 10) {
             this.value = this.value.slice(0, 10); // Batas panjang maksimum 10 digit
         }
     });
 
     // proses tambah akun
-    $("#tambah-akun").on('click', '.simpan', function(){
+    $("#tambah-akun").on('click', '.simpan', function () {
         let data = $('#tambah-akun').serialize();
 
         $.ajax({
             url: 'tambah_akun',
             data: data,
             method: "POST",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#tambah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 account.ajax.reload();
                 $("#tambah-akun")[0].reset();
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    console.log(errorMessages);
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
         });
     });
 
     // ambil data untuk di tampilkan di form ubah akun admin
-    $('.account').on('click', '.ubah', function(){
+    $('.account').on('click', '.ubah', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_users_edit/"+id,
+            url: "get_users_edit/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $('#ubah').modal('show');
                 $("#ubah-akun").html(response);
             }
@@ -49,36 +71,58 @@ $(document).ready(function() {
     });
 
     // proses ubah data akun admin
-    $('#ubah-akun').on('click', '.simpan', function(){
+    $('#ubah-akun').on('click', '.simpan', function () {
         let data = $('#ubah-akun').serialize();
         let id = $('#id').val();
 
         $.ajax({
-            url: 'ubah_akun/'+id,
+            url: 'ubah_akun/' + id,
             data: data,
             method: "PUT",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 account.ajax.reload();
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    console.log(errorMessages);
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
         });
     });
 
     // ambil data untuk di tampilkan di form konfirmasi hapus akun admin
-    $('.account').on('click', '.hapus', function(){
+    $('.account').on('click', '.hapus', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_users_delete/"+id,
+            url: "get_users_delete/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal("show");
                 $("#hapus-akun").html(response);
             }
@@ -86,56 +130,100 @@ $(document).ready(function() {
     });
 
     // proses hapus data akun admin
-    $("#hapus-akun").on("click", ".yes", function(){
+    $("#hapus-akun").on("click", ".yes", function () {
         let id = $('#id').val();
 
         $.ajax({
-            url: 'hapus_akun/'+id,
+            url: 'hapus_akun/' + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 account.ajax.reload();
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    console.log(errorMessages);
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
-        })
+        });
     });
 
     // proses tambah data guru
-    $("#tambah-guru").on('click', '.simpan', function(){
+    $("#tambah-guru").on('click', '.simpan', function () {
         let data = $('#tambah-guru').serialize();
 
         $.ajax({
             url: "tambah_guru",
             method: 'POST',
             data: data,
-            success:function(response)
-            {
+            success: function (response) {
                 $("#tambah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_guru.ajax.reload();
                 $('#tambah-guru')[0].reset();
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
-        })
+        });
     });
 
     // ambil semua data guru untuk di tampilkan pada form edit guru
-    $('.teacher').on('click', '.ubah', function(){
+    $('.teacher').on('click', '.ubah', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: 'get_teacher_edit/'+id,
+            url: 'get_teacher_edit/' + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $('#ubah').modal('show');
                 $("#ubah-guru").html(response);
             }
@@ -143,35 +231,56 @@ $(document).ready(function() {
     });
 
     // proses ubah data guru
-    $("#ubah-guru").on('click', '.simpan', function(){
+    $("#ubah-guru").on('click', '.simpan', function () {
         let data = $('#ubah-guru').serialize();
         let id = $('#id').val();
         $.ajax({
-            url: "ubah_guru/"+ id,
+            url: "ubah_guru/" + id,
             method: "PUT",
             data: data,
-            success:function(response)
-            {
+            success: function (response) {
                 $('#ubah').modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_guru.ajax.reload();
+            },
+            error:function(xhr){
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
         });
     });
 
     // ambil data guru untuk ditampilkan kedalam form konfirmasi hapus data
-    $('.teacher').on('click', '.hapus', function(){
+    $('.teacher').on('click', '.hapus', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_teacher_delete/"+id,
+            url: "get_teacher_delete/" + id,
             method: "GET",
-            success: function(response)
-            {
+            success: function (response) {
                 $('#hapus').modal('show');
                 $('#hapus-guru').html(response);
             }
@@ -179,26 +288,49 @@ $(document).ready(function() {
     });
 
     // proses hapus data guru
-    $('#hapus-guru').on('click', '.yes', function(){
+    $('#hapus-guru').on('click', '.yes', function () {
         let id = $('#id').val();
 
         $.ajax({
-            url: "hapus_guru/"+id,
+            url: "hapus_guru/" + id,
             method: "GET",
-            success: function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_guru.ajax.reload();
+            },
+            error:function(xhr)
+            {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
-        })
+        });
     });
 
-    $("#import-guru").on('click', '.import', function(){
+    $("#import-guru").on('click', '.import', function () {
         let file = $('#import-guru')[0];
         let data = new FormData(file);
 
@@ -208,8 +340,7 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             method: "POST",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#import").modal('hide');
                 $('.messages').show();
                 // Remove any existing alert classes
@@ -217,27 +348,26 @@ $(document).ready(function() {
                 // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-                setTimeout(function() {
-                    $('.messages').fadeOut(function() {
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
                         $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                     });
                 }, 3000);
                 data_guru.ajax.reload();
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.error;
                     let errorMessages = '';
 
-                    $.each(errors, function(key, messages) {
-                        $.each(messages, function(index, message) {
+                    $.each(errors, function (key, messages) {
+                        $.each(messages, function (index, message) {
                             errorMessages += message + '<br>';
                         });
                     });
-                    console.log(errorMessages);
                     $("#error-message").show();
                     $('#error-message').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
-                    $('#error-message').fadeIn().delay(3000).fadeOut(function() {
+                    $('#error-message').fadeIn().delay(3000).fadeOut(function () {
                         $(this).empty();
                     });
                 }
@@ -246,47 +376,67 @@ $(document).ready(function() {
     });
 
     // proses tambah data siswa
-    $("#tambah-siswa").on('click', '.simpan', function(){
+    $("#tambah-siswa").on('click', '.simpan', function () {
         let data = $('#tambah-siswa').serialize();
 
         $.ajax({
             url: "tambah_siswa",
             data: data,
             method: "POST",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#tambah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_siswa.ajax.reload();
                 $('#tambah-siswa')[0].reset();
+            },
+            error:function(xhr)
+            {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
         });
     });
 
     // proses pengambilan data siswa dari database untuk di tampilkan di form ubah data siswa
-    $(".student").on('click', '.ubah', function(){
+    $(".student").on('click', '.ubah', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_siswa/"+id,
+            url: "get_siswa/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal('show');
                 $('#ubah-siswa #id').val(id);
                 $('#ubah-siswa input[name=nisn]').val(response.siswa.nisn);
                 $('#ubah-siswa input[name=nik]').val(response.siswa.nik);
                 $('#ubah-siswa input[name=nama]').val(response.personal_data.nama);
-                if(response.personal_data.jenis_kelamin == "L")
-                {
+                if (response.personal_data.jenis_kelamin == "L") {
                     $('#ubah-siswa input[value=L]').prop('checked', true);
                 }
-                else if(response.personal_data.jenis_kelamin == "P")
-                {
+                else if (response.personal_data.jenis_kelamin == "P") {
                     $('#ubah-siswa input[value=P]').prop('checked', true);
                 }
                 $('#ubah-siswa input[name=t_lhr]').val(response.siswa.tempat_lahir);
@@ -307,33 +457,56 @@ $(document).ready(function() {
                 select_pekerjaan_ibu(response.siswa.pekerjaan_ibu);
                 select_pendidikan_ibu(response.siswa.pendidikan_ibu);
             }
-        })
+        });
     });
 
     // proses ubah data siswa
-    $("#ubah-siswa").on('click', '.simpan', function(){
+    $("#ubah-siswa").on('click', '.simpan', function () {
         let data = $('#ubah-siswa').serialize();
         let id = $('#id').val();
 
         $.ajax({
-            url: "ubah_siswa/"+id,
+            url: "ubah_siswa/" + id,
             method: "PUT",
             data: data,
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_siswa.ajax.reload();
+            },
+            error:function(xhr)
+            {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    $(".messages").show();
+                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }
             }
         });
     });
 
     // konfirmasi hapus data
-    $(".student").on('click', '.hapus', function(){
+    $(".student").on('click', '.hapus', function () {
         let id = $(this).data('id');
         let nama = $(this).attr('id');
         $("#nama-siswa").text(nama);
@@ -342,13 +515,13 @@ $(document).ready(function() {
     });
 
     // proses hapus data siswa
-    $('#hapus-siswa').on("click", '.yes', function() {
+    $('#hapus-siswa').on("click", '.yes', function () {
         let id = $('#id-siswa').val();
 
         $.ajax({
             url: "hapus-siswa/" + id,
             method: "GET",
-            success: function(response) {
+            success: function (response) {
                 $('#hapus').modal('hide');
                 $('.messages').show();
                 // Remove any existing alert classes
@@ -356,14 +529,14 @@ $(document).ready(function() {
                 // Show success message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-                setTimeout(function() {
-                    $('.messages').fadeOut(function() {
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
                         $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                     });
                 }, 3000);
                 data_siswa.ajax.reload();
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 $('#hapus').modal('hide');
                 $('.messages').show();
                 // Remove any existing alert classes
@@ -371,8 +544,8 @@ $(document).ready(function() {
                 // Show error message
                 $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.message).show();
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-                setTimeout(function() {
-                    $('.messages').fadeOut(function() {
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
                         $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
                     });
                 }, 3000);
@@ -381,7 +554,7 @@ $(document).ready(function() {
     });
 
     // get data siswa
-    $(".kelas").on("click", ".siswa", function(){
+    $(".kelas").on("click", ".siswa", function () {
         let id = $(this).data('id');
         $("#class_id").val(id);
         get_class_id(id);
@@ -390,12 +563,12 @@ $(document).ready(function() {
         $('#siswa').modal('show');
     });
 
-    $("#get_siswa").on('click', '#assign', function() {
+    $("#get_siswa").on('click', '#assign', function () {
         let selectid = [];
         let token = $('input[name=_token]').val();
         let class_id = $('#class_id').val();
 
-        $(".no-class tbody .no-class-siswa:checked").each(function() {
+        $(".no-class tbody .no-class-siswa:checked").each(function () {
             selectid.push($(this).data('id'));
         });
 
@@ -408,10 +581,10 @@ $(document).ready(function() {
                     _token: token,
                     class_id: class_id
                 },
-                success: function(response) {
+                success: function (response) {
                     $(".message-class").show();
                     $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                    $('.message-class').fadeIn().delay(3000).fadeOut(function() {
+                    $('.message-class').fadeIn().delay(3000).fadeOut(function () {
                         $(this).empty();
                     });
                     get_class_id(class_id);
@@ -421,7 +594,7 @@ $(document).ready(function() {
                     student_no_class.ajax.reload();
                     student_get_class.ajax.reload();
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("An error occurred: " + error);
                 }
             });
@@ -429,43 +602,41 @@ $(document).ready(function() {
     });
 
 
-    $("#get_siswa").on('click', '#unassign', function(){
+    $("#get_siswa").on('click', '#unassign', function () {
         let selectid = [];
         let token = $('input[name=_token]').val();
         let class_id = $('#class_id').val();
 
-        $(".student-class tbody .siswa:checked").each(function(){
+        $(".student-class tbody .siswa:checked").each(function () {
             selectid.push($(this).data('id'));
         });
 
-        if(selectid.length > 0)
-            {
-                $.ajax({
-                    url: 'drop_student_class',
-                    method: 'POST',
-                    data: {
-                        user_id : selectid,
-                        _token : token
-                    },
-                    success:function(response)
-                    {
-                        $(".message-class").show();
-                        $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                        $('.message-class').fadeIn().delay(3000).fadeOut(function() {
-                            $(this).empty();
-                        });
-                        get_class_id(class_id);
-                        $('.all-check-class').prop('checked', false);
-                        $('.siswa').prop('checked', false);
-                        student_no_class.ajax.reload();
-                        student_get_class.ajax.reload();
-                    }
-                });
-            }
+        if (selectid.length > 0) {
+            $.ajax({
+                url: 'drop_student_class',
+                method: 'POST',
+                data: {
+                    user_id: selectid,
+                    _token: token
+                },
+                success: function (response) {
+                    $(".message-class").show();
+                    $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                    $('.message-class').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty();
+                    });
+                    get_class_id(class_id);
+                    $('.all-check-class').prop('checked', false);
+                    $('.siswa').prop('checked', false);
+                    student_no_class.ajax.reload();
+                    student_get_class.ajax.reload();
+                }
+            });
+        }
     });
 
     // proses import siswa
-    $('#import-siswa').on('click', '.import', function(){
+    $('#import-siswa').on('click', '.import', function () {
         let f = $('#import-siswa')[0];
         let formData = new FormData(f);
 
@@ -475,31 +646,30 @@ $(document).ready(function() {
             data: formData,
             processData: false,
             contentType: false,
-            success:function(response)
-            {
+            success: function (response) {
                 $("#import").modal('hide');
                 $(".messages").show();
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
+                $('.messages').fadeIn().delay(3000).fadeOut(function () {
                     $(this).empty();
                 });
                 data_siswa.ajax.reload();
                 f.reset();
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;
                     let errorMessages = '';
 
-                    $.each(errors, function(messages) {
-                        $.each(messages, function(message) {
+                    $.each(errors, function (messages) {
+                        $.each(messages, function (message) {
                             errorMessages += message + '<br>';
                         });
                     });
                     console.log(errorMessages);
                     $("#error-message").show();
                     $('#error-message').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
-                    $('#error-message').fadeIn().delay(3000).fadeOut(function() {
+                    $('#error-message').fadeIn().delay(3000).fadeOut(function () {
                         $(this).empty();
                     });
                 }
@@ -510,45 +680,44 @@ $(document).ready(function() {
 
 
     // Handle all-check-class checkbox change
-    $('.all-check-class').on('change', function() {
+    $('.all-check-class').on('change', function () {
         let status = $(this).is(":checked");
 
         $('.siswa').prop('checked', status);
     });
 
-    $('.student-class').on('change', '.siswa', function(){
+    $('.student-class').on('change', '.siswa', function () {
         let status = $(this).is(':checked');
 
-        $('.siswa').each(function(){
+        $('.siswa').each(function () {
             $('.all-check-class').prop('checked', status);
         });
     });
 
     // Handle all-check-class checkbox change
-    $('.all-check-no-class').on('change', function() {
+    $('.all-check-no-class').on('change', function () {
         let status = $(this).is(":checked");
 
         $('.no-class-siswa').prop('checked', status);
     });
 
-    $('.no-class').on('change', '.no-class-siswa', function(){
+    $('.no-class').on('change', '.no-class-siswa', function () {
         let status = $(this).is(':checked');
 
-        $('.siswa').each(function(){
+        $('.siswa').each(function () {
             $('.all-check-no-class').prop('checked', status);
         });
     });
 
     // proses tambah data kelas
-    $("#tambah-kelas").on('click', '.simpan', function(){
+    $("#tambah-kelas").on('click', '.simpan', function () {
         let data = $("#tambah-kelas").serialize();
 
         $.ajax({
             url: "tambah_kelas",
             data: data,
             method: "POST",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#tambah").modal("hide");
                 $('.messages').show();
                 // Remove any existing alert classes
@@ -556,8 +725,8 @@ $(document).ready(function() {
                 // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-                setTimeout(function() {
-                    $('.messages').fadeOut(function() {
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
                         $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                     });
                 }, 3000);
@@ -568,31 +737,29 @@ $(document).ready(function() {
     });
 
     // click button ubah data kelas
-    $(".kelas").on('click', '.ubah', function(){
-       let id = $(this).data("id");
+    $(".kelas").on('click', '.ubah', function () {
+        let id = $(this).data("id");
 
-       $.ajax({
-        url: "get_kelas/" + id,
-        method: "GET",
-        success:function(response)
-        {
-            $("#ubah").modal('show');
-            $("#ubah-kelas").html(response);
-        }
-       });
+        $.ajax({
+            url: "get_kelas/" + id,
+            method: "GET",
+            success: function (response) {
+                $("#ubah").modal('show');
+                $("#ubah-kelas").html(response);
+            }
+        });
     });
 
     // proses ubah data kelas
-    $("#ubah-kelas").on("click", ".simpan", function(){
+    $("#ubah-kelas").on("click", ".simpan", function () {
         let id = $('#id').val();
         let data = $('#ubah-kelas').serialize();
 
         $.ajax({
-            url: "ubah_kelas/"+id,
+            url: "ubah_kelas/" + id,
             data: data,
             method: "PUT",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal('hide');
                 $('.messages').show();
                 // Remove any existing alert classes
@@ -600,8 +767,8 @@ $(document).ready(function() {
                 // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-                setTimeout(function() {
-                    $('.messages').fadeOut(function() {
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
                         $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                     });
                 }, 3000);
@@ -611,14 +778,13 @@ $(document).ready(function() {
     });
 
     // confirm hapus data kelas
-    $('.kelas').on('click', '.hapus', function(){
+    $('.kelas').on('click', '.hapus', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_data_delete/"+id,
+            url: "get_data_delete/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal("show");
                 $("#hapus-kelas").html(response);
             }
@@ -626,14 +792,13 @@ $(document).ready(function() {
     });
 
     // proses hapus data kelas
-    $("#hapus-kelas").on('click', '.yes', function(){
+    $("#hapus-kelas").on('click', '.yes', function () {
         let id = $('#id').val();
 
         $.ajax({
-            url: 'hapus_kelas/'+id,
+            url: 'hapus_kelas/' + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal('hide');
                 $('.messages').show();
                 // Remove any existing alert classes
@@ -641,23 +806,22 @@ $(document).ready(function() {
                 // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-                setTimeout(function() {
-                    $('.messages').fadeOut(function() {
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
                         $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                     });
                 }, 3000);
                 data_kelas.ajax.reload();
             },
-            error:function(xhr)
-            {
+            error: function (xhr) {
                 $('.messages').show();
                 // Remove any existing alert classes
                 $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
                 // Show error message
                 $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.message).show();
                 $('html, body').animate({ scrollTop: 0 }, 'fast');
-                setTimeout(function() {
-                    $('.messages').fadeOut(function() {
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
                         $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
                     });
                 }, 3000);
@@ -666,21 +830,26 @@ $(document).ready(function() {
     });
 
     // tambah data mapel
-    $("#tambah-mapel").on("click", '.simpan', function(){
+    $("#tambah-mapel").on("click", '.simpan', function () {
         let data = $("#tambah-mapel").serialize();
 
         $.ajax({
             url: "tambah_mapel",
             data: data,
             method: "POST",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#tambah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_mapel.ajax.reload();
                 $("#tambah-mapel")[0].reset();
             }
@@ -688,14 +857,13 @@ $(document).ready(function() {
     });
 
     // ubah data mapel
-    $(".mapel").on('click', '.ubah', function(){
+    $(".mapel").on('click', '.ubah', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_mapel/"+id,
+            url: "get_mapel/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal("show");
                 $("#ubah-mapel").html(response);
             }
@@ -703,36 +871,40 @@ $(document).ready(function() {
     });
 
     // proses ubah data mapel
-    $("#ubah-mapel").on("click", ".simpan", function(){
+    $("#ubah-mapel").on("click", ".simpan", function () {
         let id = $('#id').val();
         let data = $('#ubah-mapel').serialize();
 
         $.ajax({
-            url: "ubah_mapel/"+id,
+            url: "ubah_mapel/" + id,
             method: "PUT",
             data: data,
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_mapel.ajax.reload();
             }
         });
     });
 
     // confirm delete mapel
-    $(".mapel").on('click', '.hapus', function(){
+    $(".mapel").on('click', '.hapus', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_mapel_delete/"+id,
+            url: "get_mapel_delete/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal("show");
                 $("#hapus-mapel").html(response);
             }
@@ -740,40 +912,51 @@ $(document).ready(function() {
     });
 
     // proses hapus mapel
-    $("#hapus-mapel").on('click', '.yes', function(){
+    $("#hapus-mapel").on('click', '.yes', function () {
         let id = $('#id').val();
 
         $.ajax({
-            url: "hapus_mapel/"+ id,
+            url: "hapus_mapel/" + id,
             method: "GET",
-            success:function(response){
+            success: function (response) {
                 $("#hapus").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_mapel.ajax.reload();
             }
         });
     });
 
     // proses tambah ekskul
-    $("#tambah-ekskul").on('click', '.simpan', function(){
+    $("#tambah-ekskul").on('click', '.simpan', function () {
         let data = $('#tambah-ekskul').serialize();
 
         $.ajax({
             url: "tambah_ekskul",
             data: data,
             method: "POST",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#tambah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_ekskul.ajax.reload();
                 $("#tambah-ekskul")[0].reset();
             }
@@ -781,80 +964,87 @@ $(document).ready(function() {
     });
 
     // get data ekskul per id untuk di tampilkan di modal edit ekskul
-    $('.ekskul').on('click', '.ubah', function(){
+    $('.ekskul').on('click', '.ubah', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_ekskul_edit/"+id,
+            url: "get_ekskul_edit/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal('show');
                 $("#ubah-ekskul").html(response);
             }
         });
     });
 
-    $('#ubah-ekskul').on('click', '.simpan', function(){
+    $('#ubah-ekskul').on('click', '.simpan', function () {
         let data = $('#ubah-ekskul').serialize();
         let id = $('#id').val();
 
         $.ajax({
-            url: "ubah_ekskul/"+ id,
+            url: "ubah_ekskul/" + id,
             data: data,
             method: "PUT",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#ubah").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_ekskul.ajax.reload();
             }
         });
     });
 
-    $('.ekskul').on('click', '.hapus', function(){
+    $('.ekskul').on('click', '.hapus', function () {
         let id = $(this).data('id');
 
         $.ajax({
-            url: "get_ekskul_delete/"+id,
+            url: "get_ekskul_delete/" + id,
             method: 'GET',
-            success:function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal('show');
                 $("#hapus-ekskul").html(response);
             }
         });
     });
 
-    $('#hapus-ekskul').on('click', '.yes', function(){
+    $('#hapus-ekskul').on('click', '.yes', function () {
         let id = $('#id').val();
 
         $.ajax({
-            url: "hapus_ekskul/"+id,
+            url: "hapus_ekskul/" + id,
             method: "GET",
-            success:function(response)
-            {
+            success: function (response) {
                 $("#hapus").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function() {
-                    $(this).removeClass('alert-success bg-success');
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_ekskul.ajax.reload();
             }
         });
     });
 });
-function get_profile(){
+function get_profile() {
     $.ajax({
         url: 'profil_smk',
         method: 'GET',
-        success:function(response)
-        {
+        success: function (response) {
             $('#ubah-profile-sekolah').html(response);
         }
     })
@@ -862,21 +1052,19 @@ function get_profile(){
 
 const url = window.location.pathname;
 
-if (url.includes('/admin/pengaturan/set-profil-sekolah'))
-{
+if (url.includes('/admin/pengaturan/set-profil-sekolah')) {
     get_profile();
 }
 
 // proses ubah data profil sekolah
-$('#ubah-profile-sekolah').on('click', '.simpan', function(){
+$('#ubah-profile-sekolah').on('click', '.simpan', function () {
     let data = $('#ubah-profile-sekolah').serialize();
 
     $.ajax({
         url: 'update_profile_sekolah',
         data: data,
         method: 'POST',
-        success:function(response)
-        {
+        success: function (response) {
             get_profile();
             $('.messages').show();
             // Remove any existing alert classes
@@ -884,8 +1072,8 @@ $('#ubah-profile-sekolah').on('click', '.simpan', function(){
             // Show error message
             $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
             $('html, body').animate({ scrollTop: 0 }, 'fast');
-            setTimeout(function() {
-                $('.messages').fadeOut(function() {
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
                     $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                 });
             }, 3000);
@@ -893,7 +1081,7 @@ $('#ubah-profile-sekolah').on('click', '.simpan', function(){
     });
 });
 
-$('.wakel').on('click', '.pilih', function(){
+$('.wakel').on('click', '.pilih', function () {
     let id = $(this).data('id');
 
     $('#pilih').modal('show');
@@ -915,7 +1103,7 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
-$('#pilih-wakel').on('click', '.simpan', function(){
+$('#pilih-wakel').on('click', '.simpan', function () {
     let data = $('#pilih-wakel').serialize();
 
     console.log(data);
