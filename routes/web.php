@@ -93,4 +93,6 @@ Route::get('admin/pengaturan/get_kelas_wakel', [AdminController::class, 'get_kel
 
 Route::get('admin/pengaturan/get_guru', [AdminController::class, 'get_guru']);
 
+Route::post('admin/pengaturan/pilih_wakel', [AdminController::class, 'select_wakel']);
+
 

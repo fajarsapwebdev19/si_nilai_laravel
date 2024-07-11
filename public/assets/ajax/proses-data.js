@@ -253,7 +253,7 @@ $(document).ready(function () {
                 }, 3000);
                 data_guru.ajax.reload();
             },
-            error:function(xhr){
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.error;
                     let errorMessages = '';
@@ -309,8 +309,7 @@ $(document).ready(function () {
                 }, 3000);
                 data_guru.ajax.reload();
             },
-            error:function(xhr)
-            {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.error;
                     let errorMessages = '';
@@ -399,8 +398,7 @@ $(document).ready(function () {
                 data_siswa.ajax.reload();
                 $('#tambah-siswa')[0].reset();
             },
-            error:function(xhr)
-            {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.error;
                     let errorMessages = '';
@@ -484,8 +482,7 @@ $(document).ready(function () {
                 }, 3000);
                 data_siswa.ajax.reload();
             },
-            error:function(xhr)
-            {
+            error: function (xhr) {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.error;
                     let errorMessages = '';
@@ -582,11 +579,17 @@ $(document).ready(function () {
                     class_id: class_id
                 },
                 success: function (response) {
-                    $(".message-class").show();
-                    $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                    $('.message-class').fadeIn().delay(3000).fadeOut(function () {
-                        $(this).empty();
-                    });
+                    $('.messages-class').show();
+                    // Remove any existing alert classes
+                    $('.messages-class').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                    // Show success message
+                    $('.messages-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                    setTimeout(function () {
+                        $('.messages-class').fadeOut(function () {
+                            $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                        });
+                    }, 3000);
                     get_class_id(class_id);
                     $('.all-check-no-class').prop('checked', false);
                     $('.no-class-siswa').prop('checked', false);
@@ -620,11 +623,17 @@ $(document).ready(function () {
                     _token: token
                 },
                 success: function (response) {
-                    $(".message-class").show();
-                    $('.message-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                    $('.message-class').fadeIn().delay(3000).fadeOut(function () {
-                        $(this).empty();
-                    });
+                    $('.messages-class').show();
+                    // Remove any existing alert classes
+                    $('.messages-class').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                    // Show success message
+                    $('.messages-class').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                    setTimeout(function () {
+                        $('.messages-class').fadeOut(function () {
+                            $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                        });
+                    }, 3000);
                     get_class_id(class_id);
                     $('.all-check-class').prop('checked', false);
                     $('.siswa').prop('checked', false);
@@ -648,11 +657,17 @@ $(document).ready(function () {
             contentType: false,
             success: function (response) {
                 $("#import").modal('hide');
-                $(".messages").show();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show success message
                 $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-                $('.messages').fadeIn().delay(3000).fadeOut(function () {
-                    $(this).empty();
-                });
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
                 data_siswa.ajax.reload();
                 f.reset();
             },
@@ -670,11 +685,11 @@ $(document).ready(function () {
                     $("#error-message").show();
                     $('#error-message').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
                     $('#error-message').fadeIn().delay(3000).fadeOut(function () {
-                        $(this).empty();
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
                     });
                 }
             }
-        })
+        });
     });
 
 
@@ -1106,7 +1121,27 @@ setInterval(updateClock, 1000);
 $('#pilih-wakel').on('click', '.simpan', function () {
     let data = $('#pilih-wakel').serialize();
 
-    console.log(data);
+    $.ajax({
+        url: 'pilih_wakel',
+        method: 'POST',
+        data: data,
+        success: function (response) {
+            $('#pilih').modal('hide');
+            $('#pilih-wakel')[0].reset();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            wakel.ajax.reload();
+        }
+    })
 });
 
 

@@ -1148,9 +1148,23 @@ class AdminController extends Controller
         return view('set_wakel', compact('guru'));
     }
 
-    public function select_wakel()
+    public function select_wakel(Request $request)
     {
-        
+        $class = $request->class_id;
+        $guru = $request->guru_id;
+
+        $wakel = Guru::where('user_id', $guru)->first();
+
+        // Cek apakah guru sudah menjadi wali kelas
+        if ($wakel->wali_kelas === 'Y') {
+            return response()->json(['message' => 'Guru sudah terpilih menjadi wali kelas'], 422);
+        }
+
+        $wakel->wali_kelas = 'Y';
+        $wakel->class_id = $class;
+        $wakel->save();
+
+        return response()->json(['message' => 'Berhasil Memilih Wali Kelas'], 200);
     }
 
     public function get_kelas_wakel(Request $request)

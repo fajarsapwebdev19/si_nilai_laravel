@@ -131,4 +131,4 @@ let wakel = $('.wakel').DataTable({
         {data: 'nama', name: 'nama'},
         {data: 'action', name: 'action', orderable: false, searchable: false},
     ]
-})
+});
