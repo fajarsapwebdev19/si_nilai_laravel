@@ -95,5 +95,8 @@ Route::get('admin/pengaturan/get_kelas_wakel', [AdminController::class, 'get_kel
 Route::get('admin/pengaturan/get_guru', [AdminController::class, 'get_guru']);
 
 Route::post('admin/pengaturan/pilih_wakel', [AdminController::class, 'select_wakel']);
-
+Route::get('admin/data/data_kejuruan', [AdminController::class, 'data_kejuruan']);
+Route::post('admin/data/tambah_kejuruan', [AdminController::class, 'tambah_kejuruan']);
+Route::get('admin/data/get_kejuruan/{id}', [AdminController::class, 'get_kejuruan']);
+Route::put('admin/data/ubah_kejuruan/{id}', [AdminController::class, 'ubah_kejuruan']);
 

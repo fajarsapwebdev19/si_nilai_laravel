@@ -132,3 +132,14 @@ let wakel = $('.wakel').DataTable({
         {data: 'action', name: 'action', orderable: false, searchable: false},
     ]
 });
+
+let kejuruan = $('.kejuruan').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "data_kejuruan",
+    columns:[
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'nama_kejuruan', name: 'nama_kejuruan'},
+        {data: 'action', name: 'action', orderable: false, searchable: false}
+    ]
+});

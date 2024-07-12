@@ -1159,4 +1159,85 @@ $('#pilih-wakel').on('click', '.simpan', function () {
     });
 });
 
+$("#tambah-kejuruan").on('click', '.simpan', function(){
+    let data = $('#tambah-kejuruan').serialize();
+
+    $.ajax({
+        url: 'tambah_kejuruan',
+        data: data,
+        method: 'POST',
+        success:function(response)
+        {
+            $('#tambah').modal('hide');
+            $('#tambah-kejuruan')[0].reset();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            kejuruan.ajax.reload();
+        }
+    });
+});
+
+$('.kejuruan').on('click', '.ubah', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: 'get_kejuruan/'+id,
+        method: 'GET',
+        success:function(response)
+        {
+           $('#ubah').modal('show');
+           $('#ubah-kejuruan input[name=nama_kejuruan]').val(response.nama_kejuruan);
+           $('#ubah-kejuruan input[name=id]').val(response.id);
+        }
+    });
+});
+
+$('#ubah-kejuruan').on('click', '.simpan', function(){
+    let data = $('#ubah-kejuruan').serialize();
+    let id = $('#ubah-kejuruan input[name=id]').val();
+
+    $.ajax({
+        url: 'ubah_kejuruan/'+id,
+        data: data,
+        method: 'PUT',
+        success:function(response)
+        {
+            $('#ubah').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            kejuruan.ajax.reload();
+        }
+    });
+});
+
+$(".kejuruan").on("click", '.hapus', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: 'hapus_kejuruan/'+id,
+        method: 'GET',
+        success:function(response)
+        {
+            $('#hapus').modal('show');
+        }
+    })
+});
 

@@ -17,6 +17,7 @@ use App\Models\Tingkat;
 use App\Models\KelasSiswa;
 use App\Models\Siswa;
 use App\Models\ProfilSekolah;
+use App\Models\Kejuruan;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\DataTables;
@@ -145,6 +146,62 @@ class AdminController extends Controller
     public function kejuruan()
     {
         return view('kejuruan');
+    }
+
+    // data kejuruan
+    public function data_kejuruan(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = Kejuruan::orderBy('nama_kejuruan', 'asc');
+
+            // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    // Tombol aksi untuk setiap baris data
+                    $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> ';
+                    $btn .= '<button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    return $btn;
+                })
+                ->rawColumns(['action']) // Menandakan kolom yang berisi HTML
+                ->toJson(); // Mengonversi data menjadi format JSON
+        }
+    }
+
+    public function tambah_kejuruan(Request $request)
+    {
+        $k = new Kejuruan();
+        $k->id = Uuid::uuid4();
+        $k->nama_kejuruan = $request->nama_kejuruan;
+        $k->save();
+
+        return response()->json(['message' => 'Berhasil Tambah Data Kejuruan'], 200);
+    }
+
+    public function get_kejuruan($id)
+    {
+        $k = Kejuruan::where('id', $id)->first();
+
+        return response()->json($k);
+    }
+
+    public function ubah_kejuruan($id, Request $request)
+    {
+        $k = Kejuruan::where('id', $id)->first();
+
+        $k->nama_kejuruan = $request->nama_kejuruan;
+        $k->save();
+
+        return response()->json(['message' => 'Berhasil Ubah Data Kejuruan'], 200);
+    }
+
+    public function hapus_kejuruan($id)
+    {
+        $k = Kejuruan::where('id', $id)->first();
+
+        $k->delete();
+        return response()->json(['message' => 'Berhasil Hapus Data Kejuruan'], 200);
     }
 
     // guru

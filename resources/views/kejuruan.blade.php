@@ -3,10 +3,10 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
       <div class="col-md-12 mb-4">
-        <button type="button" data-bs-target="#tambah" class="btn btn-success mb-3">
+        <button type="button" data-bs-toggle="modal" data-bs-target="#tambah" class="btn btn-success mb-3">
             Tambah
         </button>
-        <button type="button" data-bs-target="#import" class="btn btn-info mb-3">
+        <button type="button" data-bs-toggle="modal" data-bs-target="#import" class="btn btn-info mb-3">
             Import
         </button>
 
@@ -28,6 +28,7 @@
             </div>
         </div>
       </div>
+      @include('modals/kejuruan')
     </div>
 </div>
 @endsection
