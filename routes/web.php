@@ -19,6 +19,7 @@ Route::get('/', [AuthController::class, 'auth']);
 // Route Halaman
 Route::get('admin/', [AdminController::class, 'index'])->name('dashboard-admin');
 Route::get('admin/manajemen_akun/', [AdminController::class, 'account'])->name('manajemen-akun');
+Route::get('admin/data/kejuruan', [AdminController::class, 'kejuruan'])->name('data-kejuruan');
 Route::get('admin/data/guru', [AdminController::class, 'teacher'])->name('data-guru');
 Route::get('admin/data/siswa', [AdminController::class, 'student'])->name('data-siswa');
 Route::get('admin/data/kelas', [AdminController::class, 'class_room'])->name('data-kelas');

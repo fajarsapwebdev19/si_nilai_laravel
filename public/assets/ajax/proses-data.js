@@ -1140,8 +1140,23 @@ $('#pilih-wakel').on('click', '.simpan', function () {
                 });
             }, 3000);
             wakel.ajax.reload();
+        },
+        error:function(xhr)
+        {
+            $('#pilih').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
         }
-    })
+    });
 });
 
 

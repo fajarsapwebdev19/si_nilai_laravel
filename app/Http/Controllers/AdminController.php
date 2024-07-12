@@ -26,7 +26,11 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return view('index');
+        $siswa = Siswa::all()->count();
+        $guru = Guru::all()->count();
+        $kelas = Kelas::all()->count();
+        $pengguna = User::all()->count();
+        return view('index', compact('siswa', 'guru', 'kelas', 'pengguna'));
     }
 
     // manajemen akun
@@ -134,6 +138,13 @@ class AdminController extends Controller
         $user->delete();
         $personal->delete();
         return response()->json(['message' => 'Berhasil Hapus Akun Admin'], 200);
+    }
+
+    // kejuruan
+
+    public function kejuruan()
+    {
+        return view('kejuruan');
     }
 
     // guru
@@ -1153,16 +1164,34 @@ class AdminController extends Controller
         $class = $request->class_id;
         $guru = $request->guru_id;
 
-        $wakel = Guru::where('user_id', $guru)->first();
+        $cek = Guru::where('class_id', $class)->first();
 
-        // Cek apakah guru sudah menjadi wali kelas
-        if ($wakel->wali_kelas === 'Y') {
-            return response()->json(['message' => 'Guru sudah terpilih menjadi wali kelas'], 422);
+        if(!$cek)
+        {
+            $guru = Guru::where('user_id', $guru)->first();
+
+            $guru->wali_kelas = 'Y';
+            $guru->class_id = $class;
+            $guru->save();
+        }else{
+
+            if($cek->user_id == $guru)
+            {
+                $guru = Guru::where('user_id', $guru)->first();
+                $guru->wali_kelas = 'N';
+                $guru->class_id = NULL;
+                $guru->save();
+            }else{
+                $cek->wali_kelas = 'N';
+                $cek->class_id = NULL;
+                $cek->save();
+
+                $guru = Guru::where('user_id', $guru)->first();
+                $guru->wali_kelas = 'Y';
+                $guru->class_id = $class;
+                $guru->save();
+            }
         }
-
-        $wakel->wali_kelas = 'Y';
-        $wakel->class_id = $class;
-        $wakel->save();
 
         return response()->json(['message' => 'Berhasil Memilih Wali Kelas'], 200);
     }
