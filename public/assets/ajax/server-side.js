@@ -54,6 +54,7 @@ var data_kelas = $(".kelas").DataTable({
         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
         { data: 'nama_rombel', name: 'nama_rombel'},
         { data: 'tingkat', name: 'tingkat'},
+        { data: 'jurusan.nama_kejuruan', name: 'jurusan.nama_kejuruan'},
         { data: 'status', name: 'status'},
         { data: 'action', name: 'action', orderable: false, searchable: false },
     ]
@@ -70,6 +71,7 @@ var data_mapel = $(".mapel").DataTable({
         {data : 'kode', name: 'kode'},
         {data : 'nama_mapel', name: 'nama_mapel'},
         {data : 'tingkat', name: 'tingkat'},
+        {data: 'jurusan.nama_kejuruan', name: 'jurusan.nama_kejuruan'},
         {data : 'kkm', name: 'kkm'},
         {data : 'action', name: 'action', orderable: false, searchable: false}
     ]
@@ -140,6 +142,22 @@ let kejuruan = $('.kejuruan').DataTable({
     columns:[
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
         {data: 'nama_kejuruan', name: 'nama_kejuruan'},
+        {data: 'action', name: 'action', orderable: false, searchable: false}
+    ]
+});
+
+let guru_mapel = $('.gm').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "data_guru_mapel",
+    columns:[
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'mapel.kelompok', name: 'mapel.kelompok'},
+        {data: 'mapel.kode', name: 'mapel.kode'},
+        {data: 'mapel.nama_mapel', name: 'mapel.nama_mapel'},
+        {data: 'mapel.tingkat', name: 'mapel.tingkat'},
+        {data: 'mapel.jurusan.nama_kejuruan', name: 'mapel.jurusan.nama_kejuruan'},
+        {data: 'guru.personal_data.nama', name: 'guru.personal_data.nama'},
         {data: 'action', name: 'action', orderable: false, searchable: false}
     ]
 });

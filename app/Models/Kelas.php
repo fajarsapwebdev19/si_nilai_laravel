@@ -16,5 +16,10 @@ class Kelas extends Model
     protected $keyType = 'string'; // Tentukan tipe data untuk primary key
     public $timestamps = false; // Menonaktifkan timestamps
 
-    protected $fillable = ['id', 'nama_rombel', 'tingkat', 'status']; // Kolom yang diizinkan untuk diisi massal
+    protected $fillable = ['id', 'nama_rombel', 'tingkat', 'jurusan_id', 'status']; // Kolom yang diizinkan untuk diisi massal
+
+    public function jurusan()
+    {
+        return $this->belongsTo(Kejuruan::class, 'jurusan_id');
+    }
 }

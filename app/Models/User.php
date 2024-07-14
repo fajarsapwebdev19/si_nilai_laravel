@@ -40,4 +40,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Siswa::class, 'id');
     }
+
+    public function guruMapel()
+    {
+        return $this->hasMany(GuruMapel::class, 'guru_id');
+    }
 }

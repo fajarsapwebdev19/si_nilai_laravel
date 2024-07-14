@@ -22,6 +22,7 @@
                                         <th>Kode</th>
                                         <th>Nama</th>
                                         <th>Tingkat</th>
+                                        <th>Keahlian</th>
                                         <th>KKM</th>
                                         <th>Aksi</th>
                                     </tr>

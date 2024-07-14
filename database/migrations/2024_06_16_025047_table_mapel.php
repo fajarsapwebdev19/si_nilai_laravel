@@ -19,6 +19,7 @@ class TableMapel extends Migration
             $table->string('kode')->nullable();
             $table->string('nama_mapel')->nullable();
             $table->integer('tingkat')->nullable();
+            $table->string('jurusan_id')->nullable();
             $table->integer('kkm')->nullable();
         });
     }

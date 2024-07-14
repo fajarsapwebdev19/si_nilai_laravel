@@ -450,6 +450,7 @@ $(document).ready(function () {
                 $('#ubah-siswa input[name=nama_ibu]').val(response.siswa.nama_ibu);
                 select_agama(response.siswa.agama);
                 select_tingkat(response.siswa.tingkat);
+                select_jurusan(response.siswa.jurusan_id);
                 select_pekerjaan_ayah(response.siswa.pekerjaan_ayah);
                 select_pendidikan_ayah(response.siswa.pendidikan_ayah);
                 select_pekerjaan_ibu(response.siswa.pekerjaan_ibu);
@@ -1232,12 +1233,60 @@ $(".kejuruan").on("click", '.hapus', function(){
     let id = $(this).data('id');
 
     $.ajax({
-        url: 'hapus_kejuruan/'+id,
+        url: 'get_kejuruan/'+id,
         method: 'GET',
         success:function(response)
         {
             $('#hapus').modal('show');
+            $('#j').text(response.nama_kejuruan);
+            $('#hapus-kejuruan input[name=id]').val(response.id);
         }
-    })
+    });
+});
+
+$('#hapus-kejuruan').on('click', '.yes', function(){
+    let id = $('#hapus-kejuruan input[name=id]').val();
+
+    $.ajax({
+        url: 'hapus_kejuruan/'+id,
+        method: 'GET',
+        success:function(response)
+        {
+            $('#hapus').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            kejuruan.ajax.reload();
+        }
+    });
+});
+
+$('.gm').on('click', '.pilih', function(){
+    let id = $(this).data('id');
+
+    $('#pilih').modal('show');
+    $('#pilih-guru-mapel input[name=mapel_id]').val(id);
+});
+
+$('#pilih-guru-mapel').on('click', '.simpan', function(){
+    let data = $('#pilih-guru-mapel').serialize();
+
+    $.ajax({
+        url: "select_guru_mapel",
+        method: "POST",
+        data: data,
+        success:function(response)
+        {
+            
+        }
+    });
 });
 

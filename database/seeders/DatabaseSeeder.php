@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 
 class DatabaseSeeder extends Seeder
@@ -17,14 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // uid
-        $k1 = Uuid::uuid4()->toString();
-        $k2 = Uuid::uuid4()->toString();
-        $k3 = Uuid::uuid4()->toString();
-        $k4 = Uuid::uuid4()->toString();
-        $k5 = Uuid::uuid4()->toString();
-        $k6 = Uuid::uuid4()->toString();
-
         DB::table('profile_sekolah')->insert([
             [
                 'npsn' => '69987103',
@@ -77,46 +68,6 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-        // kelas
-        DB::table('kelas')->insert([
-            [
-                'id' => $k1,
-                'nama_rombel' => 'Kelas X OTKP',
-                'tingkat' => 10,
-                'status' => 'y'
-            ],
-            [
-                'id' => $k2,
-                'nama_rombel' => 'Kelas X TKJ',
-                'tingkat' => 10,
-                'status' => 'y'
-            ],
-            [
-                'id' => $k3,
-                'nama_rombel' => 'Kelas XI OTKP',
-                'tingkat' => 11,
-                'status' => 'y'
-            ],
-            [
-                'id' => $k4,
-                'nama_rombel' => 'Kelas XI TKJ',
-                'tingkat' => 11,
-                'status' => 'y'
-            ],
-            [
-                'id' => $k5,
-                'nama_rombel' => 'Kelas XII OTKP',
-                'tingkat' => 12,
-                'status' => 'y'
-            ],
-            [
-                'id' => $k6,
-                'nama_rombel' => 'Kelas XII TKJ',
-                'tingkat' => 12,
-                'status' => 'y'
-            ]
-        ]);
-
         // ekstrakulikuller
         DB::table('ekstrakulikuler')->insert([
             [
@@ -138,162 +89,6 @@ class DatabaseSeeder extends Seeder
             [
                 'id' => 5,
                 'nama_ekstrakulikuler' => 'OSIS'
-            ],
-        ]);
-
-        // mapel
-        DB::table('mapel')->insert([
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'BINDO',
-                'nama_mapel' => 'Bahasa Indonesia',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'BINDO',
-                'nama_mapel' => 'Bahasa Indonesia',
-                'tingkat' => 11,
-                'kkm' => 70
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'BINDO',
-                'nama_mapel' => 'Bahasa Indonesia',
-                'tingkat' => 12,
-                'kkm' => 75
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'PAI',
-                'nama_mapel' => 'Pendidikan Agama Islam dan Budi Pekerti',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'PAI',
-                'nama_mapel' => 'Pendidikan Agama Islam dan Budi Pekerti',
-                'tingkat' => 11,
-                'kkm' => 70
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'PAI',
-                'nama_mapel' => 'Pendidikan Agama Islam dan Budi Pekerti',
-                'tingkat' => 12,
-                'kkm' => 75
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'PKN',
-                'nama_mapel' => 'Pendidikan Pancasila dan Kewarganegaraan',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'PKN',
-                'nama_mapel' => 'Pendidikan Pancasila dan Kewarganegaraan',
-                'tingkat' => 11,
-                'kkm' => 70
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'PKN',
-                'nama_mapel' => 'Pendidikan Pancasila dan Kewarganegaraan',
-                'tingkat' => 12,
-                'kkm' => 75
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'MTK',
-                'nama_mapel' => 'Matematika',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'MTK',
-                'nama_mapel' => 'Matematika',
-                'tingkat' => 11,
-                'kkm' => 70
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'MTK',
-                'nama_mapel' => 'Matematika',
-                'tingkat' => 12,
-                'kkm' => 75
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'SI',
-                'nama_mapel' => 'Sejarah Indonesia',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'B',
-                'kode' => 'SB',
-                'nama_mapel' => 'Seni Budaya',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'BING',
-                'nama_mapel' => 'Bahasa Inggris',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'BING',
-                'nama_mapel' => 'Bahasa Inggris',
-                'tingkat' => 11,
-                'kkm' => 70
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'A',
-                'kode' => 'BING',
-                'nama_mapel' => 'Bahasa Inggris',
-                'tingkat' => 12,
-                'kkm' => 75
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'B',
-                'kode' => 'PJOK',
-                'nama_mapel' => 'Pendidikan Jasmani, Olahraga dan Kesehatan',
-                'tingkat' => 10,
-                'kkm' => 65
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'kelompok' => 'B',
-                'kode' => 'PJOK',
-                'nama_mapel' => 'Pendidikan Jasmani, Olahraga dan Kesehatan',
-                'tingkat' => 11,
-                'kkm' => 70
             ],
         ]);
 

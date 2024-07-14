@@ -49,6 +49,15 @@
                                 <label for="">Alamat</label>
                                 <textarea name="alamat" id="" cols="30" rows="5" class="form-control"></textarea>
                             </div>
+                            <div class="form-group mb-3">
+                                <label for="">Keahlian</label>
+                                <select name="jurusan" class="form-control">
+                                    <option value="">Pilih</option>
+                                    @foreach ($keahlian as $k)
+                                        <option value="{{$k->id}}">{{$k->nama_kejuruan}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <div class="form-group mb-3">
@@ -176,6 +185,11 @@
                             <div class="form-group mb-3">
                                 <label for="">Alamat</label>
                                 <textarea name="alamat" id="" cols="30" rows="5" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="">Keahlian</label>
+                                <select name="jurusan" id="jurusan" class="form-control">
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">

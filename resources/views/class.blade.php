@@ -20,6 +20,7 @@
                                         <th>No</th>
                                         <th>Nama Rombel</th>
                                         <th>Tingkat</th>
+                                        <th>Jurusan</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>

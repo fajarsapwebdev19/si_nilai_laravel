@@ -33,6 +33,7 @@ class TableSiswa extends Migration
             $table->string('pendidikan_ibu')->nullable();
             $table->string('pekerjaan_ibu')->nullable();
             $table->char('tingkat', 3)->nullable();
+            $table->string('jurusan_id')->nullable();
             $table->enum('status',['y', 'n', 'l'])->nullable();
             $table->string('user_id')->primary();
         });

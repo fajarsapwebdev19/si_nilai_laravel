@@ -18,6 +18,7 @@ use App\Models\KelasSiswa;
 use App\Models\Siswa;
 use App\Models\ProfilSekolah;
 use App\Models\Kejuruan;
+use App\Models\GuruMapel;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\DataTables;
@@ -202,6 +203,13 @@ class AdminController extends Controller
 
         $k->delete();
         return response()->json(['message' => 'Berhasil Hapus Data Kejuruan'], 200);
+    }
+
+    public function get_jurusan()
+    {
+        $k = Kejuruan::orderBy('nama_kejuruan', 'asc')->get();
+
+        return response()->json($k);
     }
 
     // guru
@@ -481,6 +489,7 @@ class AdminController extends Controller
         ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
         ->where('u.role_id', 3)
         ->where('s.tingkat', $tingkat)
+        ->where('s.jurusan_id', $kelas->jurusan_id)
         ->where('ks.class_id', NULL)
         ->where('s.status', 'y')
         ->orderBy('pd.nama', 'asc')
@@ -586,7 +595,8 @@ class AdminController extends Controller
     // siswa
     public function student()
     {
-        return view('student');
+        $keahlian = Kejuruan::orderBy('nama_kejuruan', 'asc')->get();
+        return view('student', compact('keahlian'));
     }
 
     public function GenerateRandomNumber($length = 7)
@@ -808,6 +818,7 @@ class AdminController extends Controller
         $siswa->pekerjaan_ibu = $request->pekerjaan_ibu;
         $siswa->user_id = $uid;
         $siswa->tingkat = $request->tingkat;
+        $siswa->jurusan_id = $request->jurusan;
         $siswa->status = 'y';
         $siswa->save();
 
@@ -846,6 +857,7 @@ class AdminController extends Controller
         $siswa->pendidikan_ibu = $request->pendidikan_ibu;
         $siswa->pekerjaan_ibu = $request->pekerjaan_ibu;
         $siswa->tingkat = $request->tingkat;
+        $siswa->jurusan_id = $request->jurusan;
         $siswa->save();
         return response()->json(['message' => 'Berhasil ubah data siswa'], 200);
     }
@@ -888,20 +900,15 @@ class AdminController extends Controller
     // class
     public function class_room()
     {
-        return view('class');
-    }
+        $k = Kejuruan::orderBy('nama_kejuruan', 'asc')->get();
 
-    // data kelas
-    public function get_data_kelas()
-    {
-        $kelas = Kelas::where('status', 'y')->get();
-        return response()->json($kelas);
+        return view('class', compact('k'));
     }
 
     public function data_kelas(Request $request)
     {
         if ($request->ajax()) {
-            $data = Kelas::orderBy('nama_rombel', 'asc')->get();
+            $data = Kelas::with('jurusan')->orderBy('nama_rombel', 'asc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -934,6 +941,7 @@ class AdminController extends Controller
         $kelas->id = Uuid::uuid4()->toString();
         $kelas->nama_rombel = $request->nama_rombel;
         $kelas->tingkat = $request->tingkat;
+        $kelas->jurusan_id = $request->jurusan;
         $kelas->status = $request->status;
         $kelas->save();
 
@@ -946,9 +954,10 @@ class AdminController extends Controller
     {
         // Menggunakan findOrFail untuk mencari kelas berdasarkan ID
         $kelas = Kelas::findOrFail($id);
+        $kejuruan = Kejuruan::orderBy('nama_kejuruan', 'asc')->get();
 
         // Mengirimkan data $kelas ke view 'modals.editclass' dengan compact
-        return view('modals.editclass', compact('kelas'));
+        return view('modals.editclass', compact('kelas', 'kejuruan'));
     }
 
     public function get_class_delete($id)
@@ -965,6 +974,7 @@ class AdminController extends Controller
         $kelas = Kelas::findOrFail($id);
         $kelas->nama_rombel = $request->nama_rombel;
         $kelas->tingkat = $request->tingkat;
+        $kelas->jurusan_id = $request->jurusan;
         $kelas->status = $request->status;
         $kelas->save();
 
@@ -991,20 +1001,21 @@ class AdminController extends Controller
     // mapel
     public function mapel()
     {
-        return view('mapel');
+        $k = Kejuruan::orderBy('nama_kejuruan', 'asc')->get();
+        return view('mapel', compact('k'));
     }
 
     // data mapel
     public function data_mapel(Request $request)
     {
         if ($request->ajax()) {
-            $data = Mapel::all();
+            $data = Mapel::with('jurusan')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
-                <button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    $btn = '<button class="badge rounded-pill text-bg-info ubah mb-2" data-id="' . $row->id . '">Ubah</button>
+                <button class="badge rounded-pill text-bg-danger hapus mb-2" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -1021,8 +1032,14 @@ class AdminController extends Controller
         $mapel->kode = $request->kode;
         $mapel->nama_mapel = $request->nama_mapel;
         $mapel->tingkat = $request->tingkat;
+        $mapel->jurusan_id = $request->jurusan;
         $mapel->kkm = $request->kkm;
         $mapel->save();
+
+        $g_mapel = new GuruMapel();
+        $g_mapel->mapel_id = $mapel->id;
+        $g_mapel->guru_id = NULL;
+        $g_mapel->save();
 
         return response()->json(['message' => 'Berhasil Tambah Data Mapel'], 200);
     }
@@ -1031,8 +1048,9 @@ class AdminController extends Controller
     public function get_data_mapel($id)
     {
         $mapel = Mapel::findOrFail($id);
+        $k = Kejuruan::orderBy('nama_kejuruan', 'asc')->get();
 
-        return view("modals.update_mapel", compact("mapel"));
+        return view("modals.update_mapel", compact("mapel", "k"));
     }
     public function get_mapel_delete($id)
     {
@@ -1049,6 +1067,7 @@ class AdminController extends Controller
         $mapel->kode = $request->kode;
         $mapel->nama_mapel = $request->nama_mapel;
         $mapel->tingkat = $request->tingkat;
+        $mapel->jurusan_id = $request->jurusan;
         $mapel->kkm = $request->kkm;
         $mapel->save();
 
@@ -1278,6 +1297,33 @@ class AdminController extends Controller
 
     public function set_mapel()
     {
-        return view('set_mapel');
+        $g = User::with('personalData')->where('role_id', 2)->get();
+        return view('set_mapel', compact('g'));
+    }
+
+    public function data_guru_mapel(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = GuruMapel::with('mapel.jurusan', 'guru.personalData')->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row)
+                {
+                    $btn = '<button class="badge rounded-pill text-bg-info pilih" data-id="' . $row->mapel_id . '">Pilih</button>';
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->toJson();
+        }
+    }
+
+    public function select_guru_mapel(Request $request)
+    {
+        $gm = GuruMapel::find($request->mapel_id);
+        $gm->guru_id = $request->guru_id;
+        $gm->save();
+        return response()->json(['message' => 'Berhasil Memilih Guru Mapel'], 200);
     }
 }

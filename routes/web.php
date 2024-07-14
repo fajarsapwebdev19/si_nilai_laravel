@@ -99,4 +99,11 @@ Route::get('admin/data/data_kejuruan', [AdminController::class, 'data_kejuruan']
 Route::post('admin/data/tambah_kejuruan', [AdminController::class, 'tambah_kejuruan']);
 Route::get('admin/data/get_kejuruan/{id}', [AdminController::class, 'get_kejuruan']);
 Route::put('admin/data/ubah_kejuruan/{id}', [AdminController::class, 'ubah_kejuruan']);
+Route::get('admin/data/hapus_kejuruan/{id}', [AdminController::class, 'hapus_kejuruan']);
+Route::get('admin/data/get_jurusan', [AdminController::class, 'get_jurusan']);
+Route::get('admin/pengaturan/data_guru_mapel', [AdminController::class, 'data_guru_mapel']);
+Route::post('admin/pengaturan/select_guru_mapel', [AdminController::class, 'select_guru_mapel']);
+
+// test data
+Route::get('test', [AdminController::class, 'guru_mapel']);
 

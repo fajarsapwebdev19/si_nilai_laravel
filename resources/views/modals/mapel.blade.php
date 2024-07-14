@@ -32,6 +32,15 @@
                         </select>
                     </div>
                     <div class="form-group mb-3">
+                        <label for="">Keahlian</label>
+                        <select name="jurusan" class="form-control">
+                            <option value="">Pilih</option>
+                            @foreach ($k as $j)
+                                <option value="{{$j->id}}">{{$j->nama_kejuruan}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
                         <label for="">KKM</label>
                         <input type="number" name="kkm" class="form-control">
                     </div>

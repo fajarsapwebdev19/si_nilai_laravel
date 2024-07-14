@@ -24,6 +24,15 @@
                         </select>
                     </div>
                     <div class="form-group mb-3">
+                        <label for="" class="form-label">Keahlian</label>
+                        <select name="jurusan" class="form-control">
+                            <option value="">Pilih</option>
+                            @foreach ($k as $j)
+                                <option value="{{$j->id}}">{{$j->nama_kejuruan}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
                         <label for="" class="form-label">Status</label>
                         <div class="mt-2">
                             <div class="form-check form-check-inline">
@@ -90,7 +99,7 @@
             </div>
             <form method="post" id="get_siswa">
                 <div class="modal-body">
-                    <div class="message-class"></div>
+                    <div class="messages-class"></div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="card">

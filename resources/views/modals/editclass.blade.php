@@ -15,6 +15,15 @@
         </select>
     </div>
     <div class="form-group mb-3">
+        <label for="" class="form-label">Keahlian</label>
+        <select name="jurusan" class="form-control">
+            <option value="">Pilih</option>
+            @foreach ($kejuruan as $k)
+                <option value="{{$k->id}}" {{$k->id == $kelas->jurusan_id ? 'selected' : ''}}>{{$k->nama_kejuruan}}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group mb-3">
         <label for="" class="form-label">Status</label>
         <div class="mt-2">
             <div class="form-check form-check-inline">

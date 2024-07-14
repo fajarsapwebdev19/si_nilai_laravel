@@ -130,8 +130,8 @@ function select_agama(agamaselect) {
     });
 }
 
-
-function select_tingkat(tingkat_select) {
+function select_tingkat(tingkat_select)
+{
     $.ajax({
         url: 'get_tingkat',
         method: "GET",
@@ -245,5 +245,29 @@ if (currentUrl.includes('/admin/data/siswa')) {
             console.error("An error occurred with API 1: " + error);
         }
     });
+
+    function select_jurusan(jurusan_select)
+    {
+        $.ajax({
+            url: 'get_jurusan',
+            method: "GET",
+            success: function (response) {
+                let jurusan = response;
+                let selectTingkat = $("#jurusan");
+                selectTingkat.empty();
+                selectTingkat.append('<option value=""> Pilih Tingkat </option>');
+                $.each(jurusan, function (key, value) {
+                    if (value.id == jurusan_select) {
+                        selectTingkat.append('<option value="' + value.id + '" selected>' + value.nama_kejuruan + '</option>');
+                    } else {
+                        selectTingkat.append('<option value="' + value.id + '">' + value.nama_kejuruan + '</option>');
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("An error occurred with API 1: " + error);
+            }
+        });
+    }
 }
 

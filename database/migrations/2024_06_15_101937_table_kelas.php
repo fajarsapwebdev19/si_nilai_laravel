@@ -17,6 +17,7 @@ class TableKelas extends Migration
             $table->string('id')->primary();
             $table->string('nama_rombel')->nullable();
             $table->integer('tingkat')->nullable();
+            $table->string('jurusan_id')->nullable();
             $table->enum('status', ['y','n'])->nullable();
         });
     }
