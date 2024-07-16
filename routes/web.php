@@ -104,6 +104,8 @@ Route::get('admin/data/get_jurusan', [AdminController::class, 'get_jurusan']);
 Route::get('admin/pengaturan/data_guru_mapel', [AdminController::class, 'data_guru_mapel']);
 Route::post('admin/pengaturan/select_guru_mapel', [AdminController::class, 'select_guru_mapel']);
 
+Route::get('admin/pesan', [AdminController::class, 'pesan'])->name('pesan');
+
 // test data
 Route::get('test', [AdminController::class, 'guru_mapel']);
 

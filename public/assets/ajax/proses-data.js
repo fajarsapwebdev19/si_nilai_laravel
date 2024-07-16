@@ -1056,6 +1056,7 @@ $(document).ready(function () {
         });
     });
 });
+
 function get_profile() {
     $.ajax({
         url: 'profil_smk',
@@ -1074,23 +1075,39 @@ if (url.includes('/admin/pengaturan/set-profil-sekolah')) {
 
 // proses ubah data profil sekolah
 $('#ubah-profile-sekolah').on('click', '.simpan', function () {
-    let data = $('#ubah-profile-sekolah').serialize();
+    let form = $('#ubah-profile-sekolah')[0];
+    let data = new FormData(form);
 
     $.ajax({
         url: 'update_profile_sekolah',
+        type: 'POST',
         data: data,
-        method: 'POST',
+        processData: false,
+        contentType: false,
         success: function (response) {
             get_profile();
             $('.messages').show();
             // Remove any existing alert classes
             $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
-            // Show error message
+            // Show success message
             $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
             $('html, body').animate({ scrollTop: 0 }, 'fast');
             setTimeout(function () {
                 $('.messages').fadeOut(function () {
                     $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+        },
+        error: function (xhr) {
+            // Handle error response
+            let errorMsg = xhr.responseJSON.message || 'Terjadi kesalahan, silakan coba lagi.';
+            $('.messages').show();
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(errorMsg).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
                 });
             }, 3000);
         }
@@ -1285,7 +1302,19 @@ $('#pilih-guru-mapel').on('click', '.simpan', function(){
         data: data,
         success:function(response)
         {
-            
+            $('#pilih').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            guru_mapel.ajax.reload();
         }
     });
 });

@@ -152,8 +152,6 @@ let guru_mapel = $('.gm').DataTable({
     ajax: "data_guru_mapel",
     columns:[
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-        {data: 'mapel.kelompok', name: 'mapel.kelompok'},
-        {data: 'mapel.kode', name: 'mapel.kode'},
         {data: 'mapel.nama_mapel', name: 'mapel.nama_mapel'},
         {data: 'mapel.tingkat', name: 'mapel.tingkat'},
         {data: 'mapel.jurusan.nama_kejuruan', name: 'mapel.jurusan.nama_kejuruan'},

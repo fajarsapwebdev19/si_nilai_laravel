@@ -97,7 +97,7 @@
         <label for="">Logo Sekolah</label>
     </div>
     <div class="col-md-10">
-        <input type="file" name="logo-sekolah" class="form-control">
+        <input type="file" name="logo_sekolah" class="form-control">
     </div>
 </div>
 <div class="row mb-3">

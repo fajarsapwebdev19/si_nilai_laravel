@@ -8,17 +8,12 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Demo : Login Cover - Pages | Sneat - Bootstrap Dashboard PRO</title>
+    <title>Login</title>
 
-    <meta name="description"
-        content="Most Powerful &amp; Comprehensive Bootstrap 5 Admin Dashboard built for developers!" />
-    <meta name="keywords" content="dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
-    <!-- Canonical SEO -->
-    <link rel="canonical" href="https://themeselection.com/item/sneat-dashboard-pro-bootstrap/">
-
+    <meta name="description" content="Login kedalam aplikasi untuk melakukan pengolahan nilai" />
+    <meta name="keywords" content="login, login sistem pengolahan nilai {{ $ps->nama_sekolah }}">
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon"
-        href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{asset($ps->logo)}}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/">
@@ -47,12 +42,7 @@
     <!-- Page -->
     <link rel="stylesheet" href="assets/vendor/css/pages/page-auth.css">
 
-    <!-- Helpers -->
-    <script src="assets/vendor/js/helpers.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-    <script src="assets/vendor/js/template-customizer.js"></script>
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+
     <script src="assets/js/config.js"></script>
 
 </head>
@@ -77,28 +67,23 @@
                 <div class="w-px-400 mx-auto">
                     <div class="mb-5">
                         <h6 class="mb-2">SISTEM INFORMASI PENGOLAHAN NILAI</h6>
-                        <h6 class="mb-2">SMK XYZ</h6>
+                        <h6 class="mb-2">{{ $ps->nama_sekolah }}</h6>
                     </div>
-                    <form id="formAuthentication" class="mb-3"
-                        action=""
-                        method="GET">
+                    <form id="formAuthentication" class="mb-3" autocomplete="off">
                         <div class="mb-3">
                             <label for="email" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="email" name="email-username"
-                                placeholder="Enter your email or username" autofocus>
+                            <input type="text" class="form-control" name="username">
                         </div>
                         <div class="mb-3 form-password-toggle">
                             <div class="d-flex justify-content-between">
                                 <label class="form-label" for="password">Password</label>
                             </div>
                             <div class="input-group input-group-merge">
-                                <input type="password" id="password" class="form-control" name="password"
-                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                    aria-describedby="password" />
+                                <input type="password" id="password" class="form-control" name="password" />
                                 <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                             </div>
                         </div>
-                        <button class="btn btn-danger d-grid w-100">
+                        <button type="button" class="btn btn-danger d-grid w-100 login">
                             Login
                         </button>
                     </form>

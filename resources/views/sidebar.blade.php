@@ -89,7 +89,7 @@
         <!-- /pengaturan -->
         <!-- pesan -->
         <li class="menu-item">
-            <a href="/" class="menu-link">
+            <a href="{{ route('pesan') }}" class="menu-link">
                 <i class="menu-icon fas fa-bullhorn"></i>
                 <div class="text-truncate">Pesan</div>
             </a>

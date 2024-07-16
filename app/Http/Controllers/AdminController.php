@@ -19,6 +19,7 @@ use App\Models\Siswa;
 use App\Models\ProfilSekolah;
 use App\Models\Kejuruan;
 use App\Models\GuruMapel;
+use App\Models\Info;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\DataTables;
@@ -1157,11 +1158,12 @@ class AdminController extends Controller
     public function update_profile_sekolah(Request $request)
     {
         DB::beginTransaction();
+
         // Get the current active TahunAjaran
         $th_aj = TahunAjaran::where('status', 'Y')->first();
 
         if (!$th_aj) {
-            return response()->json(['error' => 'Active TahunAjaran not found'], 404);
+            return response()->json(['error' => 'Active TahunAjaran tidak ditemukan'], 404);
         }
 
         $th_now = $th_aj->tahun;
@@ -1171,8 +1173,36 @@ class AdminController extends Controller
         $ps = ProfilSekolah::first();
 
         if (!$ps) {
-            return response()->json(['error' => 'ProfilSekolah not found'], 404);
+            return response()->json(['error' => 'ProfilSekolah tidak ditemukan'], 404);
         }
+
+        // Validasi input dengan pesan kustom
+        $request->validate([
+            'npsn' => 'required',
+            'nama_sekolah' => 'required',
+            'alamat' => 'required',
+            'kode_pos' => 'required',
+            'kelurahan' => 'required',
+            'kecamatan' => 'required',
+            'kab_kot' => 'required',
+            'provinsi' => 'required',
+            'kep_id' => 'required',
+            'tahun_ajaran' => 'required',
+            'logo_sekolah' => 'nullable|image|mimes:jpg,jpeg,png', // validasi file gambar
+        ], [
+            'npsn.required' => 'NPSN harus diisi.',
+            'nama_sekolah.required' => 'Nama sekolah harus diisi.',
+            'alamat.required' => 'Alamat harus diisi.',
+            'kode_pos.required' => 'Kode pos harus diisi.',
+            'kelurahan.required' => 'Kelurahan harus diisi.',
+            'kecamatan.required' => 'Kecamatan harus diisi.',
+            'kab_kot.required' => 'Kabupaten/Kota harus diisi.',
+            'provinsi.required' => 'Provinsi harus diisi.',
+            'kep_id.required' => 'ID Kepala Sekolah harus diisi.',
+            'tahun_ajaran.required' => 'Tahun ajaran harus diisi.',
+            'logo_sekolah.image' => 'File gambar harus berupa gambar.',
+            'logo_sekolah.mimes' => 'Gambar harus memiliki ekstensi jpg, jpeg, atau png.',
+        ]);
 
         if ($th_now == $now) {
             // Update ProfilSekolah
@@ -1186,6 +1216,16 @@ class AdminController extends Controller
             $ps->provinsi = $request->provinsi;
             $ps->kep_id = $request->kep_id;
             $ps->th_aktif = $request->tahun_ajaran;
+
+            if ($request->hasFile('logo_sekolah')) {
+                // Handle the image upload
+                $file = $request->file('logo_sekolah');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'logo/' . $fileName;
+                $file->move(public_path('logo'), $fileName);
+                $ps->logo = $filePath;
+            }
+
             $ps->save();
         } else {
             // Deactivate the current active TahunAjaran
@@ -1196,7 +1236,7 @@ class AdminController extends Controller
             $th_new = TahunAjaran::where('tahun', $now)->first();
 
             if (!$th_new) {
-                return response()->json(['error' => 'TahunAjaran for the given year not found'], 404);
+                return response()->json(['error' => 'TahunAjaran untuk tahun yang diberikan tidak ditemukan'], 404);
             }
 
             $th_new->status = 'Y';
@@ -1213,6 +1253,16 @@ class AdminController extends Controller
             $ps->provinsi = $request->provinsi;
             $ps->kep_id = $request->kep_id;
             $ps->th_aktif = $request->tahun_ajaran;
+
+            if ($request->hasFile('logo_sekolah')) {
+                // Handle the image upload
+                $file = $request->file('logo_sekolah');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = 'logo/' . $fileName;
+                $file->move(public_path('logo'), $fileName);
+                $ps->logo = $filePath;
+            }
+
             $ps->save();
         }
 
@@ -1220,6 +1270,7 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Berhasil Ubah Profile Sekolah'], 200);
     }
+
 
     public function profil_smk()
     {
@@ -1229,12 +1280,14 @@ class AdminController extends Controller
         return view('profile_smk', compact('th', 'p', 'ks'));
     }
 
+    // halaman atur wali kelas
     public function set_wakel()
     {
         $guru = User::with(['personalData', 'guru'])->where('role_id', 2)->get();
         return view('set_wakel', compact('guru'));
     }
 
+    // memilih wali kelas di setiap kelas yang ada
     public function select_wakel(Request $request)
     {
         $class = $request->class_id;
@@ -1325,5 +1378,10 @@ class AdminController extends Controller
         $gm->guru_id = $request->guru_id;
         $gm->save();
         return response()->json(['message' => 'Berhasil Memilih Guru Mapel'], 200);
+    }
+
+    public function pesan()
+    {
+        return view('message');
     }
 }

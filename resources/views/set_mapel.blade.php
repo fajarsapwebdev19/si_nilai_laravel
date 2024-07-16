@@ -14,8 +14,6 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Kelompok</th>
-                                        <th>Kode</th>
                                         <th>Nama</th>
                                         <th>Tingkat</th>
                                         <th>Keahlian</th>
