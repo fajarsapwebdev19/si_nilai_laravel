@@ -27,7 +27,7 @@
                                     <textarea name="isi_pesan" cols="30" rows="10" class="form-control"></textarea>
                                 </div>
 
-                                <button class="btn btn-success">Kirim</button>
+                                <button type="submit" class="btn btn-success simpan">Kirim</button>
                             </form>
                         </div>
                     </div>

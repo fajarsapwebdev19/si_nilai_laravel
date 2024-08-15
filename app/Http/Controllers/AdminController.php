@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Models\TahunAjaran;
 use App\Models\HistorySiswa;
 use App\Models\Kelas;
@@ -202,6 +203,13 @@ class AdminController extends Controller
     {
         $k = Kejuruan::where('id', $id)->first();
 
+        // Check if the kejuruan is associated with any kelas
+        $kelasCount = Kelas::where('jurusan_id', $id)->count();
+
+        if ($kelasCount > 0) {
+            return response()->json(['error' => 'Tidak dapat menghapus Kejuruan karena masih terkait dengan Kelas'], 400);
+        }
+
         $k->delete();
         return response()->json(['message' => 'Berhasil Hapus Data Kejuruan'], 200);
     }
@@ -211,6 +219,52 @@ class AdminController extends Controller
         $k = Kejuruan::orderBy('nama_kejuruan', 'asc')->get();
 
         return response()->json($k);
+    }
+
+    public function import_kejuruan(Request $request)
+    {
+        $rules = [
+            'file' => 'required|file|mimes:xlsx',
+        ];
+
+        $messages = [
+            'file.required' => 'File harus diunggah',
+            'file.file' => 'File yang diunggah harus berupa file',
+            'file.mimes' => 'File yang diunggah harus berformat xlsx'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails())
+        {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+
+        // spreadsheet
+        $spreadsheet = IOFactory::load($path);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        array_shift($rows);
+        $count = 0;
+        DB::beginTransaction();
+        foreach($rows as $r){
+            $uuid = Uuid::uuid4();
+            $nama_jurusan = $r[0];
+
+            $kejuruan = new Kejuruan();
+            $kejuruan->id = $uuid;
+            $kejuruan->nama_kejuruan = $nama_jurusan;
+            $kejuruan->save();
+
+            $count++;
+        }
+        DB::commit();
+
+        return response()->json(['message' => 'Berhasil Menambah '. $count .' Data Kejuruan'], 200);
     }
 
     // guru
@@ -490,7 +544,6 @@ class AdminController extends Controller
         ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
         ->where('u.role_id', 3)
         ->where('s.tingkat', $tingkat)
-        ->where('s.jurusan_id', $kelas->jurusan_id)
         ->where('ks.class_id', NULL)
         ->where('s.status', 'y')
         ->orderBy('pd.nama', 'asc')
@@ -1383,5 +1436,39 @@ class AdminController extends Controller
     public function pesan()
     {
         return view('message');
+    }
+
+    public function send_message(Request $request)
+    {
+        $info = new Info();
+
+        $info->id = Uuid::uuid4();
+        $info->judul = $request->judul;
+        $info->isi = $request->isi_pesan;
+        $info->create_at = date('Y-m-d H:i:s');
+        $info->user_id = Auth::user()->id;
+        $info->save();
+
+        return response()->json(['message' => 'success'], 200);
+    }
+
+    public function getMessages()
+    {
+        // Mengambil data dengan relasi
+        $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
+            ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
+            ->get()
+            ->map(function ($info) {
+                return [
+                    'id' => $info->id,
+                    'judul' => $info->judul,
+                    'isi' => $info->isi,
+                    'created_at' => $info->created_at,
+                    'personal_data_name' => $info->user->personalData->nama ?? null,
+                ];
+            });
+
+        // Mengembalikan data dalam format JSON
+        return response()->json($data);
     }
 }

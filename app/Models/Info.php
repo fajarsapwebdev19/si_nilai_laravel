@@ -17,7 +17,7 @@ class Info extends Model
 
     protected $fillable = ['id', 'judul', 'isi', 'create_at', 'user_id']; // Kolom yang diizinkan untuk diisi massal
 
-    public function info()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }

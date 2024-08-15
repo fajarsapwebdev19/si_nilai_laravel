@@ -1177,6 +1177,52 @@ $('#pilih-wakel').on('click', '.simpan', function () {
     });
 });
 
+$('#import-kejuruan').on('click', '.import', function(){
+
+    let form = $('#import-kejuruan')[0];
+    let data = new FormData(form);
+
+    $.ajax({
+        url: "import-kejuruan",
+        data: data,
+        processData: false,
+        contentType: false,
+        method: "POST",
+        success: function (response) {
+            $("#import").modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+             kejuruan.ajax.reload();
+        },
+        error: function (xhr) {
+            if (xhr.status === 422) {
+                let errors = xhr.responseJSON.error;
+                let errorMessages = '';
+
+                $.each(errors, function (key, messages) {
+                    $.each(messages, function (index, message) {
+                        errorMessages += message + '<br>';
+                    });
+                });
+                $("#error-message").show();
+                $('#error-message').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                $('#error-message').fadeIn().delay(3000).fadeOut(function () {
+                    $(this).empty();
+                });
+            }
+        }
+    });
+});
+
 $("#tambah-kejuruan").on('click', '.simpan', function(){
     let data = $('#tambah-kejuruan').serialize();
 
@@ -1282,6 +1328,20 @@ $('#hapus-kejuruan').on('click', '.yes', function(){
                 });
             }, 3000);
             kejuruan.ajax.reload();
+        },
+        error: function (xhr) {
+            $('#hapus').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
         }
     });
 });
@@ -1318,4 +1378,37 @@ $('#pilih-guru-mapel').on('click', '.simpan', function(){
         }
     });
 });
+
+$('#send-info').on('click', '.simpan', function(e){
+    e.preventDefault();
+
+    let form = $('#send-info');
+    let data = form.serialize();
+
+    $.ajax({
+        url: "kirim_pesan/",
+        data: data,
+        method: 'POST',
+        success:function(response)
+        {
+            alert(response.message);
+        }
+    });
+});
+
+$('.logout').click(function(){
+    $.ajax({
+        url: "logout/",
+        method: "GET",
+        success:function(response)
+        {
+            if(response.status == "ok")
+            {
+                window.location.href = '/';
+                localStorage.setItem('logoutMessage', 'Logout berhasil');
+            }
+        }
+    });
+});
+
 

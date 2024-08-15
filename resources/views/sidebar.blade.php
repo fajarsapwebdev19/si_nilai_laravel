@@ -88,7 +88,7 @@
         </li>
         <!-- /pengaturan -->
         <!-- pesan -->
-        <li class="menu-item">
+        <li class="menu-item {{ Request::is('admin/pesan') ? 'active' : '' }}">
             <a href="{{ route('pesan') }}" class="menu-link">
                 <i class="menu-icon fas fa-bullhorn"></i>
                 <div class="text-truncate">Pesan</div>
@@ -97,7 +97,7 @@
         <!-- /pesan -->
         <!-- logout -->
         <li class="menu-item bg-danger text-center">
-            <a href="/" class="menu-link">
+            <a class="menu-link logout">
                 <i class="menu-icon fas fa-power-off"></i>
                 <div class="text-truncate">Logout</div>
             </a>

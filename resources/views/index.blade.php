@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col-md-12 mb-4">
         <h6>Dashboard</h6>
-        <b>Selamat Datang, Ujan Mamang</b>
+        <b>Selamat Datang, {{$userData->nama}}</b>
       </div>
       <div class="col-12 col-md-12">
         <div class="row">
