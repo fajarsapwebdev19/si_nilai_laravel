@@ -556,7 +556,7 @@ $(document).ready(function () {
         let id = $(this).data('id');
         $("#class_id").val(id);
         get_class_id(id);
-        var kelas = $(this).attr('id');
+        var kelas = $(this).data('kelas');
         $(".title-kelas").html(kelas);
         $('#siswa').modal('show');
     });

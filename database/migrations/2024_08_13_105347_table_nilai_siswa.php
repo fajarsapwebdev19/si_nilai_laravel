@@ -31,6 +31,6 @@ class TableNilaiSiswa extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('nilai');
     }
 }

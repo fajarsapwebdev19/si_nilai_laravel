@@ -536,6 +536,7 @@ class AdminController extends Controller
         $id = $request->id;
         $kelas = Kelas::where('id', $id)->first();
         $tingkat = $kelas->tingkat;
+        $jurusan_id = $kelas->jurusan_id;
 
         $siswa = DB::table('users as u')
         ->select('u.*', 'pd.*', 's.*', 'ks.*', 'k.*')
@@ -545,6 +546,7 @@ class AdminController extends Controller
         ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
         ->where('u.role_id', 3)
         ->where('s.tingkat', $tingkat)
+        ->where('s.jurusan_id', $jurusan_id)
         ->where('ks.class_id', NULL)
         ->where('s.status', 'y')
         ->orderBy('pd.nama', 'asc')
@@ -691,103 +693,119 @@ class AdminController extends Controller
         $file = $request->file('file');
         $path = $file->getRealPath();
 
-        // spreadsheet
-        $spreadsheet = IOFactory::load($path);
-        $worksheet = $spreadsheet->getActiveSheet();
-        $rows = $worksheet->toArray();
+        try {
+            // Load spreadsheet
+            $spreadsheet = IOFactory::load($path);
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = $worksheet->toArray();
 
-        array_shift($rows);
+            // Hilangkan baris pertama (header)
+            array_shift($rows);
 
-        $count = 0;
+            $count = 0;
 
-        DB::beginTransaction();
+            DB::beginTransaction();
 
-        foreach($rows as $r)
-        {
-            $pid = rand(1,999).date('dmY');
-            $uuid = Uuid::uuid4();
-            $pwd = $this->generateRandomString(6);
-            $nama = $r[0];
-            $jk = $r[1];
-            $nik = $r[2];
-            $nisn = $r[3];
-            $tempat_lahir = $r[4];
-            $tanggal_lahir = $r[5];
-            $alamat = $r[6];
-            $rt = $r[7];
-            $rw = $r[8];
-            $kelurahan = $r[9];
-            $kecamatan = $r[10];
-            $kodepos = $r[11];
-            $anakke = $r[12];
-            $agama = $r[13];
-            $nama_ayah = $r[14];
-            $pendidikan_ayah = $r[15];
-            $pekerjaan_ayah = $r[16];
-            $nama_ibu = $r[17];
-            $pendidikan_ibu = $r[18];
-            $pekerjaan_ibu = $r[19];
-            $tingkat = $r[20];
+            foreach($rows as $r)
+            {
+                // Membuat ID unik dan UUID
+                $pid = mt_rand().date('dmY');
+                $uuid = Uuid::uuid4();
+                $pwd = $this->generateRandomString(6);
 
-            $personal = new PersonalData();
-            $personal->id = $pid;
-            $personal->nama = $nama;
-            $personal->jenis_kelamin = $jk;
-            $personal->alamat = $alamat;
-            $personal->create_at = date('Y-m-d H:i:s');
-            $personal->modified_at = NULL;
-            $personal->save();
+                // Ambil data dari setiap baris
+                $nama = $r[0];
+                $jk = $r[1];
+                $nik = $r[2];
+                $nisn = $r[3];
+                $tempat_lahir = $r[4];
+                $tanggal_lahir = \Carbon\Carbon::createFromFormat('Y-m-d', $r[5]); // Validasi tanggal
+                $alamat = $r[6];
+                $rt = $r[7];
+                $rw = $r[8];
+                $kelurahan = $r[9];
+                $kecamatan = $r[10];
+                $kodepos = $r[11];
+                $anakke = $r[12];
+                $agama = $r[13];
+                $nama_ayah = $r[14];
+                $pendidikan_ayah = $r[15];
+                $pekerjaan_ayah = $r[16];
+                $nama_ibu = $r[17];
+                $pendidikan_ibu = $r[18];
+                $pekerjaan_ibu = $r[19];
+                $tingkat = $r[20];
 
-            $user = new User();
-            $user->id = $uuid;
-            $user->username = $nisn;
-            $user->password = Hash::make($pwd);
-            $user->real_password = $pwd;
-            $user->status_account = 'Y';
-            $user->role_id = 3;
-            $user->personal_id = $pid;
-            $user->create_at = date('Y-m-d H:i:s');
-            $user->modified_at = NULL;
-            $user->save();
+                // Simpan data ke tabel personal_data
+                $personal = new PersonalData();
+                $personal->id = $pid;
+                $personal->nama = $nama;
+                $personal->jenis_kelamin = $jk;
+                $personal->alamat = $alamat;
+                $personal->create_at = now();
+                $personal->modified_at = null;
+                $personal->save();
 
-            $ks = new KelasSiswa();
-            $ks->user_id = $uuid;
-            $ks->class_id = NULL;
-            $ks->save();
+                // Simpan data ke tabel user
+                $user = new User();
+                $user->id = $uuid;
+                $user->username = $nisn;
+                $user->password = Hash::make($pwd);
+                $user->real_password = $pwd;
+                $user->status_account = 'Y';
+                $user->role_id = 3;
+                $user->personal_id = $pid;
+                $user->create_at = now();
+                $user->modified_at = null;
+                $user->save();
 
-            $jurusan = Kejuruan::where('nama_kejuruan', 'like', '%' . $r[21] . '%')->first();
+                // Simpan data ke tabel kelas_siswa
+                $ks = new KelasSiswa();
+                $ks->user_id = $uuid;
+                $ks->class_id = null; // Pastikan class_id diatur sesuai kebutuhan
+                $ks->save();
 
-            $siswa = new Siswa();
-            $siswa->nisn = $nisn;
-            $siswa->nik = $nik;
-            $siswa->tempat_lahir = $tempat_lahir;
-            $siswa->tanggal_lahir = $tanggal_lahir;
-            $siswa->agama = $agama;
-            $siswa->rt = $rt;
-            $siswa->rw = $rw;
-            $siswa->kelurahan = $kelurahan;
-            $siswa->kecamatan = $kecamatan;
-            $siswa->kode_pos = $kodepos;
-            $siswa->anak_ke = $anakke;
-            $siswa->nama_ayah = $nama_ayah;
-            $siswa->pendidikan_ayah = $pendidikan_ayah;
-            $siswa->pekerjaan_ayah = $pekerjaan_ayah;
-            $siswa->nama_ibu = $nama_ibu;
-            $siswa->pendidikan_ibu = $pendidikan_ibu;
-            $siswa->pekerjaan_ibu = $pekerjaan_ibu;
-            $siswa->tingkat = $tingkat;
-            $siswa->jurusan_id = $jurusan->id;
-            $siswa->status = 'y';
-            $siswa->user_id = $uuid;
-            $siswa->save();
+                // Ambil jurusan dari tabel kejuruan berdasarkan nama_kejuruan
+                $jurusan = Kejuruan::where('nama_kejuruan', 'like', '%' . $r[21] . '%')->first();
 
-            $count++;
+                // Simpan data ke tabel siswa
+                $siswa = new Siswa();
+                $siswa->nisn = $nisn;
+                $siswa->nik = $nik;
+                $siswa->tempat_lahir = $tempat_lahir;
+                $siswa->tanggal_lahir = $tanggal_lahir;
+                $siswa->agama = $agama;
+                $siswa->rt = $rt;
+                $siswa->rw = $rw;
+                $siswa->kelurahan = $kelurahan;
+                $siswa->kecamatan = $kecamatan;
+                $siswa->kode_pos = $kodepos;
+                $siswa->anak_ke = $anakke;
+                $siswa->nama_ayah = $nama_ayah;
+                $siswa->pendidikan_ayah = $pendidikan_ayah;
+                $siswa->pekerjaan_ayah = $pekerjaan_ayah;
+                $siswa->nama_ibu = $nama_ibu;
+                $siswa->pendidikan_ibu = $pendidikan_ibu;
+                $siswa->pekerjaan_ibu = $pekerjaan_ibu;
+                $siswa->tingkat = $tingkat;
+                $siswa->jurusan_id = $jurusan->id ? $jurusan->id : null; // Pastikan jurusan_id tidak null
+                $siswa->status = 'y';
+                $siswa->user_id = $uuid;
+                $siswa->save();
+
+                $count++;
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Berhasil Menambah '. $count .' Data Siswa'], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Gagal Menambah Data Siswa: ' . $e->getMessage()], 500);
         }
-
-        DB::commit();
-
-        return response()->json(['message' => 'Berhasil Menambah '. $count .' Data Siswa'], 200);
     }
+
 
     // data siswa
     public function data_siswa(Request $request)
@@ -971,7 +989,7 @@ class AdminController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary siswa" id="'.$row->nama_rombel.'" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary siswa" data-kelas="'.$row->nama_rombel.'" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
                 ->addColumn('status', function ($row) {
@@ -1198,7 +1216,7 @@ class AdminController extends Controller
 
         DB::commit();
 
-        return response()->json(['message' => 'Berhasil Import '. $count . 'Data Mapel'], 200);
+        return response()->json(['message' => 'Berhasil Import '. $count . ' Data Mapel'], 200);
     }
 
     // ekskul
