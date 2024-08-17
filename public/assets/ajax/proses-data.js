@@ -913,6 +913,52 @@ $(document).ready(function () {
         });
     });
 
+    $("#import-mapel").on('click', '.import', function (e) {
+        e.preventDefault();
+        let file = $('#import-mapel')[0];
+        let data = new FormData(file);
+
+        $.ajax({
+            url: "import-mapel",
+            data: data,
+            processData: false,
+            contentType: false,
+            method: "POST",
+            success: function (response) {
+                $("#import").modal('hide');
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
+                $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
+                data_mapel.ajax.reload();
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.error;
+                    let errorMessages = '';
+
+                    $.each(errors, function (key, messages) {
+                        $.each(messages, function (index, message) {
+                            errorMessages += message + '<br>';
+                        });
+                    });
+                    $("#error-message").show();
+                    $('#error-message').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                    $('#error-message').fadeIn().delay(3000).fadeOut(function () {
+                        $(this).empty();
+                    });
+                }
+            }
+        });
+    });
+
     // confirm delete mapel
     $(".mapel").on('click', '.hapus', function () {
         let id = $(this).data('id');

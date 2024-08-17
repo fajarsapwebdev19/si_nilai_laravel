@@ -34,6 +34,11 @@
                         <div class="text-truncate">Data Kejuruan</div>
                     </a>
                 </li>
+                <li class="menu-item {{ Request::is('admin/data/mapel') ? 'active' : '' }}">
+                    <a href="{{route('data-mapel')}}" class="menu-link">
+                        <div class="text-truncate">Data Mapel</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Request::is('admin/data/guru') ? 'active' : '' }}">
                     <a href="{{route('data-guru')}}" class="menu-link">
                         <div class="text-truncate">Data Guru</div>
@@ -47,11 +52,6 @@
                 <li class="menu-item {{ Request::is('admin/data/kelas') ? 'active' : '' }}">
                     <a href="{{route('data-kelas')}}" class="menu-link">
                         <div class="text-truncate">Data Kelas</div>
-                    </a>
-                </li>
-                <li class="menu-item {{ Request::is('admin/data/mapel') ? 'active' : '' }}">
-                    <a href="{{route('data-mapel')}}" class="menu-link">
-                        <div class="text-truncate">Data Mapel</div>
                     </a>
                 </li>
                 <li class="menu-item {{ Request::is('admin/data/ekskul') ? 'active' : '' }}">

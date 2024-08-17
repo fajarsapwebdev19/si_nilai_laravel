@@ -1,27 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Form Input Angka</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <form>
-        <label for="numberInput">Masukkan angka (maksimal 10 digit):</label>
-        <input type="text" id="numberInput" maxlength="10" inputmode="numeric" pattern="[0-9]*" placeholder="Masukkan angka" />
-    </form>
+Tidak Bekerja,Nelayan,Petani,Peternak,PNS/TNI/Polri,Karyawan Swasta,Pedagang Kecil,Pedagang Besar,Wiraswasta,Wirausaha,Buruh,Pensiunan,Meninggal Dunia
 
-    <script>
-        $(document).ready(function() {
-            $('#numberInput').on('input', function() {
-                this.value = this.value.replace(/[^0-9]/g, ''); // Hanya angka yang diperbolehkan
-                if (this.value.length > 10) {
-                    this.value = this.value.slice(0, 10); // Batas panjang maksimum 10 digit
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+Tidak Sekolah,Putus SD,SD Sederajat,SMP Sederajat,SMA Sederajat,D1,D2,D3,D4/S1,S2,S3
+
+

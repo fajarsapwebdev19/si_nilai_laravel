@@ -531,7 +531,8 @@ class AdminController extends Controller
     }
 
     // get data siswa dari id class
-    public function get_siswa_tingkat(Request $request){
+    public function get_siswa_tingkat(Request $request)
+    {
         $id = $request->id;
         $kelas = Kelas::where('id', $id)->first();
         $tingkat = $kelas->tingkat;
@@ -754,6 +755,8 @@ class AdminController extends Controller
             $ks->class_id = NULL;
             $ks->save();
 
+            $jurusan = Kejuruan::where('nama_kejuruan', 'like', '%' . $r[21] . '%')->first();
+
             $siswa = new Siswa();
             $siswa->nisn = $nisn;
             $siswa->nik = $nik;
@@ -773,6 +776,7 @@ class AdminController extends Controller
             $siswa->pendidikan_ibu = $pendidikan_ibu;
             $siswa->pekerjaan_ibu = $pekerjaan_ibu;
             $siswa->tingkat = $tingkat;
+            $siswa->jurusan_id = $jurusan->id;
             $siswa->status = 'y';
             $siswa->user_id = $uuid;
             $siswa->save();
@@ -1135,6 +1139,66 @@ class AdminController extends Controller
         $mapel->delete();
 
         return response()->json(['message' => 'Berhasil Hapus Data Mapel'], 200);
+    }
+
+    // import
+    public function import_mapel(Request $request)
+    {
+        $rules = [
+            'file' => 'required|file|mimes:xlsx',
+        ];
+
+        $messages = [
+            'file.required' => 'File harus diunggah',
+            'file.file' => 'File yang diunggah harus berupa file',
+            'file.mimes' => 'File yang diunggah harus berformat xlsx'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails())
+        {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+
+        // spreadsheet
+        $spreadsheet = IOFactory::load($path);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        array_shift($rows);
+        DB::beginTransaction();
+
+        $count = 0;
+
+        foreach($rows as $r)
+        {
+            $jurusan = Kejuruan::where('nama_kejuruan', 'like', '%' . $r[4] . '%')->first();
+
+            $mapel = new Mapel();
+            $mapel->id = Uuid::uuid4()->toString();
+            $mapel->kelompok = $r[0];
+            $mapel->kode = $r[1];
+            $mapel->nama_mapel = $r[2];
+            $mapel->tingkat = $r[3];
+            $mapel->jurusan_id = $jurusan->id;
+            $mapel->kkm = $r[5];
+            $mapel->save();
+
+            $g_mapel = new GuruMapel();
+            $g_mapel->mapel_id = $mapel->id;
+            $g_mapel->guru_id = NULL;
+            $g_mapel->save();
+
+            $count++;
+        }
+
+        DB::commit();
+
+        return response()->json(['message' => 'Berhasil Import '. $count . 'Data Mapel'], 200);
     }
 
     // ekskul

@@ -102,6 +102,7 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::post('admin/data/import_siswa', [AdminController::class, 'import_siswa']); // import data siswa
     Route::post('admin/data/import-guru', [AdminController::class, 'import_guru']); // import data guru
     Route::post('admin/data/import-kejuruan', [AdminController::class, 'import_kejuruan']); // import data jurusan
+    Route::post('admin/data/import-mapel', [AdminController::class, 'import_mapel']); // import data jurusan
 
     // Route Set Data
     Route::post('admin/pengaturan/select_guru_mapel', [AdminController::class, 'select_guru_mapel']); // pilih guru per mapel
