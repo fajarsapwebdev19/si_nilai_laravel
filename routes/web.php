@@ -23,6 +23,7 @@ Route::middleware(['checkrole:1'])->group(function () {
     // Route halaman
     Route::get('/admin/', [AdminController::class, 'index'])->name('dashboard-admin');
     Route::get('admin/manajemen_akun/', [AdminController::class, 'account'])->name('manajemen-akun');
+    Route::get('admin/data/tahun_ajaran', [AdminController::class, 'tahun_ajaran'])->name('data-tahun-ajaran');
     Route::get('admin/data/kejuruan', [AdminController::class, 'kejuruan'])->name('data-kejuruan');
     Route::get('admin/data/guru', [AdminController::class, 'teacher'])->name('data-guru');
     Route::get('admin/data/siswa', [AdminController::class, 'student'])->name('data-siswa');
@@ -42,11 +43,14 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/data/data_kelas', [AdminController::class, 'data_kelas']); // data kelas
     Route::get('admin/data/data_mapel', [AdminController::class, 'data_mapel']); // data mapel
     Route::get('admin/data/data_ekskul', [AdminController::class, 'data_ekskul']); //data ekskul
+    Route::get('admin/data/data_tahun_ajaran', [AdminController::class, 'data_tahun_ajaran']); // data tahun ajaran
     Route::get('admin/pengaturan/get_kelas_wakel', [AdminController::class, 'get_kelas_wakel']); // set wakel
     Route::get('admin/pengaturan/data_guru_mapel', [AdminController::class, 'data_guru_mapel']); // set mapel
 
+
     // Route Tambah Data
     Route::post('admin/tambah_akun', [AdminController::class, 'tambah_akun']); // data akun admin
+    Route::post('admin/data/tambah_tahun_ajaran', [AdminController::class, 'tambah_th_aj']); // data guru
     Route::post('admin/data/tambah_guru', [AdminController::class, 'tambah_guru']); // data guru
     Route::post('admin/data/tambah_siswa', [AdminController::class, 'tambah_siswa']); // data siswa
     Route::post('admin/data/tambah_kelas', [AdminController::class, 'tambah_kelas']); // data kelas
@@ -64,9 +68,11 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::put('admin/data/ubah_ekskul/{id}', [AdminController::class, 'ubah_ekskul']); //data ekskul
     Route::post('admin/pengaturan/update_profile_sekolah', [AdminController::class, 'update_profile_sekolah']); // profil sekolah
     Route::put('admin/data/ubah_kejuruan/{id}', [AdminController::class, 'ubah_kejuruan']); // data kejuruan
+    Route::put('admin/data/ubah_tahun_ajaran/{id}', [AdminController::class, 'ubah_tahun_ajaran']); // data kejuruan
 
     // Route Hapus Data
     Route::get('admin/hapus_akun/{id}', [AdminController::class, 'hapus_akun']); // data akun admin
+    Route::get('admin/data/hapus_tahun_ajaran/{id}', [AdminController::class, 'hapus_tahun_ajaran']); // data tahun ajaran
     Route::get('admin/data/hapus_guru/{id}', [AdminController::class, 'hapus_guru']); // data guru
     Route::get('admin/data/hapus_kelas/{id}', [AdminController::class, 'hapus_kelas']); // data kelas
     Route::get('admin/data/hapus_mapel/{id}', [AdminController::class, 'hapus_mapel']); //data mapel
@@ -79,6 +85,7 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/get_users_delete/{id}', [AdminController::class, 'get_users_delete']); // data akun admin
     Route::get('admin/data/get_teacher_edit/{id}', [AdminController::class, 'get_teacher_edit']); // data guru
     Route::get('admin/data/get_teacher_delete/{id}', [AdminController::class, 'get_teacher_delete']); //data guru
+    Route::get('admin/data/get_tahun_ajaran/{id}', [AdminController::class, 'get_data_th_aj']); //data siswa
     Route::get('admin/data/get_siswa/{id}', [AdminController::class, 'get_siswa']); //data siswa
     Route::get('admin/data/get_data_kelas', [AdminController::class, 'get_data_kelas']); // semua data kelas
     Route::get('admin/data/get_kelas/{id}', [AdminController::class, 'get_class']); // data kelas
@@ -92,7 +99,8 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/data/get_student_class/{id}', [AdminController::class, 'get_siswa_class']); // siswa class
     Route::get('admin/data/get_kejuruan/{id}', [AdminController::class, 'get_kejuruan']); // ambil data kejuruan
     Route::get('admin/data/get_jurusan', [AdminController::class, 'get_jurusan']); // ambil data jurusan
-    Route::get('admin/pengaturan/profil_smk', [AdminController::class, 'profil_smk']);
+    Route::get('admin/data/get_data_siswa/{id}', [AdminController::class, 'get_siswa_users']); // data username siswa
+    Route::get('admin/pengaturan/profil_smk', [AdminController::class, 'profil_smk']); // profil sekolah
 
     // Route kirim dan keluarkan siswa di kelas
     Route::post('admin/data/send_student_to_class', [AdminController::class, 'send_student_class']); // mengirim siswa ke kelas
@@ -115,12 +123,18 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/pengaturan/logout', [AuthController::class, 'logout']);
     // tess
     Route::get('admin/get_message', [AdminController::class, 'getMessages']);
+
+
+    // test
+
+
 });
 
 Route::middleware(['checkrole:2'])->group(function () {
     Route::get('guru/', [TeacherController::class, 'home']);
     Route::get('logout', [AuthController::class, 'logout']);
 });
+
 
 
 

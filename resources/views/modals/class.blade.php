@@ -145,3 +145,33 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="pengguna" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Username Siswa <span class="title-kelas"></span></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" id="get_siswa">
+                <div class="modal-body">
+                    <div class="messages-class"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table siswa_users">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Siswa</th>
+                                        <th>Username</th>
+                                        <th>Password</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

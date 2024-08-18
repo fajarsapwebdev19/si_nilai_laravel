@@ -16,6 +16,7 @@ class TableTahunAjaran extends Migration
         Schema::create('tahun_ajaran', function(Blueprint $table){
             $table->id();
             $table->string('tahun')->nullable();
+            $table->string('semester')->nullable();
             $table->enum('status', ['Y', 'N'])->nullable();
         });
     }

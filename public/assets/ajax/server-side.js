@@ -95,6 +95,7 @@ function get_class_id(class_id) {
     if ($.fn.DataTable.isDataTable('.no-class')) {
         $('.no-class').DataTable().destroy();
     }
+
     if ($.fn.DataTable.isDataTable('.student-class')) {
         $('.student-class').DataTable().destroy();
     }
@@ -118,6 +119,24 @@ function get_class_id(class_id) {
             {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
             {data: 'nisn', name: 'nisn'},
             {data: 'nama', name: 'nama'}
+        ]
+    });
+}
+
+function get_siswa_user(id)
+{
+    if ($.fn.DataTable.isDataTable('.siswa_users')) {
+        $('.siswa_users').DataTable().destroy();
+    }
+
+    $('.siswa_users').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "get_data_siswa/" + id,
+        columns:[
+            {data: 'nama', name: 'nama'},
+            {data: 'username', name: 'username'},
+            {data: 'real_password', name: 'real_password'}
         ]
     });
 }
@@ -156,6 +175,19 @@ let guru_mapel = $('.gm').DataTable({
         {data: 'mapel.tingkat', name: 'mapel.tingkat'},
         {data: 'mapel.jurusan.nama_kejuruan', name: 'mapel.jurusan.nama_kejuruan'},
         {data: 'guru.personal_data.nama', name: 'guru.personal_data.nama'},
+        {data: 'action', name: 'action', orderable: false, searchable: false}
+    ]
+});
+
+let tahun_ajaran = $('.th_aj').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "data_tahun_ajaran",
+    columns:[
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'tahun', name: 'tahun'},
+        {data: 'semester', name: 'semester'},
+        {data: 'status', name: 'status'},
         {data: 'action', name: 'action', orderable: false, searchable: false}
     ]
 });

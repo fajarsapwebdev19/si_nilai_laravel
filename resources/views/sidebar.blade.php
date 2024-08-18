@@ -29,6 +29,11 @@
                 <div class="text-truncate">Master Data</div>
             </a>
             <ul class="menu-sub">
+                <li class="menu-item {{ Request::is('admin/data/tahun_ajaran') ? 'active' : '' }}">
+                    <a href="{{route('data-tahun-ajaran')}}" class="menu-link">
+                        <div class="text-truncate">Data Tahun Ajaran</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
                     <a href="{{route('data-kejuruan')}}" class="menu-link">
                         <div class="text-truncate">Data Kejuruan</div>

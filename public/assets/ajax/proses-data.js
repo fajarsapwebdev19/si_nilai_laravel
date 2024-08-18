@@ -561,6 +561,14 @@ $(document).ready(function () {
         $('#siswa').modal('show');
     });
 
+    $(".kelas").on("click", ".pengguna", function () {
+        let id = $(this).data('id');
+        get_siswa_user(id);
+        var kelas = $(this).data('kelas');
+        $(".title-kelas").html(kelas);
+        $('#pengguna').modal('show');
+    });
+
     $("#get_siswa").on('click', '#assign', function () {
         let selectid = [];
         let token = $('input[name=_token]').val();
@@ -1457,4 +1465,163 @@ $('.logout').click(function(){
     });
 });
 
+// tambah tahun ajaran
+$('#tambah-tahun-ajaran').on('click', '.simpan', function(e){
+    e.preventDefault();
+    let form = $('#tambah-tahun-ajaran');
+    let data = form.serialize();
+
+    $.ajax({
+        url: "tambah_tahun_ajaran",
+        method: "POST",
+        data: data,
+        success:function(response)
+        {
+            $('#tambah').modal('hide');
+            form[0].reset();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            tahun_ajaran.ajax.reload();
+        },
+        error: function (xhr) {
+            $('#tambah').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
+        }
+    });
+});
+
+// ubah tahun ajaran
+$('#ubah-tahun-ajaran').on('click', '.simpan', function(e){
+    e.preventDefault();
+    let form = $('#ubah-tahun-ajaran');
+    let id = $('#ubah-tahun-ajaran input[name=id]').val();
+    let data = form.serialize();
+    $.ajax({
+        url: "ubah_tahun_ajaran/"+id,
+        method: "PUT",
+        data: data,
+        success:function(response)
+        {
+            $('#ubah').modal('hide');
+            form[0].reset();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            tahun_ajaran.ajax.reload();
+        },
+        error: function (xhr) {
+            $('#ubah').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
+        }
+    });
+});
+
+// tahun ajaran ubah klik button
+$('.th_aj').on('click', '.ubah', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: 'get_tahun_ajaran/' + id,
+        method: 'GET',
+        success:function(response)
+        {
+            $('#ubah').modal('show');
+            $('#ubah-tahun-ajaran input[name=id]').val(response.id);
+            $('#ubah-tahun-ajaran input[name=tahun_ajaran]').val(response.tahun);
+            $('#ubah-tahun-ajaran input[name=semester]').val(response.semester);
+        }
+    });
+});
+
+$('.th_aj').on('click', '.hapus', function(){
+    let id = $(this).data('id');
+
+    $.ajax({
+        url: 'get_tahun_ajaran/' + id,
+        method: 'GET',
+        success:function(response)
+        {
+            $('#hapus').modal('show');
+            $('#hapus-tahun-ajaran input[name=id]').val(response.id);
+        }
+    });
+});
+
+$('#hapus-tahun-ajaran').on('click', '.ya', function(e){
+    e.preventDefault();
+
+    let id = $('#hapus-tahun-ajaran input[name=id]').val();
+
+    $.ajax({
+        url: "hapus_tahun_ajaran/"+id,
+        method: "GET",
+        success:function(response)
+        {
+            $('#hapus').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            tahun_ajaran.ajax.reload();
+        },
+        error: function (xhr) {
+            $('#hapus').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
+        }
+    });
+});
 

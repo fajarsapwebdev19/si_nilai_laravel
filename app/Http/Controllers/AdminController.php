@@ -144,6 +144,84 @@ class AdminController extends Controller
         return response()->json(['message' => 'Berhasil Hapus Akun Admin'], 200);
     }
 
+    // tahun ajaran
+
+    public function tahun_ajaran(){
+        return view('tahun_ajaran');
+    }
+
+    public function data_tahun_ajaran(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = TahunAjaran::all();
+
+            // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    // Tombol aksi untuk setiap baris data
+                    $btn = '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> ';
+                    $btn .= '<button class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    return $btn;
+                })
+                ->addColumn('status', function ($row) {
+                    $status = $row->status == "Y" ? '<em class="fas fa-check-circle text-success"></em>' : '<em class="fas fa-times-circle text-danger"></em>';
+                    return $status;
+                })
+                ->rawColumns(['action', 'status']) // Menandakan kolom yang berisi HTML
+                ->toJson(); // Mengonversi data menjadi format JSON
+        }
+    }
+
+    public function get_data_th_aj($id)
+    {
+        $th = TahunAjaran::where('id', $id)->first();
+
+        return response()->json($th);
+    }
+
+    public function tambah_th_aj(Request $request)
+    {
+        $tahun_ajaran = $request->tahun_ajaran;
+        $semester = $request->semester;
+
+        $th = new TahunAjaran();
+        $th->tahun = $tahun_ajaran;
+        $th->semester = $semester;
+        $th->status = "N";
+        $th->save();
+
+        return response()->json(['message' => "Berhasil Tambah Tahun Ajaran"]);
+    }
+
+    public function ubah_tahun_ajaran($id, Request $request)
+    {
+        $tahun_ajaran = $request->tahun_ajaran;
+        $semester = $request->semester;
+
+        $th = TahunAjaran::where('id', $id)->first();
+        $th->tahun = $tahun_ajaran;
+        $th->semester = $semester;
+        $th->save();
+
+        return response()->json(['message' => "Berhasil Ubah Tahun Ajaran"]);
+    }
+
+    public function hapus_tahun_ajaran($id)
+    {
+        $th = TahunAjaran::where('id', $id)->first();
+
+        if($th->status == "Y")
+        {
+            return response()->json(['error' => "Gagal Hapus, Tahun Ajaran Masih Aktif"], 400);
+        }else{
+            $th->delete();
+        }
+
+        return response()->json(['message' => "Berhasil Hapus Tahun Ajaran"]);
+    }
+
     // kejuruan
 
     public function kejuruan()
@@ -989,7 +1067,7 @@ class AdminController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary siswa" data-kelas="'.$row->nama_rombel.'" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus" data-id="' . $row->id . '">Hapus</button>';
+                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary pengguna mb-2" data-kelas="'.$row->nama_rombel.'" data-id="' . $row->id . '">Pengguna</button> <button type="button" class="badge rounded-pill text-bg-primary siswa mb-2" data-kelas="'.$row->nama_rombel.'" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah mb-2" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus mb-2" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
                 ->addColumn('status', function ($row) {
@@ -1155,6 +1233,9 @@ class AdminController extends Controller
     {
         $mapel = Mapel::findOrFail($id);
         $mapel->delete();
+
+        $gmapel = GuruMapel::where('mapel_id', $id);
+        $gmapel->delete();
 
         return response()->json(['message' => 'Berhasil Hapus Data Mapel'], 200);
     }
@@ -1543,14 +1624,40 @@ class AdminController extends Controller
             ->map(function ($info) {
                 return [
                     'id' => $info->id,
+                    'nama' => $info->user->personalData->nama,
                     'judul' => $info->judul,
                     'isi' => $info->isi,
-                    'created_at' => $info->created_at,
-                    'personal_data_name' => $info->user->personalData->nama ?? null,
+                    'created_at' => $info->create_at,
                 ];
             });
 
         // Mengembalikan data dalam format JSON
         return response()->json($data);
+    }
+
+    public function get_siswa_users(Request $request, $id)
+    {
+        $kelas = Kelas::findOrFail($id);
+        $tingkat = $kelas->tingkat;
+        $jurusan_id = $kelas->jurusan_id;
+
+        if($request->ajax())
+        {
+            $siswa = User::select('personal_data.nama', 'username', 'real_password')
+            ->leftJoin('personal_data', 'users.personal_id', '=', 'personal_data.id')
+            ->leftJoin('siswa', 'siswa.user_id', '=', 'users.id')
+            ->leftJoin('kelas_siswa', 'kelas_siswa.user_id', '=', 'users.id')
+            ->leftJoin('kelas', 'kelas_siswa.class_id', '=', 'kelas.id')
+            ->where('users.role_id', 3)
+            ->where('siswa.tingkat', $tingkat)
+            ->where('siswa.jurusan_id', $jurusan_id)
+            ->where('siswa.status', 'y')
+            ->orderBy('personal_data.nama', 'asc')
+            ->get();
+
+            return DataTables::of($siswa)
+                ->addIndexColumn()
+                ->toJson();
+        }
     }
 }
