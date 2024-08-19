@@ -1620,19 +1620,27 @@ class AdminController extends Controller
         // Mengambil data dengan relasi
         $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
             ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
-            ->get()
-            ->map(function ($info) {
-                return [
-                    'id' => $info->id,
-                    'nama' => $info->user->personalData->nama,
-                    'judul' => $info->judul,
-                    'isi' => $info->isi,
-                    'created_at' => $info->create_at,
-                ];
-            });
+            ->get();
 
-        // Mengembalikan data dalam format JSON
+
+        return view('data_pesan', compact('data'));
+    }
+
+    public function getPesan($id){
+        $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
+            ->where('id', $id)
+            ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
+            ->get();
+
         return response()->json($data);
+    }
+
+    public function hapusPesan($id)
+    {
+        $pesan = Info::where('id', $id)->first();
+        $pesan->delete();
+
+        return response()->json(['message' => 'Berhasil Hapus Pesan']);
     }
 
     public function get_siswa_users(Request $request, $id)

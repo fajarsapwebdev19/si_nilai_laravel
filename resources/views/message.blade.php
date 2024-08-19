@@ -6,12 +6,14 @@
             <h6>Pesan</h6>
 
             <div class="row">
-                <div class="col-md-6 mb-2">
-                    <div class="card">
-                        <div class="card-body">
+                <div class="col-md-12">
+                    <div class="messages"></div>
+                </div>
+            </div>
 
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="message-data"></div>
                 </div>
                 <div class="col-md-6 mb-2">
                     <div class="card">
@@ -36,4 +38,5 @@
         </div>
     </div>
 </div>
+@include('modals.pesan')
 @endsection

@@ -122,7 +122,9 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/data/logout', [AuthController::class, 'logout']);
     Route::get('admin/pengaturan/logout', [AuthController::class, 'logout']);
     // tess
-    Route::get('admin/get_message', [AdminController::class, 'getMessages']);
+    Route::get('admin/data_pesan', [AdminController::class, 'getMessages']);
+    Route::get('admin/get_pesan/{id}', [AdminController::class, 'getPesan']);
+    Route::get('admin/hapus_pesan/{id}', [AdminController::class, 'hapusPesan']);
 
 
     // test

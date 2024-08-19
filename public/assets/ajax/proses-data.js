@@ -1433,6 +1433,21 @@ $('#pilih-guru-mapel').on('click', '.simpan', function(){
     });
 });
 
+// pesan
+
+function message_data(){
+    $.ajax({
+        url: "data_pesan",
+        method: "GET",
+        success:function(response)
+        {
+            $('#message-data').html(response);
+        }
+    });
+}
+
+message_data();
+
 $('#send-info').on('click', '.simpan', function(e){
     e.preventDefault();
 
@@ -1445,7 +1460,90 @@ $('#send-info').on('click', '.simpan', function(e){
         method: 'POST',
         success:function(response)
         {
-            alert(response.message);
+            form[0].reset();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            message_data();
+        },
+        error: function (xhr) {
+            message_data();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
+        }
+    });
+});
+
+$("#message-data").on('click', '.hapus', function(){
+    let id = $(this).data('id');
+    let title = $(this).data('title');
+
+    $.ajax({
+        url: 'get_pesan/'+id,
+        method: "GET",
+        success:function(response)
+        {
+            $('#hapus').modal('show');
+            $('#title-message').text(title);
+            $('#hapus-pesan input[name=id]').val(response[0].id);
+        }
+    });
+});
+
+$('#hapus-pesan').on('click', '.ya', function(e){
+    e.preventDefault();
+    let id = $('#hapus-pesan input[name=id]').val();
+
+    $.ajax({
+        url: 'hapus_pesan/'+id,
+        method: "GET",
+        success:function(response)
+        {
+            $("#hapus").modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                });
+            }, 3000);
+            message_data();
+        },
+        error: function (xhr) {
+            $("#hapus").modal('hide');
+            message_data();
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
         }
     });
 });
@@ -1624,4 +1722,7 @@ $('#hapus-tahun-ajaran').on('click', '.ya', function(e){
         }
     });
 });
+
+
+
 
