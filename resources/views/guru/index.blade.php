@@ -1,4 +1,4 @@
-@extends('dash')
+@extends('guru.home')
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
@@ -17,7 +17,7 @@
                   </div>
                 </div>
                 <span class="fw-medium d-block mb-1">Siswa</span>
-                <h4 class="card-title mb-2">{{$siswa}}</h4>
+                <h4 class="card-title mb-2">{{@$siswa}}</h4>
               </div>
             </div>
           </div>
@@ -30,7 +30,7 @@
                   </div>
                 </div>
                 <span class="fw-medium d-block mb-1">Guru</span>
-                <h4 class="card-title mb-2">{{$guru}}</h4>
+                <h4 class="card-title mb-2">{{@$guru}}</h4>
               </div>
             </div>
           </div>
@@ -43,7 +43,7 @@
                   </div>
                 </div>
                 <span class="fw-medium d-block mb-1">Rombel</span>
-                <h4 class="card-title mb-2">{{$kelas}}</h4>
+                <h4 class="card-title mb-2">{{@$kelas}}</h4>
               </div>
             </div>
           </div>
@@ -56,7 +56,7 @@
                   </div>
                 </div>
                 <span class="fw-medium d-block mb-1">Pengguna</span>
-                <h4 class="card-title mb-2">{{$pengguna}}</h4>
+                <h4 class="card-title mb-2">{{@$pengguna}}</h4>
               </div>
             </div>
           </div>

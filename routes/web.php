@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 
 /*
@@ -126,16 +127,48 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/get_pesan/{id}', [AdminController::class, 'getPesan']);
     Route::get('admin/hapus_pesan/{id}', [AdminController::class, 'hapusPesan']);
 
+    // hitung data
+    Route::get('hitung_siswa', [AdminController::class, 'hitung_data_siswa']);
+    Route::get('pesan_dashboard', [AdminController::class, 'dashboard_message']);
 
-    // test
 
 
 });
 
 Route::middleware(['checkrole:2'])->group(function () {
-    Route::get('guru/', [TeacherController::class, 'home']);
+    Route::get('guru/', [TeacherController::class, 'home'])->name('home');
     Route::get('logout', [AuthController::class, 'logout']);
+
+    // hitung data
+    Route::get('hitung_siswa', [AdminController::class, 'hitung_data_siswa']);
+    Route::get('pesan_dashboard', [AdminController::class, 'dashboard_message']);
+
+    Route::get('guru/input/show_mapel', [TeacherController::class, 'show_mapel']);
+    Route::get('guru/input/show_siswa_sikap', [TeacherController::class, 'show_siswa_sikap']);
+    Route::get('guru/input/show_siswa_absensi', [TeacherController::class, 'show_siswa_absensi']);
+    Route::get('guru/input/show_siswa_ekskul', [TeacherController::class, 'show_siswa_absensi']);
+
+    // Route Halaman
+    Route::get('guru/input/nilai', [TeacherController::class, 'input_nilai'])->name('input_nilai');
+    Route::get('guru/input/nilai_sikap', [TeacherController::class, 'input_nilai_sikap'])->name('input_nilai_sikap');
+    Route::get('guru/input/absensi', [TeacherController::class, 'input_absensi'])->name('input_absensi');
+    Route::get('guru/input/nilai_ekskul', [TeacherController::class, 'nilai_ekskul'])->name('nilai_ekskul');
+    Route::get('guru/input/kenaikan', [TeacherController::class, 'kenaikan'])->name('kenaikan');
+    Route::get('guru/cetak/raport', [TeacherController::class, 'cetak_raport'])->name('cetak_raport');
+    Route::get('guru/cetak/leger', [TeacherController::class, 'cetak_leger'])->name('cetak_leger');
 });
+
+Route::middleware(['checkrole:3'])->group(function () {
+    Route::get('siswa/', [StudentController::class, 'home'])->name('home_siswa');
+    Route::get('siswa/lihat_nilai', [StudentController::class, 'lihat_nilai'])->name('lihat_nilai');
+    Route::get('siswa/cetak_raport', [StudentController::class, 'cetak_raport'])->name('cetak_raport_siswa');
+
+    // admin
+    // hitung data
+    Route::get('hitung_siswa', [AdminController::class, 'hitung_data_siswa']);
+    Route::get('pesan_dashboard', [AdminController::class, 'dashboard_message']);
+});
+
 
 
 

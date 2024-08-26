@@ -48,6 +48,16 @@ class CheckRoleAndLogin
                 Session::put('dataGuru', $dataGuru);
                 View::share('dataGuru', $dataGuru);
             }
+            else if($user->role_id == "3")
+            {
+                $dataSiswa = DB::table('siswa')
+                ->select('*')
+                ->where('user_id', $user->id)
+                ->first();
+
+                Session::put('dataSiswa', $dataSiswa);
+                View::share('dataSiswa', $dataSiswa);
+            }
 
             // Store user data in session
             Session::put('userData', $userData);

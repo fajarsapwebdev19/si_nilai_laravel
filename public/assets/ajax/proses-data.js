@@ -1723,6 +1723,121 @@ $('#hapus-tahun-ajaran').on('click', '.ya', function(e){
     });
 });
 
+$.ajax({
+    url: 'hitung_siswa',
+    method: 'GET',
+    success: function(response) {
+        let namaRombel = [];
+        let lakiLaki = [];
+        let perempuan = [];
 
+        response.forEach(function(data) {
+            namaRombel.push(data.nama_rombel);
+            lakiLaki.push(data.L);
+            perempuan.push(data.P);
+        });
 
+        var options = {
+            chart: {
+                type: 'bar',
+                height: 400
+            },
+            series: [{
+                name: 'Laki-Laki',
+                data: lakiLaki
+            }, {
+                name: 'Perempuan',
+                data: perempuan
+            }],
+            xaxis: {
+                categories: namaRombel
+            },
+            yaxis: {
+                title: {
+                    text: 'Jumlah Siswa'
+                }
+            },
+            title: {
+                text: 'Jumlah Siswa Per Kelas Berdasarkan Jenis Kelamin',
+                align: 'center'
+            }
+        }
 
+        var chart = new ApexCharts(document.querySelector("#siswa-count-chart"), options);
+
+        chart.render();
+    }
+});
+
+function pesan(){
+    $.ajax({
+        url: "pesan_dashboard",
+        method: "GET",
+        success:function(response)
+        {
+            $('#pesan').html(response);
+        }
+    });
+}
+
+pesan();
+
+$('#filter-nilai').on('click', '.filter', function(e)
+{
+    e.preventDefault();
+    let tapel = $('select[name=tahun_ajaran]').val();
+
+    if(tapel == "")
+    {
+        alert('Pilih Tahun Ajaran Terlebih Dahulu');
+    }else{
+        $.ajax({
+            url: 'show_mapel',
+            method: 'GET',
+            success:function(response)
+            {
+                $('#show_mapel').html(response);
+            }
+        });
+    }
+});
+
+$('#filter-nilai-sikap').on('click', '.filter', function(e)
+{
+    e.preventDefault();
+    let tapel = $('select[name=tahun_ajaran]').val();
+
+    if(tapel == "")
+    {
+        alert('Pilih Tahun Ajaran Terlebih Dahulu');
+    }else{
+        $.ajax({
+            url: 'show_siswa_sikap',
+            method: 'GET',
+            success:function(response)
+            {
+                $('#show_siswa_sikap').html(response);
+            }
+        });
+    }
+});
+
+$('#filter-rekap-absensi').on('click', '.filter', function(e)
+{
+    e.preventDefault();
+    let tapel = $('select[name=tahun_ajaran]').val();
+
+    if(tapel == "")
+    {
+        alert('Pilih Tahun Ajaran Terlebih Dahulu');
+    }else{
+        $.ajax({
+            url: 'show_siswa_absensi',
+            method: 'GET',
+            success:function(response)
+            {
+                $('#show_siswa_absensi').html(response);
+            }
+        });
+    }
+});

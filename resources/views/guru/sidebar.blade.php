@@ -10,43 +10,43 @@
     <div class="menu-inner-shadow"></div>
     <ul class="menu-inner py-1">
         <!-- Dashboards -->
-        <li class="menu-item {{ Request::is('admin') ? 'active' : '' }}">
-            <a href="{{route('dashboard-admin')}}" class="menu-link">
+        <li class="menu-item {{ Request::is('guru') ? 'active' : '' }}">
+            <a href="{{route('home')}}" class="menu-link">
                 <i class="menu-icon fas fa-dashboard"></i>
                 <div class="text-truncate">Dashboard</div>
             </a>
         </li>
         <!-- master data -->
-        <li class="menu-item {{ Request::is('admin/data/*') ? 'active open' : '' }}">
+        <li class="menu-item {{ Request::is('guru/input/*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fas fa-pen"></i>
-                <div class="text-truncate">Input Nilai</div>
+                <div class="text-truncate">Input</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
-                    <a href="{{route('data-kejuruan')}}" class="menu-link">
+                <li class="menu-item {{ Request::is('guru/input/nilai') ? 'active' : '' }}">
+                    <a href="{{route('input_nilai')}}" class="menu-link">
                         <div class="text-truncate">Nilai Siswa</div>
                     </a>
                 </li>
                 @if($dataGuru->wali_kelas == "Y")
 
-                    <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
-                        <a href="{{route('data-kejuruan')}}" class="menu-link">
+                    <li class="menu-item {{ Request::is('guru/input/nilai_sikap') ? 'active' : '' }}">
+                        <a href="{{route('input_nilai_sikap')}}" class="menu-link">
                             <div class="text-truncate">Nilai Sikap</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
-                        <a href="{{route('data-kejuruan')}}" class="menu-link">
+                    <li class="menu-item {{ Request::is('guru/input/absensi') ? 'active' : '' }}">
+                        <a href="{{route('input_absensi')}}" class="menu-link">
                             <div class="text-truncate">Absensi</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
-                        <a href="{{route('data-kejuruan')}}" class="menu-link">
-                            <div class="text-truncate">Ekstrakulikuler</div>
+                    <li class="menu-item {{ Request::is('guru/input/nilai_ekskul') ? 'active' : '' }}">
+                        <a href="{{route('nilai_ekskul')}}" class="menu-link">
+                            <div class="text-truncate">Nilai Ekskul</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
-                        <a href="{{route('data-kejuruan')}}" class="menu-link">
+                    <li class="menu-item {{ Request::is('guru/input/kenaikan') ? 'active' : '' }}">
+                        <a href="{{route('kenaikan')}}" class="menu-link">
                             <div class="text-truncate">Kenaikan</div>
                         </a>
                     </li>
@@ -56,19 +56,19 @@
         <!-- /master data -->
         <!-- cetak -->
         @if($dataGuru->wali_kelas == "Y")
-        <li class="menu-item {{ Request::is('admin/data/*') ? 'active open' : '' }}">
+        <li class="menu-item {{ Request::is('guru/cetak/*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fas fa-print"></i>
                 <div class="text-truncate">Cetak</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
-                    <a href="{{route('data-kejuruan')}}" class="menu-link">
+                <li class="menu-item {{ Request::is('guru/cetak/raport') ? 'active' : '' }}">
+                    <a href="{{route('cetak_raport')}}" class="menu-link">
                         <div class="text-truncate">Raport</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
-                    <a href="{{route('data-kejuruan')}}" class="menu-link">
+                <li class="menu-item {{ Request::is('guru/cetak/leger') ? 'active' : '' }}">
+                    <a href="{{route('cetak_leger')}}" class="menu-link">
                         <div class="text-truncate">Leger</div>
                     </a>
                 </li>

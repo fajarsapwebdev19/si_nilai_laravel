@@ -1626,6 +1626,18 @@ class AdminController extends Controller
         return view('data_pesan', compact('data'));
     }
 
+    public function dashboard_message()
+    {
+        // Mengambil data dengan relasi
+        $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
+        ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
+        ->orderBy('create_at', 'asc') // Mengurutkan berdasarkan create_at secara ascending
+        ->get();
+
+
+        return view('pesan_in_dash', compact('data'));
+    }
+
     public function getPesan($id){
         $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
             ->where('id', $id)
@@ -1667,5 +1679,20 @@ class AdminController extends Controller
                 ->addIndexColumn()
                 ->toJson();
         }
+    }
+
+    public function hitung_data_siswa()
+    {
+        $data = DB::table('kelas as k')
+        ->leftJoin('kelas_siswa as ks', 'ks.class_id', '=', 'k.id')
+        ->leftJoin('users as u', 'u.id', '=', 'ks.user_id')
+        ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+        ->select('k.nama_rombel',
+                DB::raw("COUNT(CASE WHEN pd.jenis_kelamin = 'L' THEN 1 END) as L"),
+                DB::raw("COUNT(CASE WHEN pd.jenis_kelamin = 'P' THEN 1 END) as P"))
+        ->groupBy('k.nama_rombel')
+        ->get();
+
+        return response()->json($data);
     }
 }
