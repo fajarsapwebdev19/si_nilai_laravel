@@ -128,3 +128,29 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="users" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Data Pengguna Guru</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-success download-users-teacher">Download</button>
+                <table class="table pengguna-guru nowrap">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>JK</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Jenis PTK</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

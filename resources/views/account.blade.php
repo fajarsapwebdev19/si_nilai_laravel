@@ -34,3 +34,5 @@
         </div>
     </div>
 @endsection
+
+@section('pageTitle', 'Manajemen Akun')

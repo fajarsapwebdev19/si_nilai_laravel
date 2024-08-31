@@ -20,7 +20,6 @@ class TableNilaiSiswa extends Migration
             // Kolom nilai
             $table->decimal('nilai_pengetahuan', 5, 2);
             $table->decimal('nilai_keterampilan', 5, 2);
-            $table->decimal('nilai_sikap', 5, 2);
         });
     }
 

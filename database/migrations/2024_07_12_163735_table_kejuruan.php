@@ -16,6 +16,7 @@ class TableKejuruan extends Migration
         Schema::create('kejuruan', function(Blueprint $table){
             $table->string('id')->primary();
             $table->string('nama_kejuruan')->nullable();
+            $table->string('singkatan')->nullable();
         });
     }
 

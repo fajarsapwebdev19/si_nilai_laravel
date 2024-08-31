@@ -14,6 +14,10 @@
                         <label for="">Nama Kejuruan</label>
                         <input type="text" name="nama_kejuruan" class="form-control">
                     </div>
+                    <div class="form-group mb-2">
+                        <label for="">Singkatan</label>
+                        <input type="text" name="singkatan" class="form-control">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-lg btn-success simpan">Simpan</button>
@@ -40,6 +44,10 @@
                     <div class="form-group mb-2">
                         <label for="">Nama Kejuruan</label>
                         <input type="text" name="nama_kejuruan" class="form-control">
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="">Singkatan</label>
+                        <input type="text" name="singkatan" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer">

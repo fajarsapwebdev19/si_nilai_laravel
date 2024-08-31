@@ -8,7 +8,7 @@
     </div>
     <div class="card-body">
         <p class="mt-3">
-            {{$m->isi}}
+            {!! $m->isi !!}
         </p>
     </div>
 </div>

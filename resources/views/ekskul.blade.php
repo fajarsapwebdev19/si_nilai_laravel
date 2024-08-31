@@ -31,3 +31,5 @@
         </div>
     </div>
 @endsection
+
+@section('pageTitle', 'Data Ekskul')

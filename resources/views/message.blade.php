@@ -26,7 +26,7 @@
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="">Isi Pesan</label>
-                                    <textarea name="isi_pesan" cols="30" rows="10" class="form-control"></textarea>
+                                    <textarea name="isi_pesan" cols="30" rows="10" class="form-control text-editor"></textarea>
                                 </div>
 
                                 <button type="submit" class="btn btn-success simpan">Kirim</button>
@@ -40,3 +40,5 @@
 </div>
 @include('modals.pesan')
 @endsection
+
+@section('pageTitle', 'Data Pesan')

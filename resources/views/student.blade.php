@@ -38,3 +38,5 @@
         </div>
     </div>
 @endsection
+
+@section('pageTitle', 'Data Siswa')

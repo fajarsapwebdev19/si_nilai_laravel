@@ -8,7 +8,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Demo : Dashboard - CRM | Sneat - Bootstrap Dashboard PRO</title>
+    <title>@yield('pageTitle')</title>
 
 
     <meta name="description"
@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css')}}">
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/sweetalert2/sweetalert2.css')}}">
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -81,11 +82,12 @@
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.js')}}"></script>
 
     <!-- Main JS -->
     <script src="{{ asset('assets/ajax/server-side.js') }}"></script>
     <script src="{{ asset('assets/ajax/select-data.js') }}"></script>
-    <script src="{{asset('assets/ajax/proses-data.js')}}"></script>
+    <script src="{{asset('assets/ajax/guru.js')}}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
 </body>

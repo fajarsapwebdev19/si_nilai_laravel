@@ -29,3 +29,5 @@
         </div>
     </div>
 @endsection
+
+@section('pageTitle', 'Menentukan Wali Kelas')

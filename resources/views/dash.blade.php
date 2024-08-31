@@ -8,7 +8,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Demo : Dashboard - CRM | Sneat - Bootstrap Dashboard PRO</title>
+    <title>@yield('pageTitle')</title>
 
 
     <meta name="description"
@@ -37,6 +37,8 @@
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
+
+    <link rel="stylesheet" href="{{asset('assets/summernote/summernote.min.css')}}">
 </head>
 
 <body>
@@ -81,6 +83,7 @@
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
+    <script src="{{ asset('assets/summernote/summernote.min.js') }}"></script>
 
     <!-- Main JS -->
     <script src="{{ asset('assets/ajax/server-side.js') }}"></script>

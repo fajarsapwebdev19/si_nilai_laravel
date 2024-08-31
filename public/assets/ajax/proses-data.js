@@ -5,6 +5,13 @@ $(document).ready(function () {
         }
     });
 
+    $('.text-editor').summernote({
+        tabsize: 4,
+        tabDisable: true,
+        height: 100
+
+    });
+
     $("form").on("input", '.10-length', function () {
         if (this.value.length > 10) {
             this.value = this.value.slice(0, 10); // Batas panjang maksimum 10 digit
@@ -566,6 +573,7 @@ $(document).ready(function () {
         get_siswa_user(id);
         var kelas = $(this).data('kelas');
         $(".title-kelas").html(kelas);
+        $('.download-user-student').attr('data-id', id);
         $('#pengguna').modal('show');
     });
 
@@ -1213,8 +1221,7 @@ $('#pilih-wakel').on('click', '.simpan', function () {
             }, 3000);
             wakel.ajax.reload();
         },
-        error:function(xhr)
-        {
+        error: function (xhr) {
             $('#pilih').modal('hide');
             $('.messages').show();
             // Remove any existing alert classes
@@ -1231,7 +1238,7 @@ $('#pilih-wakel').on('click', '.simpan', function () {
     });
 });
 
-$('#import-kejuruan').on('click', '.import', function(){
+$('#import-kejuruan').on('click', '.import', function () {
 
     let form = $('#import-kejuruan')[0];
     let data = new FormData(form);
@@ -1255,7 +1262,7 @@ $('#import-kejuruan').on('click', '.import', function(){
                     $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                 });
             }, 3000);
-             kejuruan.ajax.reload();
+            kejuruan.ajax.reload();
         },
         error: function (xhr) {
             if (xhr.status === 422) {
@@ -1277,15 +1284,14 @@ $('#import-kejuruan').on('click', '.import', function(){
     });
 });
 
-$("#tambah-kejuruan").on('click', '.simpan', function(){
+$("#tambah-kejuruan").on('click', '.simpan', function () {
     let data = $('#tambah-kejuruan').serialize();
 
     $.ajax({
         url: 'tambah_kejuruan',
         data: data,
         method: 'POST',
-        success:function(response)
-        {
+        success: function (response) {
             $('#tambah').modal('hide');
             $('#tambah-kejuruan')[0].reset();
             $('.messages').show();
@@ -1304,31 +1310,30 @@ $("#tambah-kejuruan").on('click', '.simpan', function(){
     });
 });
 
-$('.kejuruan').on('click', '.ubah', function(){
+$('.kejuruan').on('click', '.ubah', function () {
     let id = $(this).data('id');
 
     $.ajax({
-        url: 'get_kejuruan/'+id,
+        url: 'get_kejuruan/' + id,
         method: 'GET',
-        success:function(response)
-        {
-           $('#ubah').modal('show');
-           $('#ubah-kejuruan input[name=nama_kejuruan]').val(response.nama_kejuruan);
-           $('#ubah-kejuruan input[name=id]').val(response.id);
+        success: function (response) {
+            $('#ubah').modal('show');
+            $('#ubah-kejuruan input[name=nama_kejuruan]').val(response.nama_kejuruan);
+            $('#ubah-kejuruan input[name=singkatan]').val(response.singkatan);
+            $('#ubah-kejuruan input[name=id]').val(response.id);
         }
     });
 });
 
-$('#ubah-kejuruan').on('click', '.simpan', function(){
+$('#ubah-kejuruan').on('click', '.simpan', function () {
     let data = $('#ubah-kejuruan').serialize();
     let id = $('#ubah-kejuruan input[name=id]').val();
 
     $.ajax({
-        url: 'ubah_kejuruan/'+id,
+        url: 'ubah_kejuruan/' + id,
         data: data,
         method: 'PUT',
-        success:function(response)
-        {
+        success: function (response) {
             $('#ubah').modal('hide');
             $('.messages').show();
             // Remove any existing alert classes
@@ -1346,14 +1351,13 @@ $('#ubah-kejuruan').on('click', '.simpan', function(){
     });
 });
 
-$(".kejuruan").on("click", '.hapus', function(){
+$(".kejuruan").on("click", '.hapus', function () {
     let id = $(this).data('id');
 
     $.ajax({
-        url: 'get_kejuruan/'+id,
+        url: 'get_kejuruan/' + id,
         method: 'GET',
-        success:function(response)
-        {
+        success: function (response) {
             $('#hapus').modal('show');
             $('#j').text(response.nama_kejuruan);
             $('#hapus-kejuruan input[name=id]').val(response.id);
@@ -1361,14 +1365,13 @@ $(".kejuruan").on("click", '.hapus', function(){
     });
 });
 
-$('#hapus-kejuruan').on('click', '.yes', function(){
+$('#hapus-kejuruan').on('click', '.yes', function () {
     let id = $('#hapus-kejuruan input[name=id]').val();
 
     $.ajax({
-        url: 'hapus_kejuruan/'+id,
+        url: 'hapus_kejuruan/' + id,
         method: 'GET',
-        success:function(response)
-        {
+        success: function (response) {
             $('#hapus').modal('hide');
             $('.messages').show();
             // Remove any existing alert classes
@@ -1400,22 +1403,17 @@ $('#hapus-kejuruan').on('click', '.yes', function(){
     });
 });
 
-$('.gm').on('click', '.pilih', function(){
-    let id = $(this).data('id');
 
-    $('#pilih').modal('show');
-    $('#pilih-guru-mapel input[name=mapel_id]').val(id);
-});
 
-$('#pilih-guru-mapel').on('click', '.simpan', function(){
+$('#gur-maping-mapel, #pilih-guru-mapel').on('click', '.simpan', function () {
+    let class_id = $('#pilih-guru-mapel input[name=class_id]').val();
     let data = $('#pilih-guru-mapel').serialize();
 
     $.ajax({
         url: "select_guru_mapel",
         method: "POST",
         data: data,
-        success:function(response)
-        {
+        success: function (response) {
             $('#pilih').modal('hide');
             $('.messages').show();
             // Remove any existing alert classes
@@ -1428,19 +1426,18 @@ $('#pilih-guru-mapel').on('click', '.simpan', function(){
                     $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
                 });
             }, 3000);
-            guru_mapel.ajax.reload();
+            show_mapel(class_id);
         }
     });
 });
 
 // pesan
 
-function message_data(){
+function message_data() {
     $.ajax({
         url: "data_pesan",
         method: "GET",
-        success:function(response)
-        {
+        success: function (response) {
             $('#message-data').html(response);
         }
     });
@@ -1448,58 +1445,72 @@ function message_data(){
 
 message_data();
 
-$('#send-info').on('click', '.simpan', function(e){
+$('#send-info').on('click', '.simpan', function (e) {
     e.preventDefault();
 
-    let form = $('#send-info');
-    let data = form.serialize();
+    let judul = $('#send-info input[name=judul]').val();
 
-    $.ajax({
-        url: "kirim_pesan/",
-        data: data,
-        method: 'POST',
-        success:function(response)
-        {
-            form[0].reset();
-            $('.messages').show();
-            // Remove any existing alert classes
-            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
-            // Show error message
-            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-            $('html, body').animate({ scrollTop: 0 }, 'fast');
-            setTimeout(function () {
-                $('.messages').fadeOut(function () {
-                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
-                });
-            }, 3000);
-            message_data();
-        },
-        error: function (xhr) {
-            message_data();
-            $('.messages').show();
-            // Remove any existing alert classes
-            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
-            // Show error message
-            $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
-            $('html, body').animate({ scrollTop: 0 }, 'fast');
-            setTimeout(function () {
-                $('.messages').fadeOut(function () {
-                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
-                });
-            }, 3000);
-        }
-    });
+    if (judul == "") {
+        $('.messages').show();
+        // Remove any existing alert classes
+        $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+        // Show error message
+        $('.messages').addClass('alert alert-danger bg-danger text-white').text('Isi Data Yang Kosong !').show();
+        $('html, body').animate({ scrollTop: 0 }, 'fast');
+        setTimeout(function () {
+            $('.messages').fadeOut(function () {
+                $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+            });
+        }, 3000);
+    }else{
+        let form = $('#send-info');
+        let data = form.serialize();
+
+        $.ajax({
+            url: "kirim_pesan/",
+            data: data,
+            method: 'POST',
+            success: function (response) {
+                form[0].reset();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
+                $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
+                    });
+                }, 3000);
+                message_data();
+            },
+            error: function (xhr) {
+                message_data();
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
+                $('.messages').addClass('alert alert-danger bg-danger text-white').text(xhr.responseJSON.error).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }, 3000);
+            }
+        });
+    }
 });
 
-$("#message-data").on('click', '.hapus', function(){
+$("#message-data").on('click', '.hapus', function () {
     let id = $(this).data('id');
     let title = $(this).data('title');
 
     $.ajax({
-        url: 'get_pesan/'+id,
+        url: 'get_pesan/' + id,
         method: "GET",
-        success:function(response)
-        {
+        success: function (response) {
             $('#hapus').modal('show');
             $('#title-message').text(title);
             $('#hapus-pesan input[name=id]').val(response[0].id);
@@ -1507,15 +1518,14 @@ $("#message-data").on('click', '.hapus', function(){
     });
 });
 
-$('#hapus-pesan').on('click', '.ya', function(e){
+$('#hapus-pesan').on('click', '.ya', function (e) {
     e.preventDefault();
     let id = $('#hapus-pesan input[name=id]').val();
 
     $.ajax({
-        url: 'hapus_pesan/'+id,
+        url: 'hapus_pesan/' + id,
         method: "GET",
-        success:function(response)
-        {
+        success: function (response) {
             $("#hapus").modal('hide');
             $('.messages').show();
             // Remove any existing alert classes
@@ -1548,14 +1558,12 @@ $('#hapus-pesan').on('click', '.ya', function(e){
     });
 });
 
-$('.logout').click(function(){
+$('.logout').click(function () {
     $.ajax({
         url: "logout/",
         method: "GET",
-        success:function(response)
-        {
-            if(response.status == "ok")
-            {
+        success: function (response) {
+            if (response.status == "ok") {
                 window.location.href = '/';
                 localStorage.setItem('logoutMessage', 'Logout berhasil');
             }
@@ -1564,7 +1572,7 @@ $('.logout').click(function(){
 });
 
 // tambah tahun ajaran
-$('#tambah-tahun-ajaran').on('click', '.simpan', function(e){
+$('#tambah-tahun-ajaran').on('click', '.simpan', function (e) {
     e.preventDefault();
     let form = $('#tambah-tahun-ajaran');
     let data = form.serialize();
@@ -1573,8 +1581,7 @@ $('#tambah-tahun-ajaran').on('click', '.simpan', function(e){
         url: "tambah_tahun_ajaran",
         method: "POST",
         data: data,
-        success:function(response)
-        {
+        success: function (response) {
             $('#tambah').modal('hide');
             form[0].reset();
             $('.messages').show();
@@ -1608,17 +1615,16 @@ $('#tambah-tahun-ajaran').on('click', '.simpan', function(e){
 });
 
 // ubah tahun ajaran
-$('#ubah-tahun-ajaran').on('click', '.simpan', function(e){
+$('#ubah-tahun-ajaran').on('click', '.simpan', function (e) {
     e.preventDefault();
     let form = $('#ubah-tahun-ajaran');
     let id = $('#ubah-tahun-ajaran input[name=id]').val();
     let data = form.serialize();
     $.ajax({
-        url: "ubah_tahun_ajaran/"+id,
+        url: "ubah_tahun_ajaran/" + id,
         method: "PUT",
         data: data,
-        success:function(response)
-        {
+        success: function (response) {
             $('#ubah').modal('hide');
             form[0].reset();
             $('.messages').show();
@@ -1652,14 +1658,13 @@ $('#ubah-tahun-ajaran').on('click', '.simpan', function(e){
 });
 
 // tahun ajaran ubah klik button
-$('.th_aj').on('click', '.ubah', function(){
+$('.th_aj').on('click', '.ubah', function () {
     let id = $(this).data('id');
 
     $.ajax({
         url: 'get_tahun_ajaran/' + id,
         method: 'GET',
-        success:function(response)
-        {
+        success: function (response) {
             $('#ubah').modal('show');
             $('#ubah-tahun-ajaran input[name=id]').val(response.id);
             $('#ubah-tahun-ajaran input[name=tahun_ajaran]').val(response.tahun);
@@ -1668,30 +1673,28 @@ $('.th_aj').on('click', '.ubah', function(){
     });
 });
 
-$('.th_aj').on('click', '.hapus', function(){
+$('.th_aj').on('click', '.hapus', function () {
     let id = $(this).data('id');
 
     $.ajax({
         url: 'get_tahun_ajaran/' + id,
         method: 'GET',
-        success:function(response)
-        {
+        success: function (response) {
             $('#hapus').modal('show');
             $('#hapus-tahun-ajaran input[name=id]').val(response.id);
         }
     });
 });
 
-$('#hapus-tahun-ajaran').on('click', '.ya', function(e){
+$('#hapus-tahun-ajaran').on('click', '.ya', function (e) {
     e.preventDefault();
 
     let id = $('#hapus-tahun-ajaran input[name=id]').val();
 
     $.ajax({
-        url: "hapus_tahun_ajaran/"+id,
+        url: "hapus_tahun_ajaran/" + id,
         method: "GET",
-        success:function(response)
-        {
+        success: function (response) {
             $('#hapus').modal('hide');
             $('.messages').show();
             // Remove any existing alert classes
@@ -1726,12 +1729,12 @@ $('#hapus-tahun-ajaran').on('click', '.ya', function(e){
 $.ajax({
     url: 'hitung_siswa',
     method: 'GET',
-    success: function(response) {
+    success: function (response) {
         let namaRombel = [];
         let lakiLaki = [];
         let perempuan = [];
 
-        response.forEach(function(data) {
+        response.forEach(function (data) {
             namaRombel.push(data.nama_rombel);
             lakiLaki.push(data.L);
             perempuan.push(data.P);
@@ -1769,12 +1772,11 @@ $.ajax({
     }
 });
 
-function pesan(){
+function pesan() {
     $.ajax({
         url: "pesan_dashboard",
         method: "GET",
-        success:function(response)
-        {
+        success: function (response) {
             $('#pesan').html(response);
         }
     });
@@ -1782,62 +1784,55 @@ function pesan(){
 
 pesan();
 
-$('#filter-nilai').on('click', '.filter', function(e)
-{
-    e.preventDefault();
-    let tapel = $('select[name=tahun_ajaran]').val();
+$('.btn-teacher-users').click(function(){
+    let id = $(this).data('id');
 
-    if(tapel == "")
+    $('#users').modal('show');
+    role_users(id);
+});
+
+$('.download-users-teacher').click(function(){
+    window.open('../../cetak_username_guru', '_blank');
+});
+
+$('.download-user-student').click(function(){
+    let id = $(this).data('id');
+
+    window.open('../../cetak_username_siswa/' + id, '_blank');
+});
+
+function show_mapel(class_id)
+{
+    $.ajax({
+        url: 'get_mapel_class/' + class_id,
+        method: "GET",
+        success:function(response)
+        {
+            $('#gur-maping-mapel').show();
+            $('#gur-maping-mapel').html(response)
+        }
+    });
+}
+
+$('#filter-class').on('click', '.filter', function(e){
+    e.preventDefault();
+    let class_id = $('#filter-class select[name=class_id]').val();
+
+    if(class_id == "")
     {
-        alert('Pilih Tahun Ajaran Terlebih Dahulu');
+        $('#gur-maping-mapel').hide();
     }else{
-        $.ajax({
-            url: 'show_mapel',
-            method: 'GET',
-            success:function(response)
-            {
-                $('#show_mapel').html(response);
-            }
-        });
+        show_mapel(class_id);
     }
 });
 
-$('#filter-nilai-sikap').on('click', '.filter', function(e)
-{
-    e.preventDefault();
-    let tapel = $('select[name=tahun_ajaran]').val();
+$('#gur-maping-mapel').on('click', '.select-guru', function(){
+    let id = $(this).data('id');
+    let mapel_name = $(this).data('name');
+    let mapel_id = $(this).data('mapel');
 
-    if(tapel == "")
-    {
-        alert('Pilih Tahun Ajaran Terlebih Dahulu');
-    }else{
-        $.ajax({
-            url: 'show_siswa_sikap',
-            method: 'GET',
-            success:function(response)
-            {
-                $('#show_siswa_sikap').html(response);
-            }
-        });
-    }
-});
-
-$('#filter-rekap-absensi').on('click', '.filter', function(e)
-{
-    e.preventDefault();
-    let tapel = $('select[name=tahun_ajaran]').val();
-
-    if(tapel == "")
-    {
-        alert('Pilih Tahun Ajaran Terlebih Dahulu');
-    }else{
-        $.ajax({
-            url: 'show_siswa_absensi',
-            method: 'GET',
-            success:function(response)
-            {
-                $('#show_siswa_absensi').html(response);
-            }
-        });
-    }
+    $('#pilih').modal('show');
+    $('.mapel_name').text(mapel_name);
+    $('#pilih-guru-mapel input[name=class_id]').val(id);
+    $('#pilih-guru-mapel input[name=mapel_id]').val(mapel_id);
 });

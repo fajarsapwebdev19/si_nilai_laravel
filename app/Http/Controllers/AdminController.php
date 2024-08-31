@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TahunAjaran;
 use App\Models\HistorySiswa;
+use App\Models\HistoryGuruMapel;
+use App\Models\HistoryWakel;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Ekskul;
@@ -25,6 +27,7 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AdminController extends Controller
 {
@@ -146,14 +149,14 @@ class AdminController extends Controller
 
     // tahun ajaran
 
-    public function tahun_ajaran(){
+    public function tahun_ajaran()
+    {
         return view('tahun_ajaran');
     }
 
     public function data_tahun_ajaran(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = TahunAjaran::all();
 
             // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
@@ -212,10 +215,9 @@ class AdminController extends Controller
     {
         $th = TahunAjaran::where('id', $id)->first();
 
-        if($th->status == "Y")
-        {
+        if ($th->status == "Y") {
             return response()->json(['error' => "Gagal Hapus, Tahun Ajaran Masih Aktif"], 400);
-        }else{
+        } else {
             $th->delete();
         }
 
@@ -232,8 +234,7 @@ class AdminController extends Controller
     // data kejuruan
     public function data_kejuruan(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = Kejuruan::orderBy('nama_kejuruan', 'asc');
 
             // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
@@ -255,6 +256,7 @@ class AdminController extends Controller
         $k = new Kejuruan();
         $k->id = Uuid::uuid4();
         $k->nama_kejuruan = $request->nama_kejuruan;
+        $k->singkatan = $request->singkatan;
         $k->save();
 
         return response()->json(['message' => 'Berhasil Tambah Data Kejuruan'], 200);
@@ -272,6 +274,7 @@ class AdminController extends Controller
         $k = Kejuruan::where('id', $id)->first();
 
         $k->nama_kejuruan = $request->nama_kejuruan;
+        $k->singkatan = $request->singkatan;
         $k->save();
 
         return response()->json(['message' => 'Berhasil Ubah Data Kejuruan'], 200);
@@ -313,8 +316,7 @@ class AdminController extends Controller
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
 
@@ -329,20 +331,22 @@ class AdminController extends Controller
         array_shift($rows);
         $count = 0;
         DB::beginTransaction();
-        foreach($rows as $r){
+        foreach ($rows as $r) {
             $uuid = Uuid::uuid4();
             $nama_jurusan = $r[0];
+            $singkatan = $r[1];
 
             $kejuruan = new Kejuruan();
             $kejuruan->id = $uuid;
             $kejuruan->nama_kejuruan = $nama_jurusan;
+            $kejuruan->singkatan = $singkatan;
             $kejuruan->save();
 
             $count++;
         }
         DB::commit();
 
-        return response()->json(['message' => 'Berhasil Menambah '. $count .' Data Kejuruan'], 200);
+        return response()->json(['message' => 'Berhasil Menambah ' . $count . ' Data Kejuruan'], 200);
     }
 
     // guru
@@ -363,9 +367,48 @@ class AdminController extends Controller
     }
 
     // generate acak untuk username dan password
-    function generateRandomString($length) {
+    function generateRandomString($length)
+    {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return substr(str_shuffle(str_repeat($characters, ceil($length / strlen($characters)))), 1, $length);
+    }
+
+
+
+    public function cetak_user_guru()
+    {
+        // Ambil data pengguna berdasarkan role_id
+        $data = User::with(['personalData', 'guru'])
+            ->where('role_id', 2)
+            ->get();
+
+        // Pass data ke view
+        $viewData = [
+            'title' => 'Data Pengguna Guru',
+            'users' => $data
+        ];
+
+        // Buat PDF dari view 'guru' dengan data yang telah diambil
+        $pdf = PDF::loadView('cetak.teacher-user', $viewData);
+
+        // Tampilkan PDF di browser
+        return $pdf->stream('data-pengguna-guru.pdf');
+    }
+
+
+
+    // pengguna guru
+    public function users_teacher(Request $request, $id)
+    {
+        if ($request->ajax()) {
+            // Ambil data User dengan relasi 'personalData' dan 'guru' yang memiliki role_id = 2
+            $data = User::with(['personalData', 'guru'])
+                ->where('role_id', $id)
+                ->get();
+
+            // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
+            return DataTables::of($data)->toJson(); // Mengonversi data menjadi format JSON
+        }
     }
 
     // data guru
@@ -374,8 +417,8 @@ class AdminController extends Controller
         if ($request->ajax()) {
             // Ambil data User dengan relasi 'personalData' dan 'guru' yang memiliki role_id = 2
             $data = User::with(['personalData', 'guru'])
-            ->where('role_id', 2)
-            ->get();
+                ->where('role_id', 2)
+                ->get();
 
             // Menggunakan DataTables untuk mengubah data menjadi format JSON yang sesuai
             return DataTables::of($data)
@@ -528,8 +571,7 @@ class AdminController extends Controller
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
 
@@ -546,9 +588,8 @@ class AdminController extends Controller
 
         $count = 0;
 
-        foreach($rows as $r)
-        {
-            $pid = mt_rand(0,9999).date('dmY');
+        foreach ($rows as $r) {
+            $pid = mt_rand(0, 9999) . date('dmY');
             $username = $this->GenerateRandomNumber();
             $password = $this->generateRandomString(6);
             $nama = $r[0];
@@ -602,7 +643,8 @@ class AdminController extends Controller
     }
 
     // get tingkat
-    public function get_tingkat(){
+    public function get_tingkat()
+    {
         $tingkat = Tingkat::all();
 
         return response()->json($tingkat);
@@ -617,25 +659,25 @@ class AdminController extends Controller
         $jurusan_id = $kelas->jurusan_id;
 
         $siswa = DB::table('users as u')
-        ->select('u.*', 'pd.*', 's.*', 'ks.*', 'k.*')
-        ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
-        ->leftJoin('siswa as s', 's.user_id', '=', 'u.id')
-        ->leftJoin('kelas_siswa as ks', 'ks.user_id', '=', 'u.id')
-        ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
-        ->where('u.role_id', 3)
-        ->where('s.tingkat', $tingkat)
-        ->where('s.jurusan_id', $jurusan_id)
-        ->where('ks.class_id', NULL)
-        ->where('s.status', 'y')
-        ->orderBy('pd.nama', 'asc')
-        ->get();
+            ->select('u.*', 'pd.*', 's.*', 'ks.*', 'k.*')
+            ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+            ->leftJoin('siswa as s', 's.user_id', '=', 'u.id')
+            ->leftJoin('kelas_siswa as ks', 'ks.user_id', '=', 'u.id')
+            ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
+            ->where('u.role_id', 3)
+            ->where('s.tingkat', $tingkat)
+            ->where('s.jurusan_id', $jurusan_id)
+            ->where('ks.class_id', NULL)
+            ->where('s.status', 'y')
+            ->orderBy('pd.nama', 'asc')
+            ->get();
 
         return DataTables::of($siswa)
-        ->addColumn('checkbox', function($row) {
-            return '<input type="checkbox" class="form-check-input no-class-siswa" data-id="' . $row->user_id . '">';
-        })
-        ->rawColumns(['checkbox'])
-        ->toJson();
+            ->addColumn('checkbox', function ($row) {
+                return '<input type="checkbox" class="form-check-input no-class-siswa" data-id="' . $row->user_id . '">';
+            })
+            ->rawColumns(['checkbox'])
+            ->toJson();
     }
 
     public function get_siswa_class(Request $request)
@@ -645,24 +687,24 @@ class AdminController extends Controller
         $tingkat = $kelas->tingkat;
 
         $siswa = DB::table('users as u')
-        ->select('u.*', 'pd.*', 's.*', 'ks.*', 'k.*')
-        ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
-        ->leftJoin('siswa as s', 's.user_id', '=', 'u.id')
-        ->leftJoin('kelas_siswa as ks', 'ks.user_id', '=', 'u.id')
-        ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
-        ->where('u.role_id', 3)
-        ->where('s.tingkat', $tingkat)
-        ->where('ks.class_id', $kelas->id)
-        ->where('s.status', 'y')
-        ->orderBy('pd.nama', 'asc')
-        ->get();
+            ->select('u.*', 'pd.*', 's.*', 'ks.*', 'k.*')
+            ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+            ->leftJoin('siswa as s', 's.user_id', '=', 'u.id')
+            ->leftJoin('kelas_siswa as ks', 'ks.user_id', '=', 'u.id')
+            ->leftJoin('kelas as k', 'ks.class_id', '=', 'k.id')
+            ->where('u.role_id', 3)
+            ->where('s.tingkat', $tingkat)
+            ->where('ks.class_id', $kelas->id)
+            ->where('s.status', 'y')
+            ->orderBy('pd.nama', 'asc')
+            ->get();
 
         return DataTables::of($siswa)
-        ->addColumn('checkbox', function($row) {
-            return '<input type="checkbox" class="form-check-input siswa" data-id="' . $row->user_id . '">';
-        })
-        ->rawColumns(['checkbox'])
-        ->toJson();
+            ->addColumn('checkbox', function ($row) {
+                return '<input type="checkbox" class="form-check-input siswa" data-id="' . $row->user_id . '">';
+            })
+            ->rawColumns(['checkbox'])
+            ->toJson();
     }
 
     public function send_student_class(Request $request)
@@ -674,8 +716,7 @@ class AdminController extends Controller
 
         $kelas_siswa = KelasSiswa::wherein('user_id', $id)->get();
 
-        foreach($kelas_siswa as $ks)
-        {
+        foreach ($kelas_siswa as $ks) {
             $ks->class_id = $newClassId;
             $ks->save();
         }
@@ -683,10 +724,9 @@ class AdminController extends Controller
         $ta = TahunAjaran::where("status", "Y")->first();
         $ta_active = $ta->tahun;
 
-        foreach($id as $siswa_id)
-        {
+        foreach ($id as $siswa_id) {
             $hs = new HistorySiswa();
-            $hs->id = rand(11111, 99999).date('dmYhis');
+            $hs->id = rand(11111, 99999) . date('dmYhis');
             $hs->tahun_ajaran = $ta_active;
             $hs->class_id = $newClassId;
             $hs->user_id = $siswa_id;
@@ -707,8 +747,7 @@ class AdminController extends Controller
 
         $kelas_siswa = KelasSiswa::wherein('user_id', $id)->get();
 
-        foreach($kelas_siswa as $ks)
-        {
+        foreach ($kelas_siswa as $ks) {
             $ks->class_id = $newClassId;
             $ks->save();
         }
@@ -717,8 +756,7 @@ class AdminController extends Controller
 
         $siswa = HistorySiswa::wherein('user_id', $siswa_id)->get();
 
-        foreach($siswa as $s)
-        {
+        foreach ($siswa as $s) {
             $s->delete();
         }
 
@@ -737,8 +775,7 @@ class AdminController extends Controller
     public function GenerateRandomNumber($length = 7)
     {
         $digits = '';
-        for($i=0; $i < $length; $i++)
-        {
+        for ($i = 0; $i < $length; $i++) {
             $digits .= mt_rand(0, 9);
         }
         return $digits;
@@ -784,10 +821,9 @@ class AdminController extends Controller
 
             DB::beginTransaction();
 
-            foreach($rows as $r)
-            {
+            foreach ($rows as $r) {
                 // Membuat ID unik dan UUID
-                $pid = mt_rand().date('dmY');
+                $pid = mt_rand() . date('dmY');
                 $uuid = Uuid::uuid4();
                 $pwd = $this->generateRandomString(6);
 
@@ -876,8 +912,7 @@ class AdminController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Berhasil Menambah '. $count .' Data Siswa'], 200);
-
+            return response()->json(['message' => 'Berhasil Menambah ' . $count . ' Data Siswa'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Gagal Menambah Data Siswa: ' . $e->getMessage()], 500);
@@ -888,29 +923,28 @@ class AdminController extends Controller
     // data siswa
     public function data_siswa(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $siswa = User::with(['personalData', 'siswa'])
-            ->where('role_id', 3)
-            ->whereHas('siswa', function($query){
-                $query->where('status', 'y');
-            })
-            ->orderBy(function($query) {
-                $query->select('nama')
-                      ->from('personal_data')
-                      ->whereColumn('personal_data.id', 'users.personal_id')
-                      ->limit(1);
-            }, 'asc')
-            ->get();
+                ->where('role_id', 3)
+                ->whereHas('siswa', function ($query) {
+                    $query->where('status', 'y');
+                })
+                ->orderBy(function ($query) {
+                    $query->select('nama')
+                        ->from('personal_data')
+                        ->whereColumn('personal_data.id', 'users.personal_id')
+                        ->limit(1);
+                }, 'asc')
+                ->get();
 
             return DataTables::of($siswa)
-            ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-            return '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
-            <button class="badge rounded-pill text-bg-danger hapus" id="'.$row->personalData->nama.'" data-id="' . $row->id . '">Hapus</button>';
-            })
-            ->rawColumns(['action'])
-            ->toJson();
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return '<button class="badge rounded-pill text-bg-info ubah" data-id="' . $row->id . '">Ubah</button>
+            <button class="badge rounded-pill text-bg-danger hapus" id="' . $row->personalData->nama . '" data-id="' . $row->id . '">Hapus</button>';
+                })
+                ->rawColumns(['action'])
+                ->toJson();
         }
     }
 
@@ -918,7 +952,7 @@ class AdminController extends Controller
     public function tambah_siswa(Request $request)
     {
         // id untuk personal id siswa
-        $p_id = mt_rand(1111,5555).rand(0,999);
+        $p_id = mt_rand(1111, 5555) . rand(0, 999);
 
         DB::beginTransaction();
         // personal data
@@ -1028,10 +1062,9 @@ class AdminController extends Controller
 
         DB::beginTransaction();
 
-        if($ks->class_id)
-        {
+        if ($ks->class_id) {
             return response()->json(['message' => 'Hapus data siswa gagal karena siswa masih memiliki kelas'], 400);
-        }else{
+        } else {
             $personal->delete();
             $s->delete();
             $ks->delete();
@@ -1067,7 +1100,7 @@ class AdminController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary pengguna mb-2" data-kelas="'.$row->nama_rombel.'" data-id="' . $row->id . '">Pengguna</button> <button type="button" class="badge rounded-pill text-bg-primary siswa mb-2" data-kelas="'.$row->nama_rombel.'" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah mb-2" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus mb-2" data-id="' . $row->id . '">Hapus</button>';
+                    $btn = '<button type="button" class="badge rounded-pill text-bg-primary pengguna mb-2" data-kelas="' . $row->nama_rombel . '" data-id="' . $row->id . '">Pengguna</button> <button type="button" class="badge rounded-pill text-bg-primary siswa mb-2" data-kelas="' . $row->nama_rombel . '" data-id="' . $row->id . '">Siswa</button> <button type="button" class="badge rounded-pill text-bg-info ubah mb-2" data-id="' . $row->id . '">Ubah</button> <button type="button" class="badge rounded-pill text-bg-danger hapus mb-2" data-id="' . $row->id . '">Hapus</button>';
                     return $btn;
                 })
                 ->addColumn('status', function ($row) {
@@ -1140,8 +1173,7 @@ class AdminController extends Controller
     {
         $s = KelasSiswa::where('class_id', $id)->count();
 
-        if($s > 0)
-        {
+        if ($s > 0) {
             return response()->json(['message' => 'Kelas tidak dapat di hapus karena masih terdapat siswa di dalamnya'], 400);
         }
         DB::beginTransaction();
@@ -1188,12 +1220,18 @@ class AdminController extends Controller
         $mapel->tingkat = $request->tingkat;
         $mapel->jurusan_id = $request->jurusan;
         $mapel->kkm = $request->kkm;
+        $mapel->urutan = $request->urutan;
         $mapel->save();
 
-        $g_mapel = new GuruMapel();
-        $g_mapel->mapel_id = $mapel->id;
-        $g_mapel->guru_id = NULL;
-        $g_mapel->save();
+        $kelas = Kelas::all();
+
+        foreach ($kelas as $k) {
+            $g_mapel = new GuruMapel();
+            $g_mapel->mapel_id = $mapel->id;
+            $g_mapel->class_id = $k->id;
+            $g_mapel->guru_id = NULL;
+            $g_mapel->save();
+        }
 
         return response()->json(['message' => 'Berhasil Tambah Data Mapel'], 200);
     }
@@ -1206,6 +1244,7 @@ class AdminController extends Controller
 
         return view("modals.update_mapel", compact("mapel", "k"));
     }
+
     public function get_mapel_delete($id)
     {
         $mapel = Mapel::findOrFail($id);
@@ -1223,6 +1262,7 @@ class AdminController extends Controller
         $mapel->tingkat = $request->tingkat;
         $mapel->jurusan_id = $request->jurusan;
         $mapel->kkm = $request->kkm;
+        $mapel->urutan = $request->urutan;
         $mapel->save();
 
         return response()->json(['message' => 'Berhasil Ubah Data Mapel'], 200);
@@ -1255,8 +1295,7 @@ class AdminController extends Controller
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
 
@@ -1273,8 +1312,7 @@ class AdminController extends Controller
 
         $count = 0;
 
-        foreach($rows as $r)
-        {
+        foreach ($rows as $r) {
             $jurusan = Kejuruan::where('nama_kejuruan', 'like', '%' . $r[4] . '%')->first();
 
             $mapel = new Mapel();
@@ -1285,19 +1323,25 @@ class AdminController extends Controller
             $mapel->tingkat = $r[3];
             $mapel->jurusan_id = $jurusan->id;
             $mapel->kkm = $r[5];
+            $mapel->urutan = $r[6];
             $mapel->save();
 
-            $g_mapel = new GuruMapel();
-            $g_mapel->mapel_id = $mapel->id;
-            $g_mapel->guru_id = NULL;
-            $g_mapel->save();
+            $kelas = Kelas::all();
+
+            foreach ($kelas as $k) {
+                $g_mapel = new GuruMapel();
+                $g_mapel->mapel_id = $mapel->id;
+                $g_mapel->class_id = $k->id;
+                $g_mapel->guru_id = NULL;
+                $g_mapel->save();
+            }
 
             $count++;
         }
 
         DB::commit();
 
-        return response()->json(['message' => 'Berhasil Import '. $count . ' Data Mapel'], 200);
+        return response()->json(['message' => 'Berhasil Import ' . $count . ' Data Mapel'], 200);
     }
 
     // ekskul
@@ -1505,57 +1549,104 @@ class AdminController extends Controller
 
     // memilih wali kelas di setiap kelas yang ada
     public function select_wakel(Request $request)
-    {
-        $class = $request->class_id;
-        $guru = $request->guru_id;
+{
+    $class = $request->input('class_id');
+    $guruId = $request->input('guru_id'); // Pastikan ini hanya ID guru yang benar
 
-        $cek = Guru::where('class_id', $class)->first();
+    // Ambil tahun ajaran aktif
+    $t = TahunAjaran::where('status', 'Y')->first();
+    if (!$t) {
+        return response()->json(['message' => 'Tahun ajaran aktif tidak ditemukan.'], 400);
+    }
 
-        if(!$cek)
-        {
-            $guru = Guru::where('user_id', $guru)->first();
+    // Cek apakah sudah ada guru yang ditunjuk sebagai wali kelas
+    $existingGuru = Guru::where('class_id', $class)->first();
+
+    if (!$existingGuru) {
+        // Jika tidak ada, set guru baru sebagai wali kelas
+        $guru = Guru::where('user_id', $guruId)->first();
+        if (!$guru) {
+            return response()->json(['message' => 'Guru tidak ditemukan.'], 404);
+        }
+
+        $guru->wali_kelas = 'Y';
+        $guru->class_id = $class;
+        $guru->save();
+
+        // Buat entri HistoryWakel dengan ID guru yang benar
+        $hw = new HistoryWakel();
+        $hw->id = (string) rand(); // Pastikan ID primary key adalah string
+        $hw->tahun_ajaran = $t->tahun;
+        $hw->class_id = $class;
+        $hw->guru_id = $guru->user_id; // Gunakan ID guru yang benar
+        $hw->save();
+    } else {
+        if ($existingGuru->user_id == $guruId) {
+            // Jika guru yang sama, hapus sebagai wali kelas
+            $existingGuru->wali_kelas = 'N';
+            $existingGuru->class_id = NULL;
+            $existingGuru->save();
+
+            $hw = HistoryWakel::where('class_id', $class)
+                ->where('tahun_ajaran', $t->tahun)
+                ->where('guru_id', $guruId)
+                ->first();
+            if ($hw) {
+                $hw->delete();
+            }
+        } else {
+            // Ganti wali kelas
+            $existingGuru->wali_kelas = 'N';
+            $existingGuru->class_id = NULL;
+            $existingGuru->save();
+
+            // Update atau buat entri HistoryWakel baru
+            $hw = HistoryWakel::where('class_id', $class)
+                ->where('tahun_ajaran', $t->tahun)
+                ->where('guru_id', $existingGuru->user_id)
+                ->first();
+            if ($hw) {
+                $hw->guru_id = $guruId; // Gunakan ID guru yang benar
+                $hw->save();
+            } else {
+                $hw = new HistoryWakel();
+                $hw->id = (string) rand(); // Pastikan ID primary key adalah string
+                $hw->tahun_ajaran = $t->tahun;
+                $hw->class_id = $class;
+                $hw->guru_id = $guruId; // Gunakan ID guru yang benar
+                $hw->save();
+            }
+
+            // Set guru baru sebagai wali kelas
+            $guru = Guru::where('user_id', $guruId)->first();
+            if (!$guru) {
+                return response()->json(['message' => 'Guru tidak ditemukan.'], 404);
+            }
 
             $guru->wali_kelas = 'Y';
             $guru->class_id = $class;
             $guru->save();
-        }else{
-
-            if($cek->user_id == $guru)
-            {
-                $guru = Guru::where('user_id', $guru)->first();
-                $guru->wali_kelas = 'N';
-                $guru->class_id = NULL;
-                $guru->save();
-            }else{
-                $cek->wali_kelas = 'N';
-                $cek->class_id = NULL;
-                $cek->save();
-
-                $guru = Guru::where('user_id', $guru)->first();
-                $guru->wali_kelas = 'Y';
-                $guru->class_id = $class;
-                $guru->save();
-            }
         }
-
-        return response()->json(['message' => 'Berhasil Memilih Wali Kelas'], 200);
     }
+
+    return response()->json(['message' => 'Berhasil Memilih Wali Kelas'], 200);
+}
+
+
 
     public function get_kelas_wakel(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = Kelas::leftJoin('guru as g', 'kelas.id', '=', 'g.class_id')
-            ->leftJoin('users as u', 'g.user_id', '=', 'u.id')
-            ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
-            ->select('kelas.id as kelas_id', 'kelas.nama_rombel', 'kelas.tingkat', 'pd.nama', 'kelas.status')
-            ->orderBy('kelas.nama_rombel', 'asc')
-            ->get();
+                ->leftJoin('users as u', 'g.user_id', '=', 'u.id')
+                ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+                ->select('kelas.id as kelas_id', 'kelas.nama_rombel', 'kelas.tingkat', 'pd.nama', 'kelas.status')
+                ->orderBy('kelas.nama_rombel', 'asc')
+                ->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row)
-                {
+                ->addColumn('action', function ($row) {
                     $btn = '<button class="badge rounded-pill text-bg-info pilih" data-id="' . $row->kelas_id . '">Pilih</button>';
                     return $btn;
                 })
@@ -1566,20 +1657,34 @@ class AdminController extends Controller
 
     public function set_mapel()
     {
-        $g = User::with('personalData')->where('role_id', 2)->get();
-        return view('set_mapel', compact('g'));
+        $class = Kelas::all();
+        return view('set_mapel', compact('class'));
+    }
+
+    public function view_mapel_class($class_id){
+        $mapel = GuruMapel::with('guru.personalData')
+            ->leftJoin('mapel', 'guru_mapel.mapel_id', '=', 'mapel.id')
+            ->where('guru_mapel.class_id', $class_id)  // Kondisi where untuk class_id
+            ->orderBy('mapel.kelompok', 'asc')
+            ->orderBy('mapel.urutan', 'asc')
+            ->select('guru_mapel.*', 'mapel.kelompok', 'mapel.urutan')
+            ->get();
+
+        $guru = User::with(['personalData'])
+            ->where('role_id', 2)
+            ->get();
+
+        return view('mapping_guru_mapel', compact('mapel', 'guru'));
     }
 
     public function data_guru_mapel(Request $request)
     {
-        if($request->ajax())
-        {
+        if ($request->ajax()) {
             $data = GuruMapel::with('mapel.jurusan', 'guru.personalData')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row)
-                {
+                ->addColumn('action', function ($row) {
                     $btn = '<button class="badge rounded-pill text-bg-info pilih" data-id="' . $row->mapel_id . '">Pilih</button>';
                     return $btn;
                 })
@@ -1590,9 +1695,65 @@ class AdminController extends Controller
 
     public function select_guru_mapel(Request $request)
     {
-        $gm = GuruMapel::find($request->mapel_id);
-        $gm->guru_id = $request->guru_id;
-        $gm->save();
+
+        // Ambil GuruMapel berdasarkan class_id
+        $gm = GuruMapel::where('class_id', $request->class_id)->where('mapel_id', $request->mapel_id)->first();
+        if (!$gm) {
+            return response()->json(['message' => 'GuruMapel tidak ditemukan'], 404);
+        }
+
+        // Ambil TahunAjaran aktif
+        $th = TahunAjaran::where('status', 'Y')->first();
+        if (!$th) {
+            return response()->json(['message' => 'Tahun Ajaran tidak ditemukan'], 404);
+        }
+
+        // Jika guru_id tidak di-set
+        if (empty($request->guru_id)) {
+            // Hapus guru_id dari GuruMapel
+            // Hapus HistoryGuruMapel
+            $hgm = HistoryGuruMapel::where('mapel_id', $request->mapel_id)
+                                ->where('class_id', $request->class_id)
+                                ->first();
+            if ($hgm) {
+                $gm->guru_id = $request->guru_id; // Set ke null jika tidak ada guru_id
+                $gm->save();
+
+                $hgm->delete();
+            }else{
+                $gm->guru_id = $request->guru_id; // Set ke null jika tidak ada guru_id
+                $gm->save();
+            }
+        } else {
+            // Ambil HistoryGuruMapel berdasarkan mapel_id dan class_id
+            $hg = HistoryGuruMapel::where('mapel_id', $request->mapel_id)
+                                ->where('class_id', $request->class_id)
+                                ->first();
+
+            // Jika guru_id pada HistoryGuruMapel sama dengan guru_id yang dikirimkan
+            if ($hg && $hg->guru_id == $request->guru_id) {
+                $gm->guru_id = $request->guru_id;
+                $gm->save();
+            } else {
+
+                $gm->guru_id = $request->guru_id;
+                $gm->save();
+
+                if($hg)
+                {
+                    $hg->delete();
+                }
+                // Buat HistorySiswa baru
+                $hgm = new HistoryGuruMapel(); // Pastikan model dan nama tabel sesuai
+                $hgm->id = rand();
+                $hgm->tahun_ajaran = $th->tahun;
+                $hgm->mapel_id = $request->mapel_id;
+                $hgm->class_id = $request->class_id;
+                $hgm->guru_id = $request->guru_id;
+                $hgm->save();
+            }
+        }
+
         return response()->json(['message' => 'Berhasil Memilih Guru Mapel'], 200);
     }
 
@@ -1630,15 +1791,16 @@ class AdminController extends Controller
     {
         // Mengambil data dengan relasi
         $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
-        ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
-        ->orderBy('create_at', 'asc') // Mengurutkan berdasarkan create_at secara ascending
-        ->get();
+            ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
+            ->orderBy('create_at', 'asc') // Mengurutkan berdasarkan create_at secara ascending
+            ->get();
 
 
         return view('pesan_in_dash', compact('data'));
     }
 
-    public function getPesan($id){
+    public function getPesan($id)
+    {
         $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
             ->where('id', $id)
             ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
@@ -1661,9 +1823,32 @@ class AdminController extends Controller
         $tingkat = $kelas->tingkat;
         $jurusan_id = $kelas->jurusan_id;
 
-        if($request->ajax())
-        {
-            $siswa = User::select('personal_data.nama', 'username', 'real_password')
+        if ($request->ajax()) {
+            $siswa = User::select('personal_data.nama', 'username', 'real_password', 'personal_data.jenis_kelamin')
+                ->leftJoin('personal_data', 'users.personal_id', '=', 'personal_data.id')
+                ->leftJoin('siswa', 'siswa.user_id', '=', 'users.id')
+                ->leftJoin('kelas_siswa', 'kelas_siswa.user_id', '=', 'users.id')
+                ->leftJoin('kelas', 'kelas_siswa.class_id', '=', 'kelas.id')
+                ->where('users.role_id', 3)
+                ->where('siswa.tingkat', $tingkat)
+                ->where('siswa.jurusan_id', $jurusan_id)
+                ->where('siswa.status', 'y')
+                ->orderBy('personal_data.nama', 'asc')
+                ->get();
+
+            return DataTables::of($siswa)
+                ->addIndexColumn()
+                ->toJson();
+        }
+    }
+
+    public function cetak_user_siswa($id)
+    {
+        $kelas = Kelas::findOrFail($id);
+        $tingkat = $kelas->tingkat;
+        $jurusan_id = $kelas->jurusan_id;
+
+        $siswa = User::select('personal_data.nama', 'username', 'real_password', 'personal_data.jenis_kelamin')
             ->leftJoin('personal_data', 'users.personal_id', '=', 'personal_data.id')
             ->leftJoin('siswa', 'siswa.user_id', '=', 'users.id')
             ->leftJoin('kelas_siswa', 'kelas_siswa.user_id', '=', 'users.id')
@@ -1675,23 +1860,33 @@ class AdminController extends Controller
             ->orderBy('personal_data.nama', 'asc')
             ->get();
 
-            return DataTables::of($siswa)
-                ->addIndexColumn()
-                ->toJson();
-        }
+
+        // Pass data ke view
+        $viewData = [
+            'title' => 'Data Pengguna Siswa ' . $kelas->nama_rombel,
+            'siswa' => $siswa
+        ];
+
+        // Buat PDF dari view 'guru' dengan data yang telah diambil
+        $pdf = PDF::loadView('cetak.student-user', $viewData);
+
+        // Tampilkan PDF di browser
+        return $pdf->stream('data-pengguna-siswa-' . $kelas->nama_rombel . '.pdf');
     }
 
     public function hitung_data_siswa()
     {
         $data = DB::table('kelas as k')
-        ->leftJoin('kelas_siswa as ks', 'ks.class_id', '=', 'k.id')
-        ->leftJoin('users as u', 'u.id', '=', 'ks.user_id')
-        ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
-        ->select('k.nama_rombel',
+            ->leftJoin('kelas_siswa as ks', 'ks.class_id', '=', 'k.id')
+            ->leftJoin('users as u', 'u.id', '=', 'ks.user_id')
+            ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+            ->select(
+                'k.nama_rombel',
                 DB::raw("COUNT(CASE WHEN pd.jenis_kelamin = 'L' THEN 1 END) as L"),
-                DB::raw("COUNT(CASE WHEN pd.jenis_kelamin = 'P' THEN 1 END) as P"))
-        ->groupBy('k.nama_rombel')
-        ->get();
+                DB::raw("COUNT(CASE WHEN pd.jenis_kelamin = 'P' THEN 1 END) as P")
+            )
+            ->groupBy('k.nama_rombel')
+            ->get();
 
         return response()->json($data);
     }

@@ -12,7 +12,7 @@
                         <select name="tahun_ajaran" class="form-control">
                             <option value=""> -- Pilih -- </option>
                             @foreach ($tahun as $t)
-                                <option>{{$t->tahun}}</option>
+                                <option>{{$t->tahun_ajaran}}</option>
                             @endforeach
                         </select>
                         <button type="submit" class="btn btn-success mt-3 filter">
@@ -31,3 +31,4 @@
     </div>
 </div>
 @endsection
+@section('pageTitle', 'Input Nilai')

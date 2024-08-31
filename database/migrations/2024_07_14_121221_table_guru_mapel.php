@@ -15,6 +15,7 @@ class TableGuruMapel extends Migration
     {
         Schema::create('guru_mapel', function(Blueprint $table){
             $table->string('mapel_id')->primary();
+            $table->string('class_id')->nullable();
             $table->string('guru_id')->nullable();
         });
     }

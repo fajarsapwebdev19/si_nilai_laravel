@@ -23,15 +23,15 @@ $('#formAuthentication').on('click', '.login', function(e){
 
                 if(response.role == 1)
                 {
-                    window.location.href='admin/';
+                    window.location.href='admin';
                 }
                 else if(response.role == 2)
                 {
-                    window.location.href='guru/';
+                    window.location.href='guru';
                 }
                 else if(response.role == 3)
                 {
-                    window.location.href='siswa/';
+                    window.location.href='siswa';
                 }
 
             }, 3000);

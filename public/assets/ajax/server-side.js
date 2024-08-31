@@ -107,6 +107,7 @@ function get_class_id(class_id) {
         columns:[
             {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
             {data: 'nisn', name: 'nisn'},
+            {data: 'jenis_kelamin', name: 'jenis_kelamin'},
             {data: 'nama', name: 'nama'}
         ]
     });
@@ -118,6 +119,7 @@ function get_class_id(class_id) {
         columns:[
             {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
             {data: 'nisn', name: 'nisn'},
+            {data: 'jenis_kelamin', name: 'jenis_kelamin'},
             {data: 'nama', name: 'nama'}
         ]
     });
@@ -135,8 +137,28 @@ function get_siswa_user(id)
         ajax: "get_data_siswa/" + id,
         columns:[
             {data: 'nama', name: 'nama'},
+            {data: 'jenis_kelamin', name: 'jenis_kelamin'},
             {data: 'username', name: 'username'},
             {data: 'real_password', name: 'real_password'}
+        ]
+    });
+}
+
+function role_users(role_id){
+    if ($.fn.DataTable.isDataTable('.pengguna-guru')) {
+        $('.pengguna-guru').DataTable().destroy();
+    }
+
+    $('.pengguna-guru').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "get_teacher_users/" + role_id,
+        columns:[
+            {data: 'personal_data.nama', name: 'personal_data.nama'},
+            {data: 'personal_data.jenis_kelamin', name: 'personal_data.jenis_kelamin'},
+            {data: 'username', name: 'username'},
+            {data: 'real_password', name: 'real_password'},
+            {data: 'guru.jenis_ptk', name: 'guru.jenis_ptk'}
         ]
     });
 }

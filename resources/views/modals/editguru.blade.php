@@ -60,3 +60,4 @@
     <button type="button" class="btn btn-lg btn-success simpan">Simpan</button>
     <button type="button" class="btn btn-lg btn-danger" data-bs-dismiss="modal">Batal</button>
 </div>
+

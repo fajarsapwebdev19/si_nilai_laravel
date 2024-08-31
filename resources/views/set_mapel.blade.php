@@ -9,24 +9,34 @@
 
                 <div class="card mt-2">
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover gm">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Tingkat</th>
-                                        <th>Keahlian</th>
-                                        <th>Guru</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form id="filter-class">
+                                    <div class="form-group mb-3">
+                                        <label for="">
+                                            Kelas
+                                        </label>
+                                        <select name="class_id" class="form-control" style="width: 30%">
+                                            <option value="">Pilih Kelas</option>
+                                            @foreach ($class as $c)
+                                                <option value="{{$c->id}}">{{$c->nama_rombel}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-success filter">
+                                        Filter
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div id="gur-maping-mapel" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
-                @include('modals/set_mapel')
             </div>
         </div>
     </div>
 @endsection
+
+@section('pageTitle', 'Menentukan Guru Mapel')

@@ -44,6 +44,10 @@
                         <label for="">KKM</label>
                         <input type="number" name="kkm" class="form-control">
                     </div>
+                    <div class="form-group mb-3">
+                        <label for="">Urutan</label>
+                        <input type="number" name="urutan" class="form-control">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-lg btn-success simpan">Simpan</button>

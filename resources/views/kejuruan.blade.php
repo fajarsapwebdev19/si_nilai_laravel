@@ -32,3 +32,5 @@
     </div>
 </div>
 @endsection
+
+@section('pageTitle', 'Data Kejuruan')

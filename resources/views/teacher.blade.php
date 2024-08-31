@@ -11,6 +11,9 @@
                 <button type="button" data-bs-toggle="modal" data-bs-target="#import" class="btn btn-info mb-2">
                     Import
                 </button>
+                <button type="button" data-id="2" class="btn btn-primary mb-2 btn-teacher-users">
+                    Pengguna
+                </button>
 
                 <div class="messages"></div>
 
@@ -37,3 +40,5 @@
         </div>
     </div>
 @endsection
+
+@section('pageTitle', 'Data Guru')

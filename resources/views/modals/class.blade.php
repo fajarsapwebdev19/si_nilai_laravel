@@ -109,6 +109,7 @@
                                             <tr>
                                                 <th><input type="checkbox" class="form-check-input all-check-no-class"></th>
                                                 <th>NISN</th>
+                                                <th>JK</th>
                                                 <th>Nama</th>
                                             </tr>
                                         </thead>
@@ -129,6 +130,7 @@
                                             <tr>
                                                 <th><input type="checkbox" class="form-check-input all-check-class"></th>
                                                 <th>NISN</th>
+                                                <th>JK</th>
                                                 <th>Nama</th>
                                             </tr>
                                         </thead>
@@ -156,6 +158,7 @@
             </div>
             <form method="post" id="get_siswa">
                 <div class="modal-body">
+                    <button type="button" class="btn btn-success download-user-student">Download</button>
                     <div class="messages-class"></div>
                     <div class="row">
                         <div class="col-md-12">
@@ -163,6 +166,7 @@
                                 <thead>
                                     <tr>
                                         <th>Nama Siswa</th>
+                                        <th>JK</th>
                                         <th>Username</th>
                                         <th>Password</th>
                                     </tr>
