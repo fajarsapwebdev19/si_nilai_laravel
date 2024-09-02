@@ -26,3 +26,4 @@
     </div>
 </div>
 @endsection
+@section('pageTitle', 'Cetak Leger')

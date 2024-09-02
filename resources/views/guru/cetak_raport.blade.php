@@ -56,3 +56,4 @@
     </div>
 </div>
 @endsection
+@section('pageTitle', 'Cetak Raport')

@@ -9,6 +9,64 @@ function updateClock() {
     document.getElementById('clock').innerHTML = `${dateString}, ${timeString}`;
 }
 
+$.ajax({
+    url: 'hitung_siswa',
+    method: 'GET',
+    success: function (response) {
+        let namaRombel = [];
+        let lakiLaki = [];
+        let perempuan = [];
+
+        response.forEach(function (data) {
+            namaRombel.push(data.nama_rombel);
+            lakiLaki.push(data.L);
+            perempuan.push(data.P);
+        });
+
+        var options = {
+            chart: {
+                type: 'bar',
+                height: 400
+            },
+            series: [{
+                name: 'Laki-Laki',
+                data: lakiLaki
+            }, {
+                name: 'Perempuan',
+                data: perempuan
+            }],
+            xaxis: {
+                categories: namaRombel
+            },
+            yaxis: {
+                title: {
+                    text: 'Jumlah Siswa'
+                }
+            },
+            title: {
+                text: 'Jumlah Siswa Per Kelas Berdasarkan Jenis Kelamin',
+                align: 'center'
+            }
+        }
+
+        var chart = new ApexCharts(document.querySelector("#siswa-count-chart"), options);
+
+        chart.render();
+    }
+});
+
+function pesan() {
+    $.ajax({
+        url: "pesan_dashboard",
+        method: "GET",
+        success: function (response) {
+            $('#pesan').html(response);
+        }
+    });
+}
+
+pesan();
+
 // Update the clock immediately and then every second
 updateClock();
 setInterval(updateClock, 1000);
@@ -134,6 +192,18 @@ $('#show_siswa_sikap,#nilai-sikap').on('click', '.simpan', function(e){
                 text: response.message,
                 icon: 'success'
             })
+        },
+        error:function(xhr)
+        {
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+
+            Swal.fire({
+                title: 'Gagal!',
+                text: errorMessage,
+                icon: 'error'
+            });
         }
     });
 });
@@ -143,17 +213,70 @@ $('#filter-rekap-absensi').on('click', '.filter', function (e) {
     let tapel = $('select[name=tahun_ajaran]').val();
 
     if (tapel == "") {
-        alert('Pilih Tahun Ajaran Terlebih Dahulu');
+        Swal.fire({
+            title: 'Gagal!',
+            text: 'Silahkan Pilih Tahun Ajaran Terlebih Dahulu',
+            icon: 'error'
+        });
     } else {
-        $.ajax({
-            url: 'show_siswa_absensi',
-            method: 'GET',
-            success: function (response) {
-                $('#show_siswa_absensi').html(response);
-            }
+        Swal.fire({
+            title: 'Berhasil!',
+            text: 'Tahun Ajaran Valid',
+            icon: 'success'
+        }).then(function(){
+            $.ajax({
+                url: 'show_siswa_absensi/'+tapel,
+                method: 'GET',
+                success: function (response) {
+                    $('#show_siswa_absensi').html(response);
+                }
+            });
         });
     }
 });
+
+$('#show_siswa_absensi,#rekap-absensi-siswa').on('click', '.simpan', function(e){
+    e.preventDefault();
+
+    let data = $('#rekap-absensi-siswa').serialize();
+
+    $.ajax({
+        url: 'kirim_absensi',
+        method: 'POST',
+        data: data,
+        success: function (response) {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: response.message,
+                icon: 'success'
+            })
+        },
+        error: function (xhr) {
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+
+            Swal.fire({
+                title: 'Gagal!',
+                text: errorMessage,
+                icon: 'error'
+            });
+        }
+    });
+});
+
+function pesan() {
+    $.ajax({
+        url: "pesan_dashboard",
+        method: "GET",
+        success: function (response) {
+            $('#pesan').html(response);
+        }
+    });
+}
+
+pesan();
+
 
 $('.logout').click(function () {
     $.ajax({

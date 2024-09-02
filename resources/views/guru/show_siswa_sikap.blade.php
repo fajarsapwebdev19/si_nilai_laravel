@@ -19,20 +19,20 @@
                             <td>
                                 <input type="hidden" name="user_id[]" value="{{$s->user_id}}">
                                 <select name="spiritual[]" id="" class="form-control">
-                                    <option value=""> - </option>
-                                    <option value="A"> Sangat aktif dalam ibadah dan kegiatan spiritual lainnya </option>
-                                    <option value="B"> Aktif dalam ibadah, kadang kurang konsisten </option>
-                                    <option value="C"> Terkadang aktif dalam ibadah, perlu motivasi lebih </option>
-                                    <option value="D"> Jarang mengikuti ibadah, perlu peningkatan motivasi </option>
+                                    <option value="" {{$s->spiritual == "" ? "selected" : ""}}> - </option>
+                                    <option value="A" {{$s->spiritual == "A" ? "selected" : ""}}> Sangat aktif dalam ibadah dan kegiatan spiritual lainnya </option>
+                                    <option value="B" {{$s->spiritual == "B" ? "selected" : ""}}> Aktif dalam ibadah, kadang kurang konsisten </option>
+                                    <option value="C" {{$s->spiritual == "C" ? "selected" : ""}}> Terkadang aktif dalam ibadah, perlu motivasi lebih </option>
+                                    <option value="D" {{$s->spiritual == "D" ? "selected" : ""}}> Jarang mengikuti ibadah, perlu peningkatan motivasi </option>
                                 </select>
                             </td>
                             <td>
                                 <select name="sosial[]" class="form-control">
-                                    <option value=""> - </option>
-                                    <option value="A"> Selalu menunjukkan sikap sopan santun </option>
-                                    <option value="B"> Biasanya sopan, kadang kurang perhatian </option>
-                                    <option value="C"> Kadang tidak sopan dalam interaksi </option>
-                                    <option value="D"> Sering menunjukkan sikap tidak sopan </option>
+                                    <option value="" {{$s->sosial == "" ? "selected" : ""}}> - </option>
+                                    <option value="A" {{$s->sosial == "A" ? "selected" : ""}}> Selalu menunjukkan sikap sopan santun </option>
+                                    <option value="B" {{$s->sosial == "B" ? "selected" : ""}}> Biasanya sopan, kadang kurang perhatian </option>
+                                    <option value="C" {{$s->sosial == "C" ? "selected" : ""}}> Kadang tidak sopan dalam interaksi </option>
+                                    <option value="D" {{$s->sosial == "D" ? "selected" : ""}}> Sering menunjukkan sikap tidak sopan </option>
                                 </select>
                             </td>
                         </tr>

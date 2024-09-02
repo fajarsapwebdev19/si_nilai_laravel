@@ -44,8 +44,26 @@ class StudentController extends Controller
         return view('siswa.lihat_nilai', compact('tahun', 'kelas', 'mapel'));
     }
 
-    public function cetak_raport(){
+    public function cetak_raport()
+    {
         $tahun = TahunAjaran::get();
         return view('siswa.cetak_raport', compact('tahun'));
+    }
+
+    public function hitung_data_siswa()
+    {
+        $data = DB::table('kelas as k')
+            ->leftJoin('kelas_siswa as ks', 'ks.class_id', '=', 'k.id')
+            ->leftJoin('users as u', 'u.id', '=', 'ks.user_id')
+            ->leftJoin('personal_data as pd', 'u.personal_id', '=', 'pd.id')
+            ->select(
+                'k.nama_rombel',
+                DB::raw("COUNT(CASE WHEN pd.jenis_kelamin = 'L' THEN 1 END) as L"),
+                DB::raw("COUNT(CASE WHEN pd.jenis_kelamin = 'P' THEN 1 END) as P")
+            )
+            ->groupBy('k.nama_rombel')
+            ->get();
+
+        return response()->json($data);
     }
 }
