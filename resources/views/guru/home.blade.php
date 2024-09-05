@@ -16,7 +16,11 @@
     <meta name="keywords" content="dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{asset($logo)}}" />
+    @if($logo)
+        <link rel="icon" type="image/x-icon" href="{{asset($logo)}}" />
+    @else
+        <link rel="icon" type="image/x-icon" href="{{asset('logo/default.png')}}" />
+    @endif
 
     <!-- Icons -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />

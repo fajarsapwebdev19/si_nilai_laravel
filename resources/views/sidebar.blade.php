@@ -100,6 +100,14 @@
             </a>
         </li>
         <!-- /pesan -->
+        <!-- pusat unduhan -->
+        <li class="menu-item {{ Request::is('admin/pusat_unduhan') ? 'active' : '' }}">
+            <a href="{{ route('p_unduhan') }}" class="menu-link">
+                <i class="menu-icon fas fa-download"></i>
+                <div class="text-truncate">Pusat Unduhan</div>
+            </a>
+        </li>
+        <!-- /pusat unduhan -->
         <!-- logout -->
         <li class="menu-item bg-danger text-center">
             <a class="menu-link logout">

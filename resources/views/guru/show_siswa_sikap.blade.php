@@ -1,3 +1,12 @@
+<div class="row">
+    <div class="col-md-4">
+        <div class="alert alert-info">
+            <span>Tahun Ajaran : {{$ta}}</span>
+            <br>
+            <span>Kelas : {{$nama_kelas}}</span>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div class="card-body">
         <form id="nilai-sikap">

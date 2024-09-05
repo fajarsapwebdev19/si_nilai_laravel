@@ -35,6 +35,7 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/pengaturan/set-wakel', [AdminController::class, 'set_wakel'])->name('pilih-wakel'); // set wakel per kelas
     Route::get('admin/pengaturan/set-mapel', [AdminController::class, 'set_mapel'])->name('pilih-guru-mapel'); //set guru mapel
     Route::get('admin/pesan', [AdminController::class, 'pesan'])->name('pesan'); // pesan
+    Route::get('admin/pusat_unduhan', [AdminController::class, 'pusat_unduhan'])->name('p_unduhan');
 
     // Route Data
     Route::get('admin/akun_admin', [AdminController::class, 'account_data']); // data akun admin
@@ -47,8 +48,7 @@ Route::middleware(['checkrole:1'])->group(function () {
     Route::get('admin/data/data_tahun_ajaran', [AdminController::class, 'data_tahun_ajaran']); // data tahun ajaran
     Route::get('admin/pengaturan/get_kelas_wakel', [AdminController::class, 'get_kelas_wakel']); // set wakel
     Route::get('admin/pengaturan/data_guru_mapel', [AdminController::class, 'data_guru_mapel']); // set mapel
-
-    Route::get('admin/data/get_teacher_users/{id}', [AdminController::class, 'users_teacher']);
+    Route::get('admin/data/get_teacher_users/{id}', [AdminController::class, 'users_teacher']); // get username teacher
 
 
     // Route Tambah Data
@@ -136,11 +136,15 @@ Route::middleware(['checkrole:2'])->group(function () {
     Route::get('guru/input/show_student/{id}', [TeacherController::class, 'show_nilai']);
     Route::get('guru/input/show_siswa_sikap/{year}/{smt}', [TeacherController::class, 'show_siswa_sikap']);
     Route::get('guru/input/show_siswa_absensi/{year}/{smt}', [TeacherController::class, 'show_siswa_absensi']);
-    Route::get('guru/input/show_siswa_ekskul', [TeacherController::class, 'show_siswa_absensi']);
+    Route::get('guru/input/show_siswa_ekskul/{year}/{smt}', [TeacherController::class, 'show_siswa_ekskul']);
+    Route::get('guru/input/input_n_ekskul', [TeacherController::class, 'inputEkskul']);
+    Route::get('guru/input/show_siswa_kenaikan', [TeacherController::class, 'show_siswa_kenaikan']);
     // Route Kirim Data
     Route::post('guru/input/kirim_nilai', [TeacherController::class, 'kirim_nilai']);
     Route::post('guru/input/kirim_nilai_sikap', [TeacherController::class, 'kirim_nilai_sikap']);
     Route::post('guru/input/kirim_absensi', [TeacherController::class, 'kirim_absensi']);
+    Route::post('guru/input/kirim_nilai_ekskul', [TeacherController::class, 'kirim_nilai_ekskul']);
+    Route::post('guru/input/kirim_catatan', [TeacherController::class, 'kirim_catatan_wakel']);
 
     // Route Halaman
     Route::get('guru/input/nilai', [TeacherController::class, 'input_nilai'])->name('input_nilai');
@@ -150,12 +154,25 @@ Route::middleware(['checkrole:2'])->group(function () {
     Route::get('guru/input/kenaikan', [TeacherController::class, 'kenaikan'])->name('kenaikan');
     Route::get('guru/cetak/raport', [TeacherController::class, 'cetak_raport'])->name('cetak_raport');
     Route::get('guru/cetak/leger', [TeacherController::class, 'cetak_leger'])->name('cetak_leger');
+    Route::get('guru/cetak/cetak_leger', [TeacherController::class, 'cetak_leger_kelas']);
+
+    Route::get('guru/cetak/show_siswa_raport', [TeacherController::class, 'show_siswa_raport']);
+    // cetak raport
+    Route::get('guru/cetak/cetak_profil_sekolah', [TeacherController::class, 'cetak_profil_sekolah']);
+    Route::get('guru/cetak/cetak_cover', [TeacherController::class, 'cetak_cover']);
+    Route::get('guru/cetak/cetak_identitas', [TeacherController::class, 'cetak_identitas']);
+    Route::get('guru/cetak/cetak_raport_siswa', [TeacherController::class, 'cetak_raport_siswa']);
 });
 
 Route::middleware(['checkrole:3'])->group(function () {
+    // route halaman
     Route::get('siswa/', [StudentController::class, 'home'])->name('home_siswa');
     Route::get('siswa/lihat_nilai', [StudentController::class, 'lihat_nilai'])->name('lihat_nilai');
     Route::get('siswa/cetak_raport', [StudentController::class, 'cetak_raport'])->name('cetak_raport_siswa');
+    // show nilai
+    Route::get('siswa/show_nilai', [StudentController::class, 'show_nilai_siswa']);
+    // cetak raport
+    Route::get('siswa/cetak_raport_siswa', [StudentController::class, 'cetak_r_siswa']);
 });
 
 // Logout Route

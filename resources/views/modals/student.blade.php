@@ -43,7 +43,7 @@
                             </div>
                             <div class="form-group mb-3">
                                 <label for="">Tanggal Lahir</label>
-                                <input type="text" name="tgl_lhr" class="form-control">
+                                <input type="text" name="tgl_lhr" class="form-control tanggal">
                             </div>
                             <div class="form-group mb-3">
                                 <label for="">Alamat</label>
@@ -180,7 +180,7 @@
                             </div>
                             <div class="form-group mb-3">
                                 <label for="">Tanggal Lahir</label>
-                                <input type="text" name="tgl_lhr" class="form-control">
+                                <input type="text" name="tgl_lhr" class="form-control tanggal">
                             </div>
                             <div class="form-group mb-3">
                                 <label for="">Alamat</label>
@@ -306,13 +306,14 @@
                 @csrf
                 <div class="modal-body">
                     <div id="error-message"></div>
+                    <div class="alert alert-info">
+                        Untuk Template Import Silahkan Unduh Pada Menu Pusat Unduhan
+                    </div>
                     <div class="form-group mb-3">
                         <label for="">File Excel</label>
                         <input type="file" name="file" class="form-control">
                         <br>
                         <span>Ext : .xlx, .xlxs</span>
-                        <br>
-                        <a href="{{asset('assets/template-import/template-siswa.xlsx')}}" class="btn btn-sm btn-success">Template Import</a>
                     </div>
                 </div>
                 <div class="modal-footer">

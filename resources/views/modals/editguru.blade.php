@@ -32,7 +32,7 @@
     </div>
     <div class="form-group mb-3">
         <label for="">Tanggal Lahir</label>
-        <input type="text" name="tgl_lahir" class="form-control" value="{{$t->guru->tanggal_lahir}}">
+        <input type="text" name="tgl_lahir" class="form-control tanggal" value="{{date('d-m-Y', strtotime($t->guru->tanggal_lahir))}}">
     </div>
     <div class="form-group mb-3">
         <label for="">Jenis PTK</label>

@@ -19,7 +19,6 @@ class TableInputKenaikan extends Migration
             $table->string('user_id')->nullable();
             $table->string('status_kenaikan')->nullable();
             $table->string('deskripsi')->nullable();
-            $table->timestamps(); // Tambahan untuk kolom created_at dan updated_at
         });
     }
 

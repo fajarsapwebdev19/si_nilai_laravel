@@ -28,6 +28,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\DataTables;
 use Ramsey\Uuid\Uuid;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -253,6 +254,13 @@ class AdminController extends Controller
 
     public function tambah_kejuruan(Request $request)
     {
+        $j = Kejuruan::where('nama_kejuruan', $request->nama_kejuruan)->first();
+
+        if($j)
+        {
+            return response()->json(['message' => 'Gagal Tambah Data Kejuruan. Nama Kejuruan Sudah Ada Di Database'], 400);
+        }
+
         $k = new Kejuruan();
         $k->id = Uuid::uuid4();
         $k->nama_kejuruan = $request->nama_kejuruan;
@@ -336,6 +344,13 @@ class AdminController extends Controller
             $nama_jurusan = $r[0];
             $singkatan = $r[1];
 
+            $j = Kejuruan::where('nama_kejuruan', $nama_jurusan)->first();
+
+            if($j)
+            {
+                continue;
+            }
+
             $kejuruan = new Kejuruan();
             $kejuruan->id = $uuid;
             $kejuruan->nama_kejuruan = $nama_jurusan;
@@ -373,8 +388,6 @@ class AdminController extends Controller
         return substr(str_shuffle(str_repeat($characters, ceil($length / strlen($characters)))), 1, $length);
     }
 
-
-
     public function cetak_user_guru()
     {
         // Ambil data pengguna berdasarkan role_id
@@ -394,8 +407,6 @@ class AdminController extends Controller
         // Tampilkan PDF di browser
         return $pdf->stream('data-pengguna-guru.pdf');
     }
-
-
 
     // pengguna guru
     public function users_teacher(Request $request, $id)
@@ -448,6 +459,14 @@ class AdminController extends Controller
     {
         DB::beginTransaction();
 
+        $g = Guru::where('nik', $request->nik)
+        ->where('nuptk', $request->nuptk)->first();
+
+        if($g)
+        {
+            return response()->json(['message' => 'Gagal Tambah Data Guru. NIK Atau NUPTK Duplikat'], 402);
+        }
+
         $p_id = mt_rand(0, 99999);
         $personal = new PersonalData();
         $personal->id = $p_id;
@@ -474,7 +493,7 @@ class AdminController extends Controller
         $guru->nik = $request->nik;
         $guru->nuptk = $request->nuptk;
         $guru->tempat_lahir = $request->t_lahir;
-        $guru->tanggal_lahir = $request->tgl_lahir;
+        $guru->tanggal_lahir = date('Y-m-d', strtotime($request->tgl_lahir));
         $guru->jenis_ptk = $request->jenis_ptk;
         $guru->wali_kelas = 'N';
         $guru->class_id = NULL;
@@ -514,7 +533,7 @@ class AdminController extends Controller
         $guru->nik = $request->nik;
         $guru->nuptk = $request->nuptk;
         $guru->tempat_lahir = $request->t_lahir;
-        $guru->tanggal_lahir = $request->tgl_lahir;
+        $guru->tanggal_lahir = date('Y-m-d', strtotime($request->tgl_lahir));
         $guru->jenis_ptk = $request->jenis_ptk;
         $guru->save();
 
@@ -602,6 +621,14 @@ class AdminController extends Controller
             $jenis_gtk = $r[7];
             $user_id = Uuid::uuid4();
 
+            $g = Guru::where('nik', $nik)
+            ->where('nuptk', $nuptk)->first();
+
+            if($g)
+            {
+                continue;
+            }
+
             $pd = new PersonalData();
             $pd->id = $pid;
             $pd->nama = $nama;
@@ -627,7 +654,7 @@ class AdminController extends Controller
             $guru->nik = $nik;
             $guru->nuptk = $nuptk;
             $guru->tempat_lahir = $tempat_lahir;
-            $guru->tanggal_lahir = $tanggal_lahir;
+            $guru->tanggal_lahir = date('Y-m-d', strtotime($tanggal_lahir));
             $guru->jenis_ptk = $jenis_gtk;
             $guru->wali_kelas = "N";
             $guru->class_id = NULL;
@@ -833,7 +860,7 @@ class AdminController extends Controller
                 $nik = $r[2];
                 $nisn = $r[3];
                 $tempat_lahir = $r[4];
-                $tanggal_lahir = \Carbon\Carbon::createFromFormat('Y-m-d', $r[5]); // Validasi tanggal
+                $tanggal_lahir = $r[5]; // Validasi tanggal
                 $alamat = $r[6];
                 $rt = $r[7];
                 $rw = $r[8];
@@ -849,6 +876,14 @@ class AdminController extends Controller
                 $pendidikan_ibu = $r[18];
                 $pekerjaan_ibu = $r[19];
                 $tingkat = $r[20];
+
+                $s = Siswa::where('nik', $nik)
+                ->where('nisn', $nisn)->first();
+
+                if($s)
+                {
+                    continue;
+                }
 
                 // Simpan data ke tabel personal_data
                 $personal = new PersonalData();
@@ -887,7 +922,7 @@ class AdminController extends Controller
                 $siswa->nisn = $nisn;
                 $siswa->nik = $nik;
                 $siswa->tempat_lahir = $tempat_lahir;
-                $siswa->tanggal_lahir = $tanggal_lahir;
+                $siswa->tanggal_lahir = date('Y-m-d', strtotime($tanggal_lahir));
                 $siswa->agama = $agama;
                 $siswa->rt = $rt;
                 $siswa->rw = $rw;
@@ -918,7 +953,6 @@ class AdminController extends Controller
             return response()->json(['error' => 'Gagal Menambah Data Siswa: ' . $e->getMessage()], 500);
         }
     }
-
 
     // data siswa
     public function data_siswa(Request $request)
@@ -955,6 +989,15 @@ class AdminController extends Controller
         $p_id = mt_rand(1111, 5555) . rand(0, 999);
 
         DB::beginTransaction();
+
+        $s = Siswa::where('nik', $request->nik)
+        ->where('nisn', $request->nisn)->first();
+
+        if($s)
+        {
+            return response()->json(['message' => 'Gagal tambah siswa. NISN atau NIK Duplikat'], 400);
+        }
+
         // personal data
         $personal = new PersonalData();
         $personal->id = $p_id;
@@ -990,7 +1033,7 @@ class AdminController extends Controller
         $siswa->nisn = $request->nisn;
         $siswa->nik = $request->nik;
         $siswa->tempat_lahir = $request->t_lhr;
-        $siswa->tanggal_lahir = $request->tgl_lhr;
+        $siswa->tanggal_lahir = date('Y-m-d', strtotime($request->tgl_lhr));
         $siswa->agama = $request->agama;
         $siswa->rt = $request->rt;
         $siswa->rw = $request->rw;
@@ -1030,7 +1073,7 @@ class AdminController extends Controller
         $siswa->nisn = $request->nisn;
         $siswa->nik = $request->nik;
         $siswa->tempat_lahir = $request->t_lhr;
-        $siswa->tanggal_lahir = $request->tgl_lhr;
+        $siswa->tanggal_lahir = date('Y-m-d', strtotime($request->tgl_lhr));
         $siswa->agama = $request->agama;
         $siswa->rt = $request->rt;
         $siswa->rw = $request->rw;
@@ -1081,8 +1124,17 @@ class AdminController extends Controller
     {
         $siswa = User::with('personalData', 'siswa')->find($id);
 
+        if ($siswa && $siswa->siswa->tanggal_lahir) {
+            // Memastikan data tanggal_lahir diformat dengan benar
+            $formatted_tanggal_lahir = Carbon::parse($siswa->siswa->tanggal_lahir)->format('d-m-Y');
+
+            // Mengganti tanggal_lahir di dalam objek personalData
+            $siswa->siswa->tanggal_lahir = $formatted_tanggal_lahir;
+        }
+
         return response()->json($siswa);
     }
+
 
     // class
     public function class_room()
@@ -1116,12 +1168,35 @@ class AdminController extends Controller
     public function tambah_kelas(Request $request)
     {
         // Validasi data yang diterima dari form
-        $request->validate([
+        $rules = [
             'nama_rombel' => 'required|string|max:255',
             'tingkat' => 'required|integer',
-            'status' => 'required|in:y,n', // contoh validasi status
-            // tambahkan validasi sesuai kebutuhan lainnya
-        ]);
+            'status' => 'required|in:y,n',
+            'jurusan' => 'required',
+        ];
+
+        $messages = [
+            'nama_rombel.required' => 'Nama rombel wajib diisi',
+            'tingkat.required' => 'Tingkat wajib diisi',
+            'status.required' => 'Status wajib pilih salah satu',
+            'jurusan.required' => 'Jurusan wajib pilih salah satu'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // Jika validasi gagal, kembalikan pesan kesalahan dalam format JSON
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $k = Kelas::where('nama_rombel', $request->nama_rombel)->first();
+
+        if($k)
+        {
+            return response()->json(['errors' => 'Gagal Tambah Kelas. Nama Rombel Sudah Digunakan'], 402);
+        }
 
         // Simpan data ke dalam tabel kelas
         $kelas = new Kelas();
@@ -1132,9 +1207,26 @@ class AdminController extends Controller
         $kelas->status = $request->status;
         $kelas->save();
 
+        // Ambil semua Mapel yang sesuai dengan tingkat dan jurusan
+        $gm = Mapel::where('tingkat', $request->tingkat)
+                    ->where('jurusan_id', $request->jurusan)
+                    ->get();
+
+        // Simpan data ke dalam tabel guru_mapel untuk setiap mapel yang ditemukan
+        foreach($gm as $gmap)
+        {
+            $gmp = new GuruMapel();
+            $gmp->id = mt_rand();
+            $gmp->mapel_id = $gmap->id;
+            $gmp->class_id = $kelas->id;  // pastikan kolom ini sesuai dengan nama yang ada di database
+            $gmp->guru_id = NULL;
+            $gmp->save();
+        }
+
         // Berikan respons JSON yang menyatakan berhasil simpan data
         return response()->json(['message' => 'Berhasil Simpan Data Kelas'], 200);
     }
+
 
     // ambil data kelas berdasarkan id untuk di tampilkan kedalam modal edit kelas
     public function get_class($id)
@@ -1179,6 +1271,9 @@ class AdminController extends Controller
         DB::beginTransaction();
         $kelas = Kelas::findOrFail($id);
         $kelas->delete();
+
+        GuruMapel::where('class_id', $id)->delete();
+
         DB::commit();
 
         return response()->json(['message' => 'Berhasil Hapus Data Kelas'], 200);
@@ -1212,27 +1307,32 @@ class AdminController extends Controller
     // tambah data mapel
     public function tambah_mapel(Request $request)
     {
-        $mapel = new Mapel();
-        $mapel->id = Uuid::uuid4()->toString();
-        $mapel->kelompok = $request->kelompok;
-        $mapel->kode = $request->kode;
-        $mapel->nama_mapel = $request->nama_mapel;
-        $mapel->tingkat = $request->tingkat;
-        $mapel->jurusan_id = $request->jurusan;
-        $mapel->kkm = $request->kkm;
-        $mapel->urutan = $request->urutan;
-        $mapel->save();
+        if(empty($request->kelompok) || empty($request->kode) || empty($request->nama_mapel) || empty($request->tingkat) || empty($request->jurusan) || empty($request->kkm) || empty($request->urutan))
+        {
+            return response()->json(['message' => 'Lengkapi Data Yang Kosong !'], 402);
+        }else{
+            $m = Mapel::where('kelompok', $request->kelompok)
+            ->where('kode', $request->kode)
+            ->where('nama_mapel', $request->nama_mapel)
+            ->where('tingkat', $request->tingkat)
+            ->where('jurusan_id', $request->jurusan)->first();
 
-        $kelas = Kelas::all();
+            if($m)
+            {
+                return response()->json(['message' => 'Gagal Tambah Data Mapel. Mapel Sudah Ada Di Database'], 402);
+            }
 
-        foreach ($kelas as $k) {
-            $g_mapel = new GuruMapel();
-            $g_mapel->mapel_id = $mapel->id;
-            $g_mapel->class_id = $k->id;
-            $g_mapel->guru_id = NULL;
-            $g_mapel->save();
+            $mapel = new Mapel();
+            $mapel->id = Uuid::uuid4()->toString();
+            $mapel->kelompok = $request->kelompok;
+            $mapel->kode = $request->kode;
+            $mapel->nama_mapel = $request->nama_mapel;
+            $mapel->tingkat = $request->tingkat;
+            $mapel->jurusan_id = $request->jurusan;
+            $mapel->kkm = $request->kkm;
+            $mapel->urutan = $request->urutan;
+            $mapel->save();
         }
-
         return response()->json(['message' => 'Berhasil Tambah Data Mapel'], 200);
     }
 
@@ -1315,6 +1415,17 @@ class AdminController extends Controller
         foreach ($rows as $r) {
             $jurusan = Kejuruan::where('nama_kejuruan', 'like', '%' . $r[4] . '%')->first();
 
+            $m = Mapel::where('kelompok', $r[0])
+            ->where('kode', $r[1])
+            ->where('nama_mapel', $r[2])
+            ->where('tingkat', $r[3])
+            ->where('jurusan_id', $jurusan->id)->first();
+
+            if($m)
+            {
+                continue;
+            }
+
             $mapel = new Mapel();
             $mapel->id = Uuid::uuid4()->toString();
             $mapel->kelompok = $r[0];
@@ -1325,16 +1436,6 @@ class AdminController extends Controller
             $mapel->kkm = $r[5];
             $mapel->urutan = $r[6];
             $mapel->save();
-
-            $kelas = Kelas::all();
-
-            foreach ($kelas as $k) {
-                $g_mapel = new GuruMapel();
-                $g_mapel->mapel_id = $mapel->id;
-                $g_mapel->class_id = $k->id;
-                $g_mapel->guru_id = NULL;
-                $g_mapel->save();
-            }
 
             $count++;
         }
@@ -1535,7 +1636,16 @@ class AdminController extends Controller
     public function profil_smk()
     {
         $th = TahunAjaran::all();
-        $ks = User::with(['personalData', 'guru'])->where('role_id', 2)->get();
+        $ks = User::with(['personalData', 'guru'])
+        ->where('role_id', 2)
+        ->whereHas('guru', function($query) {
+            $query->where('jenis_ptk', 'Kepala Sekolah');
+        })
+        ->get()
+        ->sortBy(function($user) {
+            return $user->personalData->nama;
+        });
+
         $p = ProfilSekolah::first();
         return view('profile_smk', compact('th', 'p', 'ks'));
     }
@@ -1543,81 +1653,29 @@ class AdminController extends Controller
     // halaman atur wali kelas
     public function set_wakel()
     {
-        $guru = User::with(['personalData', 'guru'])->where('role_id', 2)->get();
+        $guru = User::with(['personalData', 'guru'])->where('role_id', 2)->get()->sortBy(function($user) {
+            return $user->personalData->nama;
+        });
         return view('set_wakel', compact('guru'));
     }
 
     // memilih wali kelas di setiap kelas yang ada
     public function select_wakel(Request $request)
-{
-    $class = $request->input('class_id');
-    $guruId = $request->input('guru_id'); // Pastikan ini hanya ID guru yang benar
+    {
+        $class = $request->input('class_id');
+        $guruId = $request->input('guru_id'); // Pastikan ini hanya ID guru yang benar
 
-    // Ambil tahun ajaran aktif
-    $t = TahunAjaran::where('status', 'Y')->first();
-    if (!$t) {
-        return response()->json(['message' => 'Tahun ajaran aktif tidak ditemukan.'], 400);
-    }
-
-    // Cek apakah sudah ada guru yang ditunjuk sebagai wali kelas
-    $existingGuru = Guru::where('class_id', $class)->first();
-
-    if (!$existingGuru) {
-        // Jika tidak ada, set guru baru sebagai wali kelas
-        $guru = Guru::where('user_id', $guruId)->first();
-        if (!$guru) {
-            return response()->json(['message' => 'Guru tidak ditemukan.'], 404);
+        // Ambil tahun ajaran aktif
+        $t = TahunAjaran::where('status', 'Y')->first();
+        if (!$t) {
+            return response()->json(['message' => 'Tahun ajaran aktif tidak ditemukan.'], 400);
         }
 
-        $guru->wali_kelas = 'Y';
-        $guru->class_id = $class;
-        $guru->save();
+        // Cek apakah sudah ada guru yang ditunjuk sebagai wali kelas
+        $existingGuru = Guru::where('class_id', $class)->first();
 
-        // Buat entri HistoryWakel dengan ID guru yang benar
-        $hw = new HistoryWakel();
-        $hw->id = (string) rand(); // Pastikan ID primary key adalah string
-        $hw->tahun_ajaran = $t->tahun;
-        $hw->class_id = $class;
-        $hw->guru_id = $guru->user_id; // Gunakan ID guru yang benar
-        $hw->save();
-    } else {
-        if ($existingGuru->user_id == $guruId) {
-            // Jika guru yang sama, hapus sebagai wali kelas
-            $existingGuru->wali_kelas = 'N';
-            $existingGuru->class_id = NULL;
-            $existingGuru->save();
-
-            $hw = HistoryWakel::where('class_id', $class)
-                ->where('tahun_ajaran', $t->tahun)
-                ->where('guru_id', $guruId)
-                ->first();
-            if ($hw) {
-                $hw->delete();
-            }
-        } else {
-            // Ganti wali kelas
-            $existingGuru->wali_kelas = 'N';
-            $existingGuru->class_id = NULL;
-            $existingGuru->save();
-
-            // Update atau buat entri HistoryWakel baru
-            $hw = HistoryWakel::where('class_id', $class)
-                ->where('tahun_ajaran', $t->tahun)
-                ->where('guru_id', $existingGuru->user_id)
-                ->first();
-            if ($hw) {
-                $hw->guru_id = $guruId; // Gunakan ID guru yang benar
-                $hw->save();
-            } else {
-                $hw = new HistoryWakel();
-                $hw->id = (string) rand(); // Pastikan ID primary key adalah string
-                $hw->tahun_ajaran = $t->tahun;
-                $hw->class_id = $class;
-                $hw->guru_id = $guruId; // Gunakan ID guru yang benar
-                $hw->save();
-            }
-
-            // Set guru baru sebagai wali kelas
+        if (!$existingGuru) {
+            // Jika tidak ada, set guru baru sebagai wali kelas
             $guru = Guru::where('user_id', $guruId)->first();
             if (!$guru) {
                 return response()->json(['message' => 'Guru tidak ditemukan.'], 404);
@@ -1626,11 +1684,65 @@ class AdminController extends Controller
             $guru->wali_kelas = 'Y';
             $guru->class_id = $class;
             $guru->save();
-        }
-    }
 
-    return response()->json(['message' => 'Berhasil Memilih Wali Kelas'], 200);
-}
+            // Buat entri HistoryWakel dengan ID guru yang benar
+            $hw = new HistoryWakel();
+            $hw->id = (string) rand(); // Pastikan ID primary key adalah string
+            $hw->tahun_ajaran = $t->tahun;
+            $hw->class_id = $class;
+            $hw->guru_id = $guru->user_id; // Gunakan ID guru yang benar
+            $hw->save();
+        } else {
+            if ($existingGuru->user_id == $guruId) {
+                // Jika guru yang sama, hapus sebagai wali kelas
+                $existingGuru->wali_kelas = 'N';
+                $existingGuru->class_id = NULL;
+                $existingGuru->save();
+
+                $hw = HistoryWakel::where('class_id', $class)
+                    ->where('tahun_ajaran', $t->tahun)
+                    ->where('guru_id', $guruId)
+                    ->first();
+                if ($hw) {
+                    $hw->delete();
+                }
+            } else {
+                // Ganti wali kelas
+                $existingGuru->wali_kelas = 'N';
+                $existingGuru->class_id = NULL;
+                $existingGuru->save();
+
+                // Update atau buat entri HistoryWakel baru
+                $hw = HistoryWakel::where('class_id', $class)
+                    ->where('tahun_ajaran', $t->tahun)
+                    ->where('guru_id', $existingGuru->user_id)
+                    ->first();
+                if ($hw) {
+                    $hw->guru_id = $guruId; // Gunakan ID guru yang benar
+                    $hw->save();
+                } else {
+                    $hw = new HistoryWakel();
+                    $hw->id = (string) rand(); // Pastikan ID primary key adalah string
+                    $hw->tahun_ajaran = $t->tahun;
+                    $hw->class_id = $class;
+                    $hw->guru_id = $guruId; // Gunakan ID guru yang benar
+                    $hw->save();
+                }
+
+                // Set guru baru sebagai wali kelas
+                $guru = Guru::where('user_id', $guruId)->first();
+                if (!$guru) {
+                    return response()->json(['message' => 'Guru tidak ditemukan.'], 404);
+                }
+
+                $guru->wali_kelas = 'Y';
+                $guru->class_id = $class;
+                $guru->save();
+            }
+        }
+
+        return response()->json(['message' => 'Berhasil Memilih Wali Kelas'], 200);
+    }
 
 
 
@@ -1672,7 +1784,10 @@ class AdminController extends Controller
 
         $guru = User::with(['personalData'])
             ->where('role_id', 2)
-            ->get();
+            ->get()
+            ->sortBy(function($user) {
+                return $user->personalData->nama;
+            });
 
         return view('mapping_guru_mapel', compact('mapel', 'guru'));
     }
@@ -1695,65 +1810,38 @@ class AdminController extends Controller
 
     public function select_guru_mapel(Request $request)
     {
+        $th_aktif = TahunAjaran::where('status', 'Y')->first();
 
-        // Ambil GuruMapel berdasarkan class_id
-        $gm = GuruMapel::where('class_id', $request->class_id)->where('mapel_id', $request->mapel_id)->first();
-        if (!$gm) {
-            return response()->json(['message' => 'GuruMapel tidak ditemukan'], 404);
-        }
+        $hgm = HistoryGuruMapel::where('mapel_id', $request->mapel_id)->where('tahun_ajaran', $th_aktif->tahun)->where('class_id', $request->class_id)->first();
 
-        // Ambil TahunAjaran aktif
-        $th = TahunAjaran::where('status', 'Y')->first();
-        if (!$th) {
-            return response()->json(['message' => 'Tahun Ajaran tidak ditemukan'], 404);
-        }
+        if($request->guru_id == "")
+        {
+            GuruMapel::where('class_id', $request->class_id)
+                              ->where('mapel_id', $request->mapel_id)
+                              ->update(['guru_id' => $request->guru_id]);
 
-        // Jika guru_id tidak di-set
-        if (empty($request->guru_id)) {
-            // Hapus guru_id dari GuruMapel
-            // Hapus HistoryGuruMapel
-            $hgm = HistoryGuruMapel::where('mapel_id', $request->mapel_id)
+            $hgm->delete();
+        }else{
+            GuruMapel::where('class_id', $request->class_id)
+                              ->where('mapel_id', $request->mapel_id)
+                              ->update(['guru_id' => $request->guru_id]);
+
+            if($hgm)
+            {
+                HistoryGuruMapel::where('mapel_id', $request->mapel_id)
+                                ->where('tahun_ajaran', $th_aktif->tahun)
                                 ->where('class_id', $request->class_id)
-                                ->first();
-            if ($hgm) {
-                $gm->guru_id = $request->guru_id; // Set ke null jika tidak ada guru_id
-                $gm->save();
-
-                $hgm->delete();
+                                ->update(['guru_id' => $request->guru_id]);
             }else{
-                $gm->guru_id = $request->guru_id; // Set ke null jika tidak ada guru_id
-                $gm->save();
-            }
-        } else {
-            // Ambil HistoryGuruMapel berdasarkan mapel_id dan class_id
-            $hg = HistoryGuruMapel::where('mapel_id', $request->mapel_id)
-                                ->where('class_id', $request->class_id)
-                                ->first();
-
-            // Jika guru_id pada HistoryGuruMapel sama dengan guru_id yang dikirimkan
-            if ($hg && $hg->guru_id == $request->guru_id) {
-                $gm->guru_id = $request->guru_id;
-                $gm->save();
-            } else {
-
-                $gm->guru_id = $request->guru_id;
-                $gm->save();
-
-                if($hg)
-                {
-                    $hg->delete();
-                }
-                // Buat HistorySiswa baru
-                $hgm = new HistoryGuruMapel(); // Pastikan model dan nama tabel sesuai
-                $hgm->id = rand();
-                $hgm->tahun_ajaran = $th->tahun;
-                $hgm->mapel_id = $request->mapel_id;
-                $hgm->class_id = $request->class_id;
-                $hgm->guru_id = $request->guru_id;
-                $hgm->save();
+                $h = new HistoryGuruMapel();
+                $h->id = mt_rand();
+                $h->tahun_ajaran = $th_aktif->tahun;
+                $h->mapel_id = $request->mapel_id;
+                $h->class_id = $request->class_id;
+                $h->guru_id = $request->guru_id;
+                $h->save();
             }
         }
-
         return response()->json(['message' => 'Berhasil Memilih Guru Mapel'], 200);
     }
 
@@ -1792,7 +1880,7 @@ class AdminController extends Controller
         // Mengambil data dengan relasi
         $data = Info::select('id', 'judul', 'isi', 'create_at', 'user_id')
             ->with(['user.personalData:id,nama']) // Mengambil kolom tertentu dari personal_data
-            ->orderBy('create_at', 'asc') // Mengurutkan berdasarkan create_at secara ascending
+            ->orderBy('create_at', 'desc') // Mengurutkan berdasarkan create_at secara ascending
             ->get();
 
 
@@ -1820,6 +1908,7 @@ class AdminController extends Controller
     public function get_siswa_users(Request $request, $id)
     {
         $kelas = Kelas::findOrFail($id);
+        $class_id = $kelas->id;
         $tingkat = $kelas->tingkat;
         $jurusan_id = $kelas->jurusan_id;
 
@@ -1832,6 +1921,7 @@ class AdminController extends Controller
                 ->where('users.role_id', 3)
                 ->where('siswa.tingkat', $tingkat)
                 ->where('siswa.jurusan_id', $jurusan_id)
+                ->where('kelas_siswa.class_id', $class_id)
                 ->where('siswa.status', 'y')
                 ->orderBy('personal_data.nama', 'asc')
                 ->get();
@@ -1845,6 +1935,7 @@ class AdminController extends Controller
     public function cetak_user_siswa($id)
     {
         $kelas = Kelas::findOrFail($id);
+        $class_id = $kelas->id;
         $tingkat = $kelas->tingkat;
         $jurusan_id = $kelas->jurusan_id;
 
@@ -1856,6 +1947,7 @@ class AdminController extends Controller
             ->where('users.role_id', 3)
             ->where('siswa.tingkat', $tingkat)
             ->where('siswa.jurusan_id', $jurusan_id)
+            ->where('kelas_siswa.class_id', $class_id)
             ->where('siswa.status', 'y')
             ->orderBy('personal_data.nama', 'asc')
             ->get();
@@ -1889,5 +1981,9 @@ class AdminController extends Controller
             ->get();
 
         return response()->json($data);
+    }
+
+    public function pusat_unduhan(){
+        return view('pusat_unduhan');
     }
 }

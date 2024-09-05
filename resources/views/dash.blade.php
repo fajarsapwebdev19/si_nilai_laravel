@@ -16,7 +16,11 @@
     <meta name="keywords" content="dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{asset($logo)}}" />
+    @if($logo)
+        <link rel="icon" type="image/x-icon" href="{{asset($logo)}}" />
+    @else
+        <link rel="icon" type="image/x-icon" href="{{asset('logo/default.png')}}" />
+    @endif
 
     <!-- Icons -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
@@ -34,6 +38,8 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css')}}">
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/sweetalert2/sweetalert2.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css')}}">
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -84,12 +90,18 @@
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
     <script src="{{ asset('assets/summernote/summernote.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js')}}"></script>
 
     <!-- Main JS -->
     <script src="{{ asset('assets/ajax/server-side.js') }}"></script>
     <script src="{{ asset('assets/ajax/select-data.js') }}"></script>
     <script src="{{asset('assets/ajax/proses-data.js')}}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+
+    <script>
+
+    </script>
 
 </body>
 

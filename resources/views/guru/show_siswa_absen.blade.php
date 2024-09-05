@@ -1,3 +1,12 @@
+<div class="row">
+    <div class="col-md-4">
+        <div class="alert alert-info">
+            <span>Tahun Ajaran : {{$ta}}</span>
+            <br>
+            <span>Kelas : {{$nama_kelas}}</span>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div class="card-body">
         <form id="rekap-absensi-siswa">
@@ -5,7 +14,7 @@
                 <thead>
                     <tr>
                         <th>Nama Siswa</th>
-                        <th>Hadir</th>
+                        <th>Sakit</th>
                         <th>Izin</th>
                         <th>Tanpa Keterangan</th>
                     </tr>
@@ -20,7 +29,7 @@
                                 {{$s->nama}}
                             </td>
                             <td>
-                                <input type="text" class="form-control" name="hadir[]" style="width: 40%" value="{{$s->hadir ?? 0}}">
+                                <input type="text" class="form-control" name="hadir[]" style="width: 40%" value="{{$s->sakit ?? 0}}">
                             </td>
                             <td>
                                 <input type="text" class="form-control" name="izin[]" style="width: 40%" value="{{$s->izin ?? 0}}">

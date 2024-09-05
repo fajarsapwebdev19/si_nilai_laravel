@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
                 'provinsi' => 'Banten',
                 'kep_id' => NULL,
                 'logo' => NULL,
-                'th_aktif' => '2023/2024 2'
+                'th_aktif' => '2023/2024 1'
             ]
         ]);
 
@@ -52,11 +52,11 @@ class DatabaseSeeder extends Seeder
         DB::table('tahun_ajaran')->insert([
             [
                 'tahun' => '2023/2024 1',
-                'status' => 'N'
+                'status' => 'Y'
             ],
             [
                 'tahun' => '2023/2024 2',
-                'status' => 'Y'
+                'status' => 'N'
             ],
             [
                 'tahun' => '2024/2025 1',

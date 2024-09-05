@@ -14,7 +14,8 @@ class TableGuruMapel extends Migration
     public function up()
     {
         Schema::create('guru_mapel', function(Blueprint $table){
-            $table->string('mapel_id')->primary();
+            $table->string('id')->primary();
+            $table->string('mapel_id')->nullable();
             $table->string('class_id')->nullable();
             $table->string('guru_id')->nullable();
         });

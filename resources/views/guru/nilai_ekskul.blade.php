@@ -7,7 +7,7 @@
 
           <div class="row">
             <div class="col-md-4">
-                <form id="filter-rekap-absensi">
+                <form id="filter-ekskul">
                     <div class="form-group mb-3">
                         <select name="tahun_ajaran" class="form-control">
                             <option value=""> -- Pilih -- </option>

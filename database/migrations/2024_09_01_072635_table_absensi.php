@@ -17,7 +17,7 @@ class TableAbsensi extends Migration
             $table->string('id')->nullable(); // Primary key
             $table->string('tahun_ajaran')->nullable();
             $table->string('user_id')->nullable();
-            $table->integer('hadir')->nullable();
+            $table->integer('sakit')->nullable();
             $table->integer('izin')->nullable();
             $table->integer('tanpa_keterangan')->nullable();
         });

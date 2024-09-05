@@ -5,11 +5,18 @@ $(document).ready(function () {
         }
     });
 
+
+
     $('.text-editor').summernote({
         tabsize: 4,
         tabDisable: true,
         height: 100
+    });
 
+    $('.tanggal').datepicker({
+        format: 'dd-mm-yyyy',
+        autoclose: true,
+        todayHighlight: true
     });
 
     $("form").on("input", '.10-length', function () {
@@ -204,21 +211,13 @@ $(document).ready(function () {
                 $('#tambah-guru')[0].reset();
             },
             error: function (xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON.error;
-                    let errorMessages = '';
-
-                    $.each(errors, function (messages) {
-                        $.each(messages, function (message) {
-                            errorMessages += message + '<br>';
-                        });
-                    });
-                    $(".messages").show();
-                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
-                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
-                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
-                    });
-                }
+                let errors = xhr.responseJSON.message;
+                $("#tambah").modal('hide');
+                $(".messages").show();
+                $('.messages').addClass('alert alert-danger bg-danger text-white').html(errors).show();
+                $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
             }
         });
     });
@@ -233,6 +232,12 @@ $(document).ready(function () {
             success: function (response) {
                 $('#ubah').modal('show');
                 $("#ubah-guru").html(response);
+
+                $('.tanggal').datepicker({
+                    format: 'dd-mm-yyyy',
+                    autoclose: true,
+                    todayHighlight: true
+                });
             }
         });
     });
@@ -406,21 +411,21 @@ $(document).ready(function () {
                 $('#tambah-siswa')[0].reset();
             },
             error: function (xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON.error;
-                    let errorMessages = '';
 
-                    $.each(errors, function (messages) {
-                        $.each(messages, function (message) {
-                            errorMessages += message + '<br>';
-                        });
+                let errors = xhr.responseJSON.message;
+                let errorMessages = '';
+
+                $.each(errors, function (messages) {
+                    $.each(messages, function (message) {
+                        errorMessages += message + '<br>';
                     });
-                    $(".messages").show();
-                    $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
-                    $('.messages').fadeIn().delay(3000).fadeOut(function () {
-                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
-                    });
-                }
+                });
+                $('#tambah').modal('hide');
+                $(".messages").show();
+                $('.messages').addClass('alert alert-danger bg-danger text-white').html(errorMessages).show();
+                $('.messages').fadeIn().delay(3000).fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
             }
         });
     });
@@ -445,7 +450,8 @@ $(document).ready(function () {
                     $('#ubah-siswa input[value=P]').prop('checked', true);
                 }
                 $('#ubah-siswa input[name=t_lhr]').val(response.siswa.tempat_lahir);
-                $('#ubah-siswa input[name=tgl_lhr]').val(response.siswa.tanggal_lahir);
+                // $('#ubah-siswa input[name=tgl_lhr]').val(response.siswa.tanggal_lahir);
+                $('#ubah-siswa input[name=tgl_lhr]').datepicker('setDate', response.siswa.tanggal_lahir);
                 $('#ubah-siswa textarea[name=alamat]').html(response.personal_data.alamat);
                 $('#ubah-siswa input[name=rt]').val(response.siswa.rt);
                 $('#ubah-siswa input[name=rw]').val(response.siswa.rw);
@@ -764,6 +770,38 @@ $(document).ready(function () {
                 }, 3000);
                 data_kelas.ajax.reload();
                 $("#tambah-kelas")[0].reset();
+            },
+            error:function(xhr)
+            {
+                let errors = xhr.responseJSON.errors;
+                let errorMessages = '';
+
+                if (typeof errors === 'string') {
+                    // Ambil key pertama dari objek errors
+                    errorMessages = errors;
+                } else {
+                    // Jika ada banyak field error, iterasi melalui setiap error
+                    $.each(errors, function (field, messages) {
+                        if (Array.isArray(messages)) {
+                            $.each(messages, function (index, message) {
+                                errorMessages += message + '<br>';
+                            });
+                        } else {
+                            errorMessages += messages + '<br>';  // Tambahkan langsung jika string
+                        }
+                    });
+                }
+                $('#tambah').modal('hide');
+                $(".messages").show();
+                $('.messages')
+                    .addClass('alert alert-danger bg-danger text-white')
+                    .html(errorMessages)
+                    .show()
+                    .fadeIn()
+                    .delay(3000)
+                    .fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
             }
         });
     });
@@ -884,6 +922,22 @@ $(document).ready(function () {
                 }, 3000);
                 data_mapel.ajax.reload();
                 $("#tambah-mapel")[0].reset();
+            },
+            error:function(xhr)
+            {
+                let error = xhr.responseJSON.message;
+                $("#tambah").modal('hide');
+                $('.messages').show();
+                // Remove any existing alert classes
+                $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+                // Show error message
+                $('.messages').addClass('alert alert-danger bg-danger text-white').text(error).show();
+                $('html, body').animate({ scrollTop: 0 }, 'fast');
+                setTimeout(function () {
+                    $('.messages').fadeOut(function () {
+                        $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                    });
+                }, 3000);
             }
         });
     });
@@ -1306,6 +1360,23 @@ $("#tambah-kejuruan").on('click', '.simpan', function () {
                 });
             }, 3000);
             kejuruan.ajax.reload();
+        },
+        error:function(xhr)
+        {
+            let error = xhr.responseJSON.message;
+
+            $('#tambah').modal('hide');
+            $('.messages').show();
+            // Remove any existing alert classes
+            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
+            // Show error message
+            $('.messages').addClass('alert alert-danger bg-danger text-white').text(error).show();
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            setTimeout(function () {
+                $('.messages').fadeOut(function () {
+                    $(this).empty().removeClass('alert alert-danger bg-danger text-white').hide();
+                });
+            }, 3000);
         }
     });
 });
@@ -1403,8 +1474,6 @@ $('#hapus-kejuruan').on('click', '.yes', function () {
     });
 });
 
-
-
 $('#gur-maping-mapel, #pilih-guru-mapel').on('click', '.simpan', function () {
     let class_id = $('#pilih-guru-mapel input[name=class_id]').val();
     let data = $('#pilih-guru-mapel').serialize();
@@ -1415,17 +1484,11 @@ $('#gur-maping-mapel, #pilih-guru-mapel').on('click', '.simpan', function () {
         data: data,
         success: function (response) {
             $('#pilih').modal('hide');
-            $('.messages').show();
-            // Remove any existing alert classes
-            $('.messages').removeClass('alert-success bg-success alert-danger bg-danger text-white').empty();
-            // Show error message
-            $('.messages').addClass('alert alert-success bg-success text-white').text(response.message).show();
-            $('html, body').animate({ scrollTop: 0 }, 'fast');
-            setTimeout(function () {
-                $('.messages').fadeOut(function () {
-                    $(this).empty().removeClass('alert alert-success bg-success text-white').hide();
-                });
-            }, 3000);
+            Swal.fire({
+                title: 'Berhasil!',
+                text: response.message,
+                icon: 'success'
+            });
             show_mapel(class_id);
         }
     });
@@ -1821,8 +1884,19 @@ $('#filter-class').on('click', '.filter', function(e){
     if(class_id == "")
     {
         $('#gur-maping-mapel').hide();
+        Swal.fire({
+            title: 'Gagal!',
+            text: 'Pilih Kelas Terlebih dahulu',
+            icon: 'error'
+        });
     }else{
-        show_mapel(class_id);
+        Swal.fire({
+            title: 'Berhasil!',
+            text: 'Data Kelas Di Temukan',
+            icon: 'success'
+        }).then(function(){
+            show_mapel(class_id);
+        });
     }
 });
 
@@ -1835,4 +1909,10 @@ $('#gur-maping-mapel').on('click', '.select-guru', function(){
     $('.mapel_name').text(mapel_name);
     $('#pilih-guru-mapel input[name=class_id]').val(id);
     $('#pilih-guru-mapel input[name=mapel_id]').val(mapel_id);
+});
+
+$('.unduh').click(function(){
+    let url = $(this).data('url');
+
+    window.location.href = url;
 });

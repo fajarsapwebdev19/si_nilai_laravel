@@ -14,7 +14,8 @@ class TableNilaiSiswa extends Migration
     public function up()
     {
         Schema::create('nilai', function(Blueprint $table){
-            $table->string('user_id')->primary();
+            $table->string('id')->primary();
+            $table->string('user_id')->nullable();
             $table->string('mapel_id');
             $table->string('tahun_ajaran');
             // Kolom nilai

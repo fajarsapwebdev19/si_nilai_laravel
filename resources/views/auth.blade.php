@@ -13,7 +13,11 @@
     <meta name="description" content="Login kedalam aplikasi untuk melakukan pengolahan nilai" />
     <meta name="keywords" content="login, login sistem pengolahan nilai {{ $ps->nama_sekolah }}">
     <!-- Favicon -->
+    @if($ps->logo)
     <link rel="icon" type="image/x-icon" href="{{asset($ps->logo)}}" />
+    @else
+    <link rel="icon" type="image/x-icon" href="{{asset('logo/default.png')}}" />
+    @endif
 
     <!-- Icons -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css?v='.rand()) }}" />
@@ -34,7 +38,7 @@
 
 </head>
 
-<body>
+<body style="background-color: #fff;">
 
     <!-- Content -->
 

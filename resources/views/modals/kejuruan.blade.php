@@ -96,14 +96,15 @@
             <form id="import-kejuruan" autocomplete="off" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
+                    <div class="alert alert-info">
+                        Untuk Template Import Silahkan Unduh Pada Menu Pusat Unduhan
+                    </div>
                     <div id="error-message"></div>
                     <div class="form-group mb-3">
                         <label for="">File Excel</label>
                         <input type="file" name="file" class="form-control">
                         <br>
                         <span>Ext : .xlx, .xlxs</span>
-                        <br>
-                        <a href="{{asset('assets/template-import/template-kejuruan.xlsx')}}" class="btn btn-sm btn-success">Template Import</a>
                     </div>
                 </div>
                 <div class="modal-footer">

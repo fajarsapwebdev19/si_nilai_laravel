@@ -87,3 +87,4 @@
     </div>
   </div>
 @endsection
+@section('pageTitle', 'Dashboard')
