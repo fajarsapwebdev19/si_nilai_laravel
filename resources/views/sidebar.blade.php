@@ -36,7 +36,7 @@
                 </li>
                 <li class="menu-item {{ Request::is('admin/data/kejuruan') ? 'active' : '' }}">
                     <a href="{{route('data-kejuruan')}}" class="menu-link">
-                        <div class="text-truncate">Data Kejuruan</div>
+                        <div class="text-truncate">Data Jurusan</div>
                     </a>
                 </li>
                 <li class="menu-item {{ Request::is('admin/data/mapel') ? 'active' : '' }}">
@@ -86,7 +86,7 @@
                 </li>
                 <li class="menu-item {{ Request::is('admin/pengaturan/set-mapel') ? 'active' : '' }}">
                     <a href="{{route('pilih-guru-mapel')}}" class="menu-link">
-                        <div class="text-truncate">Mapel</div>
+                        <div class="text-truncate">Guru Mapel</div>
                     </a>
                 </li>
             </ul>

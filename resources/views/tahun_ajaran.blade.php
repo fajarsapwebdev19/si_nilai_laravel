@@ -2,6 +2,9 @@
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
+        <div class="col-md-12 mb-4">
+            <h6>Master Data <span class="fas fa-arrow-right"></span> Tahun Ajaran</h6>
+        </div>
       <div class="col-md-12 mb-4">
         <button type="button" data-bs-toggle="modal" data-bs-target="#tambah" class="btn btn-success mb-3">
             Tambah
