@@ -1,6 +1,6 @@
-let apiUrl1 = "https://masterdata.ppdb.dev19.my.id/api/m_pekerjaan.php";
-let apiUrl2 = "https://masterdata.ppdb.dev19.my.id/api/m_pendidikan.php";
-let apiUrl3 = "https://masterdata.ppdb.dev19.my.id/api/m_agama.php";
+let apiUrl1 = "https://masterdata.ppdb.dev19.my.id/api/work.php";
+let apiUrl2 = "https://masterdata.ppdb.dev19.my.id/api/education.php";
+let apiUrl3 = "https://masterdata.ppdb.dev19.my.id/api/religion.php";
 
 // selected update data
 // pendidikan ibu
@@ -9,17 +9,17 @@ function select_pendidikan_ibu(pendidikan_ibu) {
         url: apiUrl2,
         method: "GET",
         success: function (response) {
-            let pendidikan = response;
+            let pendidikan = response.data;
 
             let p_ibu = $('#p_ibu');
             // Mengosongkan elemen select sebelum menambahkan opsi baru
             p_ibu.empty();
             p_ibu.append('<option value=""> Pilih Pendidikan </option>');
             $.each(pendidikan, function (key, value) {
-                if (value.pendidikan == pendidikan_ibu) {
-                    p_ibu.append('<option value="' + value.pendidikan + '" selected>' + value.pendidikan + '</option>');
+                if (value.education == pendidikan_ibu) {
+                    p_ibu.append('<option value="' + value.education + '" selected>' + value.education + '</option>');
                 } else {
-                    p_ibu.append('<option value="' + value.pendidikan + '">' + value.pendidikan + '</option>');
+                    p_ibu.append('<option value="' + value.education + '">' + value.education + '</option>');
                 }
             });
         },
@@ -34,17 +34,17 @@ function select_pendidikan_ayah(pendidikan_ayah) {
         url: apiUrl2,
         method: "GET",
         success: function (response) {
-            let pendidikan = response;
+            let pendidikan = response.data;
             // Mengosongkan elemen select sebelum menambahkan opsi baru
             let p_ayah = $('#p_ayah');
             // Mengosongkan elemen select sebelum menambahkan opsi baru
             p_ayah.empty();
             p_ayah.append('<option value=""> Pilih Pendidikan </option>');
             $.each(pendidikan, function (key, value) {
-                if (value.pendidikan == pendidikan_ayah) {
-                    p_ayah.append('<option value="' + value.pendidikan + '" selected>' + value.pendidikan + '</option>');
+                if (value.education == pendidikan_ayah) {
+                    p_ayah.append('<option value="' + value.education + '" selected>' + value.education + '</option>');
                 } else {
-                    p_ayah.append('<option value="' + value.pendidikan + '">' + value.pendidikan + '</option>');
+                    p_ayah.append('<option value="' + value.education + '">' + value.education + '</option>');
                 }
             });
         },
@@ -60,14 +60,14 @@ function select_pekerjaan_ibu(pekerjaan_ibu) {
         method: "GET",
         success: function (response) {
             console.log("API Response:", response); // Log response to inspect structure
-            let pekerjaan = response;
+            let pekerjaan = response.data;
             let pkj_ibu = $("#pkj_ibu");
             pkj_ibu.append('<option value=""> Pilih Pekerjaan </option>');
             $.each(pekerjaan, function (key, value) {
-                if (value.pekerjaan == pekerjaan_ibu) {
-                    pkj_ibu.append('<option value="' + value.pekerjaan + '" selected>' + value.pekerjaan + '</option>');
+                if (value.work == pekerjaan_ibu) {
+                    pkj_ibu.append('<option value="' + value.work + '" selected>' + value.work + '</option>');
                 } else {
-                    pkj_ibu.append('<option value="' + value.pekerjaan + '">' + value.pekerjaan + '</option>');
+                    pkj_ibu.append('<option value="' + value.work + '">' + value.work + '</option>');
                 }
             });
         },
@@ -83,14 +83,14 @@ function select_pekerjaan_ayah(pekerjaan_ayah) {
         method: "GET",
         success: function (response) {
             console.log("API Response:", response); // Log response to inspect structure
-            let pekerjaan = response;
+            let pekerjaan = response.data;
             let pkj_ayah = $("#pkj_ayah");
             pkj_ayah.append('<option value=""> Pilih Pekerjaan </option>');
             $.each(pekerjaan, function (key, value) {
-                if (value.pekerjaan == pekerjaan_ayah) {
-                    pkj_ayah.append('<option value="' + value.pekerjaan + '" selected>' + value.pekerjaan + '</option>');
+                if (value.work == pekerjaan_ayah) {
+                    pkj_ayah.append('<option value="' + value.work + '" selected>' + value.work + '</option>');
                 } else {
-                    pkj_ayah.append('<option value="' + value.pekerjaan + '">' + value.pekerjaan + '</option>');
+                    pkj_ayah.append('<option value="' + value.work + '">' + value.work + '</option>');
                 }
             });
         },
@@ -106,7 +106,7 @@ function select_agama(agamaselect) {
         url: apiUrl3,
         method: "GET",
         success: function (response) {
-            let agama = response;
+            let agama = response.data;
             let selectAgama = $('#agm');
 
             // Mengosongkan elemen select sebelum menambahkan opsi baru
@@ -117,10 +117,10 @@ function select_agama(agamaselect) {
 
             // Menambahkan opsi dari respons API
             $.each(agama, function (key, value) {
-                if (value.nama_agama == agamaselect) {
-                    selectAgama.append('<option value="' + value.nama_agama + '" selected>' + value.nama_agama + '</option>');
+                if (value.religion_name == agamaselect) {
+                    selectAgama.append('<option value="' + value.religion_name + '" selected>' + value.religion_name + '</option>');
                 } else {
-                    selectAgama.append('<option value="' + value.nama_agama + '">' + value.nama_agama + '</option>');
+                    selectAgama.append('<option value="' + value.religion_name + '">' + value.religion_name + '</option>');
                 }
             });
         },
@@ -160,15 +160,14 @@ $.ajax({
     url: apiUrl1,
     method: "GET",
     success: function (response) {
-        console.log("API Response:", response); // Log response to inspect structure
-        let pekerjaan = response;
+        let pekerjaan = response.data;
         let pkj_ayah = $(".pkj_ayah");
         let pkj_ibu = $(".pkj_ibu");
         pkj_ibu.append('<option value=""> Pilih Pekerjaan </option>');
         pkj_ayah.append('<option value=""> Pilih Pekerjaan </option>');
         $.each(pekerjaan, function (key, value) {
-            pkj_ibu.append('<option value="' + value.pekerjaan + '">' + value.pekerjaan + '</option>');
-            pkj_ayah.append('<option value="' + value.pekerjaan + '">' + value.pekerjaan + '</option>');
+            pkj_ibu.append('<option value="' + value.work + '">' + value.work + '</option>');
+            pkj_ayah.append('<option value="' + value.work + '">' + value.work + '</option>');
         });
     },
     error: function (xhr, status, error) {
@@ -181,14 +180,14 @@ $.ajax({
     url: apiUrl2,
     method: "GET",
     success: function (response) {
-        let pendidikan = response;
+        let pendidikan = response.data;
         let p_ibu = $('.p_ibu');
         let p_ayah = $('.p_ayah');
         p_ayah.append('<option value=""> Pilih Pendidikan </option>');
         p_ibu.append('<option value=""> Pilih Pendidikan </option>');
         $.each(pendidikan, function (key, value) {
-            p_ayah.append('<option value="' + value.pendidikan + '">' + value.pendidikan + '</option>');
-            p_ibu.append('<option value="' + value.pendidikan + '">' + value.pendidikan + '</option>');
+            p_ayah.append('<option value="' + value.education + '">' + value.education + '</option>');
+            p_ibu.append('<option value="' + value.education + '">' + value.education + '</option>');
         });
     },
     error: function (xhr, status, error) {
@@ -201,7 +200,7 @@ $.ajax({
     url: apiUrl3,
     method: "GET",
     success: function (response) {
-        let agama = response;
+        let agama = response.data;
         let selectAgama = $('.agm');
 
         // Mengosongkan elemen select sebelum menambahkan opsi baru
@@ -212,7 +211,7 @@ $.ajax({
 
         // Menambahkan opsi dari respons API
         $.each(agama, function (key, value) {
-            selectAgama.append('<option value="' + value.nama_agama + '">' + value.nama_agama + '</option>');
+            selectAgama.append('<option value="' + value.religion_name + '">' + value.religion_name + '</option>');
         });
     },
     error: function (xhr, status, error) {
